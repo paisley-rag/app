@@ -13,6 +13,7 @@ from datasets import Dataset
 from ragas import evaluate
 from ragas.metrics import answer_relevancy
 
+
 import psycopg2
 
 def run_evals(query=None, output=None, context=None):
@@ -32,8 +33,8 @@ def run_evals(query=None, output=None, context=None):
 
 def store_to_db(query, output, context, answer_relevancy_score):
     conn = psycopg2.connect(
-        user="ben",
-        password="adf4adfa23;mvb",
+        user=os.getenv("PG_USER"),
+        password=os.getenv("PG_PASSWORD"),
         host="127.0.0.1",
         port="5432",
         database="evals"
@@ -50,8 +51,8 @@ def store_to_db(query, output, context, answer_relevancy_score):
 
 def get_evals():
     conn = psycopg2.connect(
-        user="ben",
-        password="adf4adfa23;mvb",
+        user=os.getenv("PG_USER"),
+        password=os.getenv("PG_PASSWORD"),
         host="127.0.0.1",
         port="5432",
         database="evals"
@@ -62,10 +63,10 @@ def get_evals():
     print(records)
     return records
 
-# run_evals(
-#     query='When was the second super bowl?', 
-#     output='The first superbowl was held on January 15, 1967', 
-#     context='The first superbowl was held on January 15, 1967'
-# )
+run_evals(
+    query='When was the second super bowl?', 
+    output='The first superbowl was held on January 15, 1967', 
+    context='The first superbowl was held on January 15, 1967'
+)
 
-# get_evals()
+get_evals()
