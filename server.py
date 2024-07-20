@@ -18,7 +18,7 @@ app.add_middleware(
 
 
 
-@app.get('/')
+@app.get('/api')
 async def root():
     return {"message": "Server running"}
 
