@@ -1,4 +1,4 @@
 #! /bin/bash
 
-pipenv shell
-fastapi run server.py
+cd /home/ubuntu/db
+pipenv run fastapi run server.py
