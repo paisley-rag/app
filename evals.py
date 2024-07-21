@@ -4,16 +4,9 @@ import os
 from ragas import evaluate
 from ragas.metrics import answer_relevancy
 
-
 # DB dependencies
-import os
 import psycopg2
-from datasets import Dataset
-from ragas import evaluate
-from ragas.metrics import answer_relevancy
 
-
-import psycopg2
 
 def connect_to_db():
     try:
@@ -75,10 +68,10 @@ def get_evals():
     print(records)
     return records
 
-run_evals(
-    query='When was the second super bowl?', 
-    output='The first superbowl was held on January 15, 1967', 
-    context='The first superbowl was held on January 15, 1967'
-)
+# run_evals(
+#     query='When was the second super bowl?', 
+#     output='The first superbowl was held on January 15, 1967', 
+#     context='The first superbowl was held on January 15, 1967'
+# )
 
 get_evals()
