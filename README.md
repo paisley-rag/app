@@ -9,17 +9,15 @@ STARTING FROM FRESH EC2 INSTANCE:
 
 sudo apt-get install python3\
 sudo apt install -y git\
-git clone https://github.com/2405-team3/db\
+git clone https://github.com/2405-team3/db \
 sudo apt install python3-pip -y\
 sudo apt install pipenv\
 cd db\
 pipenv --python /usr/bin/python3\
 pipenv install\
 \
-\
 git checkout eval\
 pipenv shell\
-\
 \
 pipenv install\
 bash setup_postgres.sh\
