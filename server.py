@@ -23,7 +23,10 @@ async def root():
     return {"message": "Server running"}
 
 
-
+@app.get('/api/evals')
+async def get_evals():
+    eval_table = await evals.get_evals()
+    return {"message": eval_table}
 
 
 @app.post('/api/upload')
