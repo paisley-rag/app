@@ -1,7 +1,7 @@
 Sets up Python3, pip, pipenv, git, and clones the repo\
 Installs the necessary packages\
 Sets up a local postgres db\
-Runs the evals.py file\
+Runs the evals.py file
 
   
 
@@ -24,6 +24,6 @@ pipenv shell\
 pipenv install\
 bash setup_postgres.sh\
 \
-[ create and populate .env with PG_USER=paisley, PG_PASSWORD=paisley_rules, PG_DATABASE=paisley_evals, OPENAI_API_KEY=... ]\
+[ create and populate .env with PG_USER=paisley, PG_PASSWORD=paisley_rules, PG_DATABASE=paisley_evals, OPENAI_API_KEY=... ]
 
-python3 evals.py\
+python3 evals.py
