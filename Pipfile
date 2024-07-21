@@ -6,6 +6,8 @@ name = "pypi"
 [packages]
 fastapi = "*"
 boto3 = "*"
+datasets = "*"
+ragas = "*"
 
 [dev-packages]
 
