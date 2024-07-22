@@ -1,11 +1,13 @@
+# Evals notes
+
 Sets up Python3, pip, pipenv, git, and clones the repo\
 Installs the necessary packages\
 Sets up a local postgres db\
 Runs the evals.py file
 
-  
 
-# Steps to set up brand new EC2 instance:
+
+## Steps to set up brand new EC2 instance:
 ```
 sudo apt-get install python3
 sudo apt install -y git
