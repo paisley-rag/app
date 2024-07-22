@@ -8,6 +8,10 @@ fastapi = "*"
 boto3 = "*"
 datasets = "*"
 ragas = "*"
+llama-index = "*"
+pymongo = "*"
+llama-index-vector-stores-awsdocdb = "*"
+python-dotenv = "*"
 
 [dev-packages]
 
