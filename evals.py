@@ -7,6 +7,9 @@ from ragas.metrics import answer_relevancy
 # DB dependencies
 import psycopg2
 
+from dotenv import load_dotenv
+
+load_dotenv()
 
 def connect_to_db():
     try:
@@ -68,10 +71,10 @@ def get_evals():
     print(records)
     return records
 
-# run_evals(
-#     query='When was the second super bowl?', 
-#     output='The first superbowl was held on January 15, 1967', 
-#     context='The first superbowl was held on January 15, 1967'
-# )
+run_evals(
+    query='When was the second super bowl?', 
+    output='The first superbowl was held on January 15, 1967', 
+    context='The first superbowl was held on January 15, 1967'
+)
 
 get_evals()
