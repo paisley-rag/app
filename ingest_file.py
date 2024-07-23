@@ -1,5 +1,8 @@
 from dotenv import load_dotenv
 
+import pymongo
+import os
+
 from llama_parse import LlamaParse
 from llama_index.core.node_parser import MarkdownElementNodeParser
 from llama_index.llms.openai import OpenAI
@@ -10,10 +13,13 @@ from llama_index.core import StorageContext
 
 load_dotenv()
 
+mongo_uri = os.environ["MONGO_URI"]
+mongodb_client = pymongo.MongoClient(mongo_uri)
+store = AWSDocDbVectorStore(mongodb_client, db_name='testdb', collection_name='testcollection')
 
 def send_file_to_llama_parse(file_path):
     parser = LlamaParse(
-        api_key=LLAMA_PARSE_KEY,
+        api_key=os.environ["LLAMA_PARSE_KEY"],
         result_type="markdown"
     )
 
@@ -27,7 +33,7 @@ def send_file_to_llama_parse(file_path):
 def markdown_to_node(documents):
     
     markdown_parser = MarkdownElementNodeParser(
-        llm=OpenAI(api_key=OPENAI_KEY, model="gpt-3.5-turbo"),
+        llm=OpenAI(api_key=os.environ["OPENAI_KEY"], model="gpt-3.5-turbo"),
         num_workers=8,
     )
 
@@ -38,8 +44,7 @@ def markdown_to_node(documents):
 # convert nodes to vector store
 # side effect: save index to docdb
 def nodes_to_vector_store(nodes):
-    embed_model = OpenAIEmbedding(api_key=OPENAI_KEY, model="gpt-3.5-turbo")
-    store = AWSDocDbVectorStore(mongodb_client, db_name='testdb', collection_name='testcollection')
+    embed_model = OpenAIEmbedding(api_key=os.environ["OPENAI_KEY"], model="gpt-3.5-turbo")
     storage_context = StorageContext.from_defaults(vector_store=store)
 
     index = VectorStoreIndex.from_nodes(nodes, embed_model=embed_model)
