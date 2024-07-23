@@ -55,7 +55,7 @@ class UserQuery(BaseModel):
 @app.post('/api/query')
 async def post_query(query: UserQuery):
     print('user query: ', query)
-    response = load_vectors.submit_query(query)
+    response = load_vectors.submit_query(query.query)
     return { "type": "response", "body":response }
 
 
