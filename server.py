@@ -60,8 +60,8 @@ async def post_query(query: UserQuery):
 
 
 @app.post('/api/test')
-async def post_query(query: UserQuery):
-    print('user query: ', query)
+async def test_query(query: UserQuery):
+    print('user query: ', query.query)
     return { "type": "response", "body": query }
 
 
