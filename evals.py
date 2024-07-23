@@ -71,10 +71,10 @@ def get_evals():
     print(records)
     return records
 
-run_evals(
-    query='When was the second super bowl?', 
-    output='The first superbowl was held on January 15, 1967', 
-    context='The first superbowl was held on January 15, 1967'
-)
-
-get_evals()
+# run_evals(
+#     query='When was the second super bowl?', 
+#     output='The first superbowl was held on January 15, 1967', 
+#     context='The first superbowl was held on January 15, 1967'
+# )
+# 
+# get_evals()
