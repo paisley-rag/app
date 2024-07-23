@@ -5,6 +5,8 @@ from fastapi.middleware.cors import CORSMiddleware
 import shutil
 import os
 import use_s3
+import load_vectors
+import evals
 
 app = FastAPI()
 
@@ -25,7 +27,7 @@ async def root():
 
 @app.get('/api/evals')
 async def get_evals():
-    eval_table = await evals.get_evals()
+    eval_table = evals.get_evals()
     return {"message": eval_table}
 
 
@@ -44,6 +46,17 @@ async def upload(file: UploadFile=File(...)):
     use_s3.ul_file(file.filename, dir=FILE_DIR)
 
     return {"message": f"{file.filename} received"}
+
+class UserQuery(BaseModel):
+    query: str
+
+
+
+@app.post('/api/query')
+async def post_query(query: UserQuery):
+    print('user query: ', query)
+    response = load_vectors.submit_query(query)
+    return { "type": "response", "body":response }
 
 
 
