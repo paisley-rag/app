@@ -33,7 +33,7 @@ def send_file_to_llama_parse(file_path):
 def markdown_to_node(documents):
     
     markdown_parser = MarkdownElementNodeParser(
-        llm=OpenAI(api_key=os.environ["OPENAI_KEY"], model="gpt-3.5-turbo"),
+        llm=OpenAI(api_key=os.environ["OPENAI_API_KEY"], model="gpt-3.5-turbo"),
         num_workers=8,
     )
 
@@ -44,7 +44,7 @@ def markdown_to_node(documents):
 # convert nodes to vector store
 # side effect: save index to docdb
 def nodes_to_vector_store(nodes):
-    embed_model = OpenAIEmbedding(api_key=os.environ["OPENAI_KEY"], model="gpt-3.5-turbo")
+    embed_model = OpenAIEmbedding(api_key=os.environ["OPENAI_API_KEY"], model="gpt-3.5-turbo")
     storage_context = StorageContext.from_defaults(vector_store=store)
 
     index = VectorStoreIndex.from_nodes(nodes, embed_model=embed_model)
