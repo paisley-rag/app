@@ -59,6 +59,11 @@ async def post_query(query: UserQuery):
     return { "type": "response", "body":response }
 
 
+@app.post('/api/test')
+async def post_query(query: UserQuery):
+    print('user query: ', query)
+    return { "type": "response", "body": query }
+
 
 if __name__ == "__main__":
     import uvicorn
