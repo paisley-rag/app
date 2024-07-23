@@ -5,6 +5,8 @@ from fastapi.middleware.cors import CORSMiddleware
 import shutil
 import os
 import use_s3
+import ingest_file
+import evals
 
 app = FastAPI()
 
@@ -16,18 +18,14 @@ app.add_middleware(
     allow_headers=['*']
 )
 
-
-
 @app.get('/api')
 async def root():
     return {"message": "Server running"}
-
 
 @app.get('/api/evals')
 async def get_evals():
     eval_table = await evals.get_evals()
     return {"message": eval_table}
-
 
 @app.post('/api/upload')
 async def upload(file: UploadFile=File(...)):
@@ -42,10 +40,9 @@ async def upload(file: UploadFile=File(...)):
         shutil.copyfileobj(file.file, file_object)
 
     use_s3.ul_file(file.filename, dir=FILE_DIR)
+    ingest_file.ingest_file_to_docdb(file_location)
 
     return {"message": f"{file.filename} received"}
-
-
 
 if __name__ == "__main__":
     import uvicorn
