@@ -18,12 +18,15 @@ app.add_middleware(
 
 
 
-@app.get('/')
+@app.get('/api')
 async def root():
     return {"message": "Server running"}
 
 
-
+@app.get('/api/evals')
+async def get_evals():
+    eval_table = await evals.get_evals()
+    return {"message": eval_table}
 
 
 @app.post('/api/upload')
@@ -44,6 +47,6 @@ async def upload(file: UploadFile=File(...)):
 
 
 
-# if __name__ == "__main__":
-#     import uvicorn
-#     uvicorn.run(app, host="0.0.0.0", port=8000)
+if __name__ == "__main__":
+    import uvicorn
+    uvicorn.run(app, host="0.0.0.0", port=8000)

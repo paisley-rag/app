@@ -6,6 +6,14 @@ name = "pypi"
 [packages]
 fastapi = "*"
 boto3 = "*"
+datasets = "*"
+ragas = "*"
+psycopg2-binary = "*"
+async-timeout = "*"
+llama-index = "*"
+pymongo = "*"
+llama-index-vector-stores-awsdocdb = "*"
+python-dotenv = "*"
 
 [dev-packages]
 
