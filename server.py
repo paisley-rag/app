@@ -10,10 +10,8 @@ import use_s3
 import load_vectors
 # import lp_ingest
 import simple_ingest
-# import ingest_file
-import lp_ingest
-import simple_ingest
 import evals
+import nest_asyncio
 
 nest_asyncio.apply()
 
@@ -51,6 +49,7 @@ async def upload(file: UploadFile=File(...)):
         shutil.copyfileobj(file.file, file_object)
 
     use_s3.ul_file(file.filename, dir=FILE_DIR)
+
     # lp_ingest.ingest_file_to_docdb(file_location)
     log.info('starting simple_ingest')
     simple_ingest.ingest_file_to_docdb(file_location)
