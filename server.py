@@ -7,15 +7,12 @@ import shutil
 import os
 import use_s3
 import load_vectors
-import simple_ingest
 # import ingest_file
 import lp_ingest
 import simple_ingest
 import evals
-import nest_asyncio
 
 nest_asyncio.apply()
-
 app = FastAPI()
 
 app.add_middleware(
