@@ -10,10 +10,12 @@ import load_vectors
 import simple_ingest
 # import ingest_file
 import lp_ingest
+import simple_ingest
 import evals
 import nest_asyncio
 
 nest_asyncio.apply()
+
 app = FastAPI()
 
 app.add_middleware(
@@ -52,7 +54,6 @@ async def upload(file: UploadFile=File(...)):
     log.info('starting simple_ingest')
     simple_ingest.ingest_file_to_docdb(file_location)
     log.info('finishing simple_ingest')
-
 
     return {"message": f"{file.filename} received"}
 
