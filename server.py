@@ -5,6 +5,7 @@ from fastapi.middleware.cors import CORSMiddleware
 import shutil
 import os
 import use_s3
+import load_vectors
 import ingest_file
 import evals
 
@@ -24,7 +25,7 @@ async def root():
 
 @app.get('/api/evals')
 async def get_evals():
-    eval_table = await evals.get_evals()
+    eval_table = evals.get_evals()
     return {"message": eval_table}
 
 @app.post('/api/upload')
@@ -43,6 +44,23 @@ async def upload(file: UploadFile=File(...)):
     ingest_file.ingest_file_to_docdb(file_location)
 
     return {"message": f"{file.filename} received"}
+
+class UserQuery(BaseModel):
+    query: str
+
+
+@app.post('/api/query')
+async def post_query(query: UserQuery):
+    print('user query: ', query)
+    response = load_vectors.submit_query(query.query)
+    return { "type": "response", "body":response }
+
+
+@app.post('/api/test')
+async def test_query(query: UserQuery):
+    print('user query: ', query.query)
+    return { "type": "response", "body": query }
+
 
 if __name__ == "__main__":
     import uvicorn
