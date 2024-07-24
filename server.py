@@ -7,6 +7,7 @@ import os
 import use_s3
 import load_vectors
 import ingest_file
+import load_vectors
 import evals
 
 app = FastAPI()
@@ -49,6 +50,7 @@ class UserQuery(BaseModel):
     query: str
 
 
+<<<<<<< HEAD
 
 @app.post('/api/query')
 async def post_query(query: UserQuery):
@@ -62,6 +64,15 @@ async def test_query(query: UserQuery):
     print('user query: ', query.query)
     return { "type": "response", "body": query }
 
+=======
+@app.post('/api/query')
+async def post_query(query: UserQuery):
+    print('user query: ', query)
+    response = load_vectors.submit_query(query)
+    return { "type": "response", "body":response }
+
+
+>>>>>>> 44e8a61 (fix(server.py): merge conflict resolved)
 
 if __name__ == "__main__":
     import uvicorn
