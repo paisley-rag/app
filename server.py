@@ -3,6 +3,7 @@ from pydantic import BaseModel
 from fastapi.middleware.cors import CORSMiddleware
 
 import app_logger as log
+import app_logger as log
 import shutil
 import os
 import use_s3
@@ -10,9 +11,11 @@ import load_vectors
 # import ingest_file
 import lp_ingest
 import simple_ingest
+import simple_ingest
 import evals
 
 nest_asyncio.apply()
+
 app = FastAPI()
 
 app.add_middleware(
@@ -25,6 +28,7 @@ app.add_middleware(
 
 @app.get('/api')
 async def root():
+    log.info("server running")
     log.info("server running")
     return {"message": "Server running"}
 
@@ -47,7 +51,6 @@ async def upload(file: UploadFile=File(...)):
 
     use_s3.ul_file(file.filename, dir=FILE_DIR)
     # lp_ingest.ingest_file_to_docdb(file_location)
-
     log.info('starting simple_ingest')
     simple_ingest.ingest_file_to_docdb(file_location)
     log.info('finishing simple_ingest')
