@@ -11,6 +11,36 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
+def store_eval_data(query, response):
+    context, output = extract_from_response(response)
+    run_and_store_evals(query, context, output)
+
+def extract_from_response(response):
+    # creates context using 'text' from each 'node' in response's 'source_nodes'. also deletes any instances of '\n'
+    source_nodes = response['body']['source_nodes']
+    context_list = [source_node['node']['text'].replace('\n', '') for source_node in source_nodes] 
+    context = '\n\n'.join(context_list)
+
+    output = response['body']['response']
+
+    return [context, output]
+
+def run_and_store_evals(query, context, output):
+    data_samples = {
+        'question': [query],
+        'answer': [output],
+        'contexts' : [[context]], # currently the context is globbed into one string, can change that later
+    }
+
+    dataset = Dataset.from_dict(data_samples)
+
+    score = evaluate(dataset, metrics=[answer_relevancy])
+    answer_relevancy_score = score['answer_relevancy']
+
+    print('score', answer_relevancy_score)
+    
+    store_to_db(query, output, context, answer_relevancy_score)
+
 def connect_to_db():
     try:
         conn = psycopg2.connect(
@@ -25,22 +55,6 @@ def connect_to_db():
     except Exception as e:
         print("An error occurred while connecting to the database:", e)
         return None
-
-
-def run_evals(query=None, output=None, context=None):
-    data_samples = {
-        'question': [query],
-        'answer': [output],
-        'contexts' : [[context]],
-    }
-
-    dataset = Dataset.from_dict(data_samples)
-
-    score = evaluate(dataset, metrics=[answer_relevancy])
-    answer_relevancy_score = score['answer_relevancy']
-    print('score', answer_relevancy_score)
-    
-    store_to_db(query, output, context, answer_relevancy_score)
 
 def store_to_db(query, output, context, answer_relevancy_score):
     conn = connect_to_db()
@@ -70,11 +84,3 @@ def get_evals():
     records = cursor.fetchall()
     print(records)
     return records
-
-# run_evals(
-#     query='When was the second super bowl?', 
-#     output='The first superbowl was held on January 15, 1967', 
-#     context='The first superbowl was held on January 15, 1967'
-# )
-# 
-# get_evals()
