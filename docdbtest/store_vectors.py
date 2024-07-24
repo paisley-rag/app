@@ -4,7 +4,6 @@
 
 import pymongo
 from dotenv import load_dotenv
-import app_logger as log
 
 from llama_index.vector_stores.awsdocdb import AWSDocDbVectorStore
 from llama_index.core import VectorStoreIndex
@@ -17,16 +16,17 @@ load_dotenv(override=True)
 
 mongo_uri = os.environ["MONGO_URI"]
 mongodb_client = pymongo.MongoClient(mongo_uri)
-store = AWSDocDbVectorStore(mongodb_client, db_name=os.environ["DOCDB_NAME"], collection_name=os.environ["DOCDB_COLLECTION"])
+store = AWSDocDbVectorStore(mongodb_client, db_name='testdb', collection_name='testcollection')
 storage_context = StorageContext.from_defaults(vector_store=store)
 
+documents = SimpleDirectoryReader("files").load_data()
 
-def ingest_file_to_docdb(file_path):
-    try:
-        log.debug('starting ingestion', file_path)
-        document = SimpleDirectoryReader(input_files=[file_path]).load_data()
-        index = VectorStoreIndex.from_documents(document, storage_context=storage_context)
-        log.debug('index created')
-    except Exception as e:
-        raise e
+index = VectorStoreIndex.from_documents(
+    documents, storage_context=storage_context
+)
+
+
+response = index.as_query_engine().query('Tell me about Rudenza')
+print(f"{response}")
+
 
