@@ -53,6 +53,7 @@ class UserQuery(BaseModel):
 async def post_query(query: UserQuery):
     print('user query: ', query)
     response = load_vectors.submit_query(query.query)
+    evals.store_eval_data(query, response)
     return { "type": "response", "body":response }
 
 
