@@ -7,7 +7,6 @@ import os
 import use_s3
 import load_vectors
 import ingest_file
-import load_vectors
 import evals
 
 app = FastAPI()
