@@ -14,6 +14,10 @@ llama-index = "*"
 pymongo = "*"
 llama-index-vector-stores-awsdocdb = "*"
 python-dotenv = "*"
+llama-parse = "*"
+llama-index-embeddings-openai = "*"
+llama-index-llms-openai = "*"
+nest-asyncio = "*"
 
 [dev-packages]
 

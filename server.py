@@ -6,9 +6,12 @@ import shutil
 import os
 import use_s3
 import load_vectors
-import ingest_file
+# import ingest_file
+import lp_ingest
 import evals
+import nest_asyncio
 
+nest_asyncio.apply()
 app = FastAPI()
 
 app.add_middleware(
@@ -41,7 +44,8 @@ async def upload(file: UploadFile=File(...)):
         shutil.copyfileobj(file.file, file_object)
 
     use_s3.ul_file(file.filename, dir=FILE_DIR)
-    ingest_file.ingest_file_to_docdb(file_location)
+    # ingest_file.ingest_file_to_docdb(file_location)
+    lp_ingest.ingest_file_to_docdb(file_location)
 
     return {"message": f"{file.filename} received"}
 
@@ -64,4 +68,4 @@ async def test_query(query: UserQuery):
 
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run(app, host="0.0.0.0", port=8000)
+    uvicorn.run(app, host="0.0.0.0", port=8000, loop='asyncio')
