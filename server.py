@@ -8,10 +8,10 @@ import shutil
 import os
 import use_s3
 import load_vectors
+# import lp_ingest
+import simple_ingest
 # import ingest_file
 import lp_ingest
-import simple_ingest
-import simple_ingest
 import evals
 
 nest_asyncio.apply()
