@@ -18,16 +18,15 @@ load_dotenv(override=True)
 
 mongo_uri = os.environ["MONGO_URI"]
 mongodb_client = pymongo.MongoClient(mongo_uri)
-store = AWSDocDbVectorStore(mongodb_client, db_name='SII1', collection_name='SII1')
+docdb_name = os.environ["DOCDB_NAME"]
+docdb_collection = os.environ["DOCDB_COLLECTION"]
+store = AWSDocDbVectorStore(mongodb_client, db_name=docdb_name, collection_name=docdb_collection)
 storage_context = StorageContext.from_defaults(vector_store=store)
-
-
 
 index = VectorStoreIndex.from_vector_store(
   vector_store=store,
   storage_context=storage_context
 )
-
 
 def submit_query(query):
     response = index.as_query_engine().query(query)
