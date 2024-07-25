@@ -3,7 +3,6 @@ from pydantic import BaseModel
 from fastapi.middleware.cors import CORSMiddleware
 
 import app_logger as log
-import app_logger as log
 import shutil
 import os
 import use_s3
