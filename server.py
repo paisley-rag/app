@@ -2,16 +2,19 @@ from fastapi import FastAPI, File, UploadFile
 from pydantic import BaseModel
 from fastapi.middleware.cors import CORSMiddleware
 
+import app_logger as log
+import app_logger as log
 import shutil
 import os
 import use_s3
 import load_vectors
-# import ingest_file
-import lp_ingest
+# import lp_ingest
+import simple_ingest
 import evals
 import nest_asyncio
 
 nest_asyncio.apply()
+
 app = FastAPI()
 
 app.add_middleware(
@@ -24,6 +27,8 @@ app.add_middleware(
 
 @app.get('/api')
 async def root():
+    log.info("server running")
+    log.info("server running")
     return {"message": "Server running"}
 
 @app.get('/api/evals')
@@ -44,8 +49,11 @@ async def upload(file: UploadFile=File(...)):
         shutil.copyfileobj(file.file, file_object)
 
     use_s3.ul_file(file.filename, dir=FILE_DIR)
-    # ingest_file.ingest_file_to_docdb(file_location)
-    lp_ingest.ingest_file_to_docdb(file_location)
+
+    # lp_ingest.ingest_file_to_docdb(file_location)
+    log.info('starting simple_ingest')
+    simple_ingest.ingest_file_to_docdb(file_location)
+    log.info('finishing simple_ingest')
 
     return {"message": f"{file.filename} received"}
 
@@ -63,7 +71,8 @@ async def post_query(query: UserQuery):
 
 @app.post('/api/test')
 async def test_query(query: UserQuery):
-    print('user query: ', query.query)
+    log.debug("/api/test accessed", query, query.query)
+    # print('user query: ', query.query)
     return { "type": "response", "body": query }
 
 
