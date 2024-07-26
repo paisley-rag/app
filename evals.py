@@ -46,8 +46,8 @@ def evaluate_golden_dataset():
         log.debug('THIS ENTRY IS:', entry)
         response_body = test.mock_query(entry['input'])
         log.debug('RESPONSE BODY IS:', response_body)
-        context, output = utils.extract_from_response(response_body)
-        # context, output = test.extract_from_mock_query_response(response_body)
+        # context, output = utils.extract_from_response(response_body)
+        context, output = test.extract_from_mock_query_response(response_body)
         entry['context'] = context
         entry['output'] = output
         log.debug('WITH OUTPUT AND CONTEXT, THIS ENTRY IS NOW:', entry)
