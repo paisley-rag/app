@@ -96,8 +96,8 @@ def get_batch_evals():
 if __name__ == "__main__":
     # evaluate_and_store_running_entry('this is a query', 'this was the context', 'and we got this for output')
     # get_running_evals()
-    evaluate_golden_dataset()
+    # evaluate_golden_dataset()
     # pg.import_csv_to_golden_dataset('../side_files/strawberries_bananas_csv.csv')
 
-    # pg.print_table(pg.get_data_from('scored_golden_dataset'))
+    pg.print_table(pg.get_data_from('scored_golden_dataset'))
 
