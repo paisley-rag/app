@@ -11,7 +11,7 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-def store_eval_data(query, response):
+def store_running_eval_data(query, response):
     context, output = extract_from_response(response)
     run_and_store_evals(query, context, output)
 
@@ -76,12 +76,12 @@ def store_to_db(query, output, context, answer_relevancy_score):
     cursor.close()
     conn.close()
 
-def get_evals():
+def get_running_evals():
     conn = connect_to_db()
     if conn is None:
         return
     cursor = conn.cursor()
-    cursor.execute("SELECT * FROM evals")
+    cursor.execute("SELECT * FROM running_evals")
     records = cursor.fetchall()
     print(records)
     return records

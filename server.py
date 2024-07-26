@@ -33,7 +33,7 @@ async def root():
 
 @app.get('/api/evals')
 async def get_evals():
-    eval_table = evals.get_evals()
+    eval_table = evals.get_running_evals()
     return {"message": eval_table}
 
 @app.post('/api/upload')
@@ -81,7 +81,7 @@ class UserQuery(BaseModel):
 async def post_query(query: UserQuery):
     print('user query: ', query)
     response = load_vectors.submit_query(query.query)
-    evals.store_eval_data(query.query, response)
+    evals.store_running_eval_data(query.query, response)
     return { "type": "response", "body":response }
 
 
