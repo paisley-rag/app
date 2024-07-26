@@ -24,3 +24,10 @@ def debug(*args):
 
     logger.debug('<<<') if len(args) > 1 else None
 
+def error(*args):
+    logger.error('>>>>>>>>') if len(args) > 1 else None
+    for arg in args:
+        logger.error(arg)
+
+    logger.error('<<<<<<<<') if len(args) > 1 else None
+
