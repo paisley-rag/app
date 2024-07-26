@@ -26,9 +26,11 @@ def connect_to_db():
         return None
     
 def insert_dict_in(dict, table=''):
+    log.info(f"inserting data into {table}")
     json_data = json.dumps(dict)
     conn = connect_to_db()
     if conn is None:
+        log.info(f"table {table} not found.")
         return
     cursor = conn.cursor()
     insert_query = "INSERT INTO {table} (data) VALUES (%s)".format(table=table)
@@ -39,12 +41,16 @@ def insert_dict_in(dict, table=''):
     print(f"JSONB data stored in '{table}' successfully.")
 
 def get_data_from(table=''):
+    log.info(f"retrieving data from {table}")
     conn = connect_to_db()
     if conn is None:
+        log.info(f"table {table} not found.")
         return
     cursor = conn.cursor()
     cursor.execute(f"SELECT * FROM {table}")
     records = cursor.fetchall()
+    
+    log.info("data retrieved.")
     return records
 
 def values_only(table_data):
@@ -83,6 +89,7 @@ def import_csv_to_golden_dataset(csv_file_path):
     conn.close()
 
 def print_table(table_data):
+    log.info("displaying table:")
     if not table_data:
         return "No data to display"
 

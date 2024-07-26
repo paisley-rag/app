@@ -4,13 +4,17 @@ import app_logger as log
 
 def extract_from_response(response):
     # creates context using 'text' from each 'node' in response's 'source_nodes'. also deletes any instances of '\n'
+    # Check if response has a 'body' attribute and update response if it does
+    if hasattr(response, 'body'):
+        response = response.body
+    
     log.debug('RESPONSE IS:', response)
     log.debug('RESPONSE TYPE IS:', type(response))
-    source_nodes = response.body.source_nodes
+    source_nodes = response.source_nodes
     context_list = [source_node.node.text.replace('\n', '') for source_node in source_nodes] 
     context = '\n\n'.join(context_list)
 
-    output = response.body.response
+    output = response.response
 
     return [context, output]
 
