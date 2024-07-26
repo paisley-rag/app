@@ -5,11 +5,11 @@ import app_logger as log
 def extract_from_response(response):
     # creates context using 'text' from each 'node' in response's 'source_nodes'. also deletes any instances of '\n'
     log.debug('RESPONSE IS:', response)
-    source_nodes = response.source_nodes
+    source_nodes = response.body.source_nodes
     context_list = [source_node.node.text.replace('\n', '') for source_node in source_nodes] 
     context = '\n\n'.join(context_list)
 
-    output = response.response
+    output = response.body.response
 
     return [context, output]
 
