@@ -56,6 +56,7 @@ def evaluate_golden_dataset():
 def evaluate_and_store_golden_data_entry(entry):
     
     log.debug('ENTRY TYPE:', type(entry))
+    log.debug('ENTRY KEYS:', entry.keys())
     data_samples = {
         'question': [entry['query']],
         'answer': [entry['output']],
