@@ -33,7 +33,7 @@ async def root():
 
 @app.get('/api/evals')
 async def get_evals():
-    eval_table = evals.get_evals()
+    eval_table = evals.get_running_evals()
     return {"message": eval_table}
 
 @app.post('/api/upload')
@@ -57,6 +57,22 @@ async def upload(file: UploadFile=File(...)):
 
     return {"message": f"{file.filename} received"}
 
+@app.post('/api/csv')
+async def upload(file: UploadFile=File(...)):
+    FILE_DIR = 'tmpfiles/csv'
+
+    # write file to disk
+    if not os.path.exists(f"./{FILE_DIR}"):
+        os.makedirs(f"./{FILE_DIR}")
+
+    file_location = f"./{FILE_DIR}/{file.filename}"
+    with open(file_location, "wb+") as file_object:
+        shutil.copyfileobj(file.file, file_object)
+
+    use_s3.ul_file(file.filename, dir=FILE_DIR)
+
+    return {"message": f"{file.filename} received"}
+
 class UserQuery(BaseModel):
     query: str
 
@@ -65,7 +81,7 @@ class UserQuery(BaseModel):
 async def post_query(query: UserQuery):
     print('user query: ', query)
     response = load_vectors.submit_query(query.query)
-    evals.store_eval_data(query.query, response)
+    evals.store_running_eval_data(query.query, response)
     return { "type": "response", "body":response }
 
 
