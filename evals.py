@@ -14,6 +14,7 @@ def store_running_eval_data(query, response):
     context, output = utils.extract_from_response(response)
     evaluate_and_store_running_entry(query, context, output)
 
+
 # takes query/context/output, scores on 'answer_relevancy' and 'faithfulness'
 # using RAGAs, inserts data into 'running_evals' table
 def evaluate_and_store_running_entry(query, context, output):
@@ -52,7 +53,6 @@ def evaluate_golden_dataset():
         entry['output'] = output
         log.info('WITH OUTPUT AND CONTEXT, THIS ENTRY IS NOW:', entry)
         evaluate_and_store_golden_data_entry(entry)
-    
 
 def evaluate_and_store_golden_data_entry(entry):
     data_samples = {
@@ -98,3 +98,4 @@ if __name__ == "__main__":
     # pg.import_csv_to_golden_dataset('../side_files/strawberries_bananas_csv.csv')
 
     pg.print_table(pg.get_data_from('scored_golden_dataset'))
+
