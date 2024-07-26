@@ -18,6 +18,7 @@ llama-parse = "*"
 llama-index-embeddings-openai = "*"
 llama-index-llms-openai = "*"
 nest-asyncio = "*"
+llama-index-vector-stores-mongodb = "*"
 
 [dev-packages]
 
