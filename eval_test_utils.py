@@ -11,7 +11,8 @@ def mock_query(string):
             log.info("Request was successful")
             # print("Response data:", response.json())
             log.debug('MOCK QUERY RESPONSE OBJECT KEYS:', response.json().keys())
-            return response.json()['body']
+            # return response.json()['body']
+            return response.json()
         else:
             log.info(f"Request failed with status code: {response.status_code}")
     except Exception as e:
@@ -23,10 +24,10 @@ def extract_from_mock_query_response(response):
     log.debug('RESPONSE IS:', response)
     log.debug('RESPONSE TYPE IS:', type(response))
 
-    source_nodes = response['source_nodes']
+    source_nodes = response['body']['source_nodes']
     context_list = [source_node['node']['text'].replace('\n', '') for source_node in source_nodes] 
     context = '\n\n'.join(context_list)
 
-    output = response['response']
+    output = response['body']['response']
 
     return [context, output]

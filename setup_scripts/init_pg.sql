@@ -12,7 +12,7 @@ CREATE USER paisley WITH PASSWORD 'paisley_rules';
 CREATE DATABASE paisley_evals2;
 
 -- Connect to the new database
-\c paisley_evals
+\c paisley_evals2
 
 -- Create new tables
 CREATE TABLE running_evals (
