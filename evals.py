@@ -58,7 +58,7 @@ def evaluate_and_store_golden_data_entry(entry):
     log.debug('ENTRY TYPE:', type(entry))
     log.debug('ENTRY KEYS:', entry.keys())
     data_samples = {
-        'question': [entry['query']],
+        'question': [entry['input']],
         'answer': [entry['output']],
         'contexts' : [[entry['context']]], # currently the context is globbed into one string, can change that later
         'ground_truth': [entry['ground_truth']]
