@@ -141,5 +141,5 @@ def print_table(table_data):
             table.append(row)
         table.append('+' + '+'.join('-' * (w + 2) for w in col_widths) + '+')
 
-    return '\n'.join(table)
+    print('\n'.join(table))
 
