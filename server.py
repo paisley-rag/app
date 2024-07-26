@@ -57,6 +57,22 @@ async def upload(file: UploadFile=File(...)):
 
     return {"message": f"{file.filename} received"}
 
+@app.post('/api/csv')
+async def upload(file: UploadFile=File(...)):
+    FILE_DIR = 'tmpfiles/csv'
+
+    # write file to disk
+    if not os.path.exists(f"./{FILE_DIR}"):
+        os.makedirs(f"./{FILE_DIR}")
+
+    file_location = f"./{FILE_DIR}/{file.filename}"
+    with open(file_location, "wb+") as file_object:
+        shutil.copyfileobj(file.file, file_object)
+
+    use_s3.ul_file(file.filename, dir=FILE_DIR)
+
+    return {"message": f"{file.filename} received"}
+
 class UserQuery(BaseModel):
     query: str
 
