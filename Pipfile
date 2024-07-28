@@ -18,6 +18,9 @@ llama-parse = "*"
 llama-index-embeddings-openai = "*"
 llama-index-llms-openai = "*"
 nest-asyncio = "*"
+llama-index-vector-stores-mongodb = "*"
+rank-bm25 = "*"
+llama-index-postprocessor-colbert-rerank = "*"
 
 [dev-packages]
 
