@@ -88,10 +88,11 @@ async def post_chat(query: UserQuery):
     evals.store_running_eval_data(query.query, response)
 
 # route for observing pipeline input/output history + associated evaluation scores
+# TESTED, WORKING 7/29/24
 @app.get('/api/history')
 async def get_evals():
     eval_table = evals.get_running_evals()
-    return {"message": eval_table}
+    return {"table_data": eval_table}
 
 
 
@@ -108,10 +109,11 @@ async def upload(file: UploadFile=File(...)):
     if not os.path.exists(f"./{FILE_DIR}"):
         os.makedirs(f"./{FILE_DIR}")
 
-    # import csv to postgres benchmark_data table
-    evals.pg.import_csv_benchmark_data(f"./{FILE_DIR}")
-
     file_location = f"./{FILE_DIR}/{file.filename}"
+
+    # import csv to postgres benchmark_data table
+    evals.pg.import_csv_benchmark_data(file_location)
+
     with open(file_location, "wb+") as file_object:
         shutil.copyfileobj(file.file, file_object)
 
