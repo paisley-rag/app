@@ -115,7 +115,7 @@ async def benchmark_evaluate():
 # benchmark api route for examining evaluation results of benchmark data
 @app.get('/api/benchmark/results')
 async def benchmark_results():
-    
+    return
 
 
 
