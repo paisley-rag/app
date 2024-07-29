@@ -88,17 +88,17 @@ def evaluate_and_store_benchmark_data_entry(entry):
 
 def get_running_evals():
     data = pg.get_data_from('running_evals')
-    print(pg.printable_table(data))
+    # print(pg.printable_table(data))
     return data
 
 def get_benchmark_data():
     data = pg.get_data_from('benchmark_data')
-    print(pg.printable_table(data))
+    # print(pg.printable_table(data))
     return data
 
 def get_benchmark_scores():
     data = pg.get_data_from('scored_benchmark_data')
-    print(pg.printable_table(data))
+    # print(pg.printable_table(data))
     return data
 
 # if __name__ == "__main__":
