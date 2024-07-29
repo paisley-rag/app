@@ -75,6 +75,12 @@ def import_csv_benchmark_data(csv_file_path):
     with open(csv_file_path, 'r') as csvfile:
         csvreader = csv.DictReader(csvfile)
         
+        # Clear the existing data from the benchmark_data table
+        clear_query = "DELETE FROM benchmark_data"
+        cursor.execute(clear_query)
+        print("Existing data in 'benchmark_data' table has been cleared.")
+        log.info("Existing data in 'benchmark_data' table has been cleared.")
+
         # Prepare the SQL query
         insert_query = f"INSERT INTO benchmark_data (data) VALUES (%s)"
 
