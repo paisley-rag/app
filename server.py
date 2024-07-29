@@ -41,7 +41,11 @@ async def root():
 # QUERY/CHAT ROUTES
 
 # api route for document uploads to add to document collection
-@app.post('/api/upload')
+# TESTED, WORKING 7/29/24
+# required key/values for Postman:
+    # file => upload file via Postman
+    # filename => file name
+@app.post('/api/upload') 
 async def upload(file: UploadFile=File(...)):
     FILE_DIR = 'tmpfiles'
 
@@ -63,6 +67,12 @@ async def upload(file: UploadFile=File(...)):
     return {"message": f"{file.filename} received"}
 
 # simple pipeline query with no side effects
+# TESTED, WORKING 7/29/24
+# required body for Postman
+    # body -> raw -> json
+    # {
+    #     "query": "how tall are banana trees"
+    # }
 @app.post('/api/query')
 async def post_query(query: UserQuery):
     print('user query: ', query)
@@ -70,9 +80,11 @@ async def post_query(query: UserQuery):
     return { "type": "response", "body":response }
 
 # pipeline query with side effects of the input/context/output being evaluated and stored in chat history
+# TESTED, error where response is 'coroutine' object, not awaited?
+# same Postman requirements as '/api/query'
 @app.post('/api/chat')
 async def post_chat(query: UserQuery):
-    response = post_query(query)
+    response = await post_query(query)
     evals.store_running_eval_data(query.query, response)
 
 # route for observing pipeline input/output history + associated evaluation scores
