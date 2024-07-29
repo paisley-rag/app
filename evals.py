@@ -7,6 +7,8 @@ import eval_pg_utils as pg
 import eval_utils as utils
 import eval_test_utils as test
 
+from server import post_query
+
 import app_logger as log
 
 # called within the server /api/query route
@@ -44,10 +46,9 @@ def evaluate_benchmark_data():
 
     for entry in data_list:
         log.debug('THIS ENTRY IS:', entry)
-        response = test.mock_query(entry['input'])
+        response = post_query(entry['input'])
         log.debug('RESPONSE BODY IS:', response)
-        # context, output = utils.extract_from_response(response)
-        context, output = test.extract_from_mock_query_response(response)
+        context, output = utils.extract_from_response(response)
         entry['context'] = context
         entry['output'] = output
         log.debug('WITH OUTPUT AND CONTEXT, THIS ENTRY IS NOW:', entry)
