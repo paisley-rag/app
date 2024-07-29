@@ -129,7 +129,7 @@ async def benchmark_evaluate():
         await evals.evaluate_benchmark_data()
         return {"message": "Benchmark data evaluated successfully", "status_code": 200}
     except Exception as e:
-        log.error(f"Error evaluating benchmark data: {str(e)}")
+        print(f"Error evaluating benchmark data: {str(e)}")
         return {"message": "Failed to evaluate benchmark data", "status_code": 500}
 
 # benchmark api route for examining evaluation results of benchmark data
