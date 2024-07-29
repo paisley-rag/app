@@ -11,7 +11,7 @@ import app_logger as log
 
 # called within the server /api/query route
 def store_running_eval_data(query, response):
-    context, output = utils.extract_from_response(response)
+    context, output = test.extract_from_mock_query_response(response)
     evaluate_and_store_running_entry(query, context, output)
 
 # takes query/context/output, scores on 'answer_relevancy' and 'faithfulness'
@@ -44,10 +44,10 @@ def evaluate_benchmark_data():
 
     for entry in data_list:
         log.debug('THIS ENTRY IS:', entry)
-        response_body = test.mock_query(entry['input'])
-        log.debug('RESPONSE BODY IS:', response_body)
-        # context, output = utils.extract_from_response(response_body)
-        context, output = test.extract_from_mock_query_response(response_body)
+        response = test.mock_query(entry['input'])
+        log.debug('RESPONSE BODY IS:', response)
+        # context, output = utils.extract_from_response(response)
+        context, output = test.extract_from_mock_query_response(response)
         entry['context'] = context
         entry['output'] = output
         log.debug('WITH OUTPUT AND CONTEXT, THIS ENTRY IS NOW:', entry)
