@@ -1,13 +1,14 @@
+import os
+
 from llama_index.core import SimpleDirectoryReader
 from llama_index.core.node_parser import SentenceSplitter
 from llama_index.retrievers.bm25 import BM25Retriever
-# from llama_index.vector_stores.awsdocdb import AWSDocDbVectorStore
 from llama_index.storage.docstore.mongodb import MongoDocumentStore
 from llama_index.core import StorageContext
 from dotenv import load_dotenv
-# import pymongo
 import Stemmer
-import os
+
+import app_logger as log
 
 load_dotenv(dotenv_path='../.', override=True)
 
@@ -29,13 +30,18 @@ storage_context = StorageContext.from_defaults(
 
 # methods
 def write_to_db(file_path):
-    documents = SimpleDirectoryReader(file_path).load_data()
+    if os.path.isdir(file_path):
+        documents = SimpleDirectoryReader(file_path).load_data()
+    else:
+        documents = SimpleDirectoryReader(input_files=[file_path]).load_data()
+
     splitter = SentenceSplitter(chunk_size=512)
 
     nodes = splitter.get_nodes_from_documents(documents)
 
     storage_context.docstore.add_documents(nodes)
-    print(f"../tmpfiles written to {mongo_uri}")
+    log.info(f"keyword.py write_to_db: {file_path} written to db {db_name}", mongo_uri)
+
 
 
 def get_retriever(top_k):
@@ -46,7 +52,7 @@ def get_retriever(top_k):
         language='english',
     )
 
-    print('read from db, return retriever')
+    log.info(f"keyword.py get_retriever: bm25 retriever returned")
     return bm25_retriever
 
 

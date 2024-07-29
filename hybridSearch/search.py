@@ -5,8 +5,8 @@ from hybridSearch import vector
 default_top_k = 5
 
 # keyword
-def keyword_write():
-    keyword.write_to_db()
+def keyword_write(file_path):
+    keyword.write_to_db(file_path)
 
 def keyword_query(query, top_k=default_top_k):
     retriever = keyword.get_retriever(top_k=top_k)
@@ -29,6 +29,11 @@ def vector_query(query, top_k=default_top_k):
 
 
 # hybrid
+
+def hybrid_write(file_path):
+    keyword.write_to_db(file_path)
+    vector.write_to_db(file_path)
+
 
 def hybrid_get_nodes(query, top_k=default_top_k):
     vector_retriever = vector.get_retriever(top_k=top_k)
