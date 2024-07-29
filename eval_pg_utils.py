@@ -56,7 +56,7 @@ def get_data_from(table=''):
 def values_only(table_data):
     return [data[1] for data in table_data]
 
-def import_csv_to_golden_dataset(csv_file_path):
+def import_csv_benchmark_data(csv_file_path):
     log.info('Importing csv file...')
     log.info(f"Current working directory: {os.getcwd()}")
 
@@ -76,7 +76,7 @@ def import_csv_to_golden_dataset(csv_file_path):
         csvreader = csv.DictReader(csvfile)
         
         # Prepare the SQL query
-        insert_query = f"INSERT INTO golden_dataset (data) VALUES (%s)"
+        insert_query = f"INSERT INTO benchmark_data (data) VALUES (%s)"
 
         # Insert each row as a JSONB object
         for row in csvreader:

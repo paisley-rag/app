@@ -37,8 +37,9 @@ def evaluate_and_store_running_entry(query, context, output):
 
     pg.insert_dict_in(entry, table='running_evals')
 
-def evaluate_golden_dataset():
-    table_data = pg.get_data_from('golden_dataset')
+def evaluate_benchmark_data():
+    
+    table_data = pg.get_data_from('benchmark_data')
     data_list = pg.values_only(table_data)
     print(data_list)
 
@@ -51,9 +52,9 @@ def evaluate_golden_dataset():
         entry['context'] = context
         entry['output'] = output
         log.debug('WITH OUTPUT AND CONTEXT, THIS ENTRY IS NOW:', entry)
-        evaluate_and_store_golden_data_entry(entry)
+        evaluate_and_store_benchmark_data_entry(entry)
 
-def evaluate_and_store_golden_data_entry(entry):
+def evaluate_and_store_benchmark_data_entry(entry):
     log.debug('ENTRY TYPE:', type(entry))
     log.debug('ENTRY KEYS:', entry.keys())
     data_samples = {
@@ -84,7 +85,7 @@ def evaluate_and_store_golden_data_entry(entry):
         'scores': score
     }
 
-    pg.insert_dict_in(scored_entry, table='scored_golden_dataset')
+    pg.insert_dict_in(scored_entry, table='scored_benchmark_data')
 
 def get_running_evals():
     return pg.get_table('running_evals')
@@ -95,8 +96,7 @@ def get_batch_evals():
 if __name__ == "__main__":
     # evaluate_and_store_running_entry('this is a query', 'this was the context', 'and we got this for output')
     # get_running_evals()
-    # evaluate_golden_dataset()
-    # pg.import_csv_to_golden_dataset('../side_files/strawberries_bananas_csv.csv')
-
-    pg.print_table(pg.get_data_from('scored_golden_dataset'))
+    pg.import_csv_benchmark_data('../side_files/strawberries_bananas_csv.csv')
+    evaluate_benchmark_data()
+    pg.print_table(pg.get_data_from('scored_benchmark_data'))
 
