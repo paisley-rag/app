@@ -39,14 +39,14 @@ def evaluate_and_store_running_entry(query, context, output):
 
     pg.insert_dict_in(entry, table='running_evals')
 
-def evaluate_benchmark_data():
+async def evaluate_benchmark_data():
     table_data = pg.get_data_from('benchmark_data')
     data_list = pg.values_only(table_data)
     print(data_list)
 
     for entry in data_list:
         log.debug('THIS ENTRY IS:', entry)
-        response = post_query(entry['input'])
+        response = await post_query(entry['input'])
         log.debug('RESPONSE BODY IS:', response)
         context, output = utils.extract_from_response(response)
         entry['context'] = context
