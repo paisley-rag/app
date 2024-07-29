@@ -5,7 +5,8 @@ pipenv run sudo apt install postgresql postgresql-contrib
 
 # load db details from .env
 set -a
-. ../.env
+# . ../.env
+~/db/.env
 set +a
 
 # run init_pg.sql file as admin

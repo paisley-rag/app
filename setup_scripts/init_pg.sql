@@ -3,8 +3,6 @@
 -- and one for golden dataset values (with ~5 additional metrics), but to keep 
 -- things easy for now there's a scored and unscored golden dataset table
 
-
-
 -- Create a new user with a password
 CREATE USER paisley WITH PASSWORD 'paisley_rules';
 
