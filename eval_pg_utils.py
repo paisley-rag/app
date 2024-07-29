@@ -89,9 +89,9 @@ def import_csv_to_golden_dataset(csv_file_path):
     conn.close()
 
 def print_table(table_data):
-    log.info("displayying table:")
+    log.info("displaying table:")
 
-    if table_data:
+    if not table_data:
         log.info("No data to display.")
         return
 
