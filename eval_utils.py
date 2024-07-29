@@ -9,8 +9,8 @@ def extract_from_response(response):
     print('RESPONSE IS:', response)
     print('TYPE OF RESPONSE:', type(response))
     print('RESPONSE KEYS:', response.keys())
-    if hasattr(response, 'body'):
-        response = response.body
+    # if hasattr(response, 'body'):
+    response = response.body
     
     log.debug('RESPONSE IS:', response)
     log.debug('RESPONSE TYPE IS:', type(response))
