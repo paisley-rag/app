@@ -10,6 +10,6 @@ set -a
 set +a
 
 # run init_pg.sql file as admin
-psql --host=$PG_HOST --port=$PG_PORT --username=$PG_ADMIN --password --dbname=postgres -f init_pg.sql
+psql --host=$PG_HOST --port=$PG_PORT --username=$PG_ADMIN --password --dbname=postgres -f ~/db/setup_scripts/init_pg.sql
 
 echo "PostgreSQL setup completed successfully."
