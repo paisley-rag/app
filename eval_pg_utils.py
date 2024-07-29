@@ -89,7 +89,7 @@ def import_csv_benchmark_data(csv_file_path):
     cursor.close()
     conn.close()
 
-def print_table(table_data):
+def printable_table(table_data):
     log.info("displaying table:")
 
     if not table_data:
@@ -152,5 +152,5 @@ def print_table(table_data):
             table.append(row)
         table.append('+' + '+'.join('-' * (w + 2) for w in col_widths) + '+')
 
-    print('\n'.join(table))
+    return '\n'.join(table)
 

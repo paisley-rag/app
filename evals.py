@@ -87,10 +87,19 @@ def evaluate_and_store_benchmark_data_entry(entry):
     pg.insert_dict_in(scored_entry, table='scored_benchmark_data')
 
 def get_running_evals():
-    return pg.get_table('running_evals')
+    data = pg.get_table('running_evals')
+    print(pg.printable_table(data))
+    return data
 
-def get_batch_evals():
-    return pg.get_table('batch_evals')
+def get_benchmark_data():
+    data = pg.get_table('benchmark_data')
+    print(pg.printable_table(data))
+    return data
+
+def get_benchmark_scores():
+    data = pg.get_table('scored_benchmark_data')
+    print(pg.printable_table(data))
+    return data
 
 if __name__ == "__main__":
     # evaluate_and_store_running_entry('this is a query', 'this was the context', 'and we got this for output')

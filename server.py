@@ -108,14 +108,14 @@ async def upload(file: UploadFile=File(...)):
     return {"message": f"{file.filename} received"}
 
 # benchmark api route for batch-evaluating stored benchmark data
-@app.get('/api/benchmark/evaluate')
+@app.post('/api/benchmark/evaluate')
 async def benchmark_evaluate():
     evals.evaluate_benchmark_data()
 
 # benchmark api route for examining evaluation results of benchmark data
 @app.get('/api/benchmark/results')
 async def benchmark_results():
-    evals.evaluate_benchmark_data()
+    
 
 
 
