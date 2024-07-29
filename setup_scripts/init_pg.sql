@@ -37,5 +37,5 @@ GRANT ALL PRIVILEGES ON TABLE benchmark_data TO paisley;
 GRANT ALL PRIVILEGES ON TABLE scored_benchmark_data TO paisley;
 
 GRANT USAGE, SELECT ON SEQUENCE running_evals_id_seq TO paisley;
-GRANT USAGE, SELECT ON SEQUENCE benchmark_data TO paisley;
+GRANT USAGE, SELECT ON SEQUENCE benchmark_data_id_seq TO paisley;
 GRANT USAGE, SELECT ON SEQUENCE scored_benchmark_data_id_seq TO paisley;
