@@ -89,10 +89,11 @@ def import_csv_to_golden_dataset(csv_file_path):
     conn.close()
 
 def print_table(table_data):
-    log.info("displaying table:")
+    log.info("displayying table:")
 
     if table_data:
         log.info("No data to display.")
+        return
 
     data_list = values_only(table_data)
     
