@@ -91,8 +91,8 @@ async def post_chat(query: UserQuery):
 # TESTED, WORKING 7/29/24
 @app.get('/api/history')
 async def get_evals():
-    eval_table = evals.get_running_evals()
-    return {"table_data": eval_table}
+    data = evals.get_running_evals()
+    return {"table_data": data}
 
 
 
@@ -125,12 +125,18 @@ async def upload(file: UploadFile=File(...)):
 # benchmark api route for batch-evaluating stored benchmark data
 @app.post('/api/benchmark/evaluate')
 async def benchmark_evaluate():
-    evals.evaluate_benchmark_data()
+    try:
+        await evals.evaluate_benchmark_data()
+        return {"message": "Benchmark data evaluated successfully", "status_code": 200}
+    except Exception as e:
+        log.error(f"Error evaluating benchmark data: {str(e)}")
+        return {"message": "Failed to evaluate benchmark data", "status_code": 500}
 
 # benchmark api route for examining evaluation results of benchmark data
 @app.get('/api/benchmark/results')
 async def benchmark_results():
-    return
+    data = evals.get_benchmark_scores()
+    return {"table_data": data}
 
 
 
