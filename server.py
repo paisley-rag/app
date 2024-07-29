@@ -75,12 +75,12 @@ async def upload(file: UploadFile=File(...)):
     # }
 @app.post('/api/query')
 async def post_query(query: UserQuery):
-    print('user query: ', query)
+    # print('user query: ', query)
     response = load_vectors.submit_query(query.query)
     return { "type": "response", "body":response }
 
 # pipeline query with side effects of the input/context/output being evaluated and stored in chat history
-# TESTED, error where response is 'coroutine' object, not awaited?
+# TESTED, WORKING 7/29/24
 # same Postman requirements as '/api/query'
 @app.post('/api/chat')
 async def post_chat(query: UserQuery):
