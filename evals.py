@@ -11,7 +11,7 @@ import app_logger as log
 
 # called within the server /api/query route
 def store_running_eval_data(query, response):
-    context, output = test.extract_from_mock_query_response(response)
+    context, output = utils.extract_from_response(response)
     evaluate_and_store_running_entry(query, context, output)
 
 # takes query/context/output, scores on 'answer_relevancy' and 'faithfulness'
