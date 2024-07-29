@@ -96,7 +96,7 @@ def get_batch_evals():
 if __name__ == "__main__":
     # evaluate_and_store_running_entry('this is a query', 'this was the context', 'and we got this for output')
     # get_running_evals()
-    pg.import_csv_benchmark_data('../side_files/strawberries_bananas_csv.csv')
+    pg.import_csv_benchmark_data('./tmpfiles/strawberries_bananas.csv')
     evaluate_benchmark_data()
     pg.print_table(pg.get_data_from('scored_benchmark_data'))
 
