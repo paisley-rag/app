@@ -5,6 +5,10 @@ import app_logger as log
 def extract_from_response(response):
     # creates context using 'text' from each 'node' in response's 'source_nodes'. also deletes any instances of '\n'
     # Check if response has a 'body' attribute and update response if it does
+
+    print('RESPONSE IS:', response)
+    print('TYPE OF RESPONSE:', type(response))
+    print('RESPONSE KEYS:', response.keys())
     if hasattr(response, 'body'):
         response = response.body
     
