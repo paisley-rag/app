@@ -82,3 +82,33 @@ synth.update_prompts(
 
 response = synth.synthesize(query, nodes=nodes_reorder)
 print(response)
+
+
+
+
+
+'''
+Notes:
+
+incorporate post-processing modules:
+- created `pipelineTest.py` based upon ‘hybridTest.py’
+- added similarity
+- adding ColbertRerank
+- found Colbert import statement from https://docs.llamaindex.ai/en/stable/examples/pipeline/query_pipeline_memory/?h=colbertr
+- found reranker syntax from https://docs.llamaindex.ai/en/stable/examples/node_postprocessor/LLMReranker-Lyft-10k/?h=reranker
+- adding LongContextReorder
+- https://docs.llamaindex.ai/en/stable/module_guides/querying/node_postprocessors/node_postprocessors/?h=
+
+- post-processing modules all seem to work
+- need to go from nodes to query response now
+- llamaindex uses a “response synthesizer”
+- https://docs.llamaindex.ai/en/stable/api_reference/response_synthesizers/
+- “simple_summarize” merges all text chunks from nodes into 1 and makes an LLM call
+- it will fail if the merged text chunk exceeds the context window size
+
+- Accessing and customizing prompts
+- https://docs.llamaindex.ai/en/stable/examples/prompts/prompt_mixin/
+- `synthesizer.get_prompts()` returns a dictionary of prompts
+- key is a template (e.g., “text_qa_template”)
+- see promptTest.py to access returned dict and display prompt content
+'''
