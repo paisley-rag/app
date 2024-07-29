@@ -83,6 +83,7 @@ def import_csv_benchmark_data(csv_file_path):
             json_data = Json(row)
             cursor.execute(insert_query, (json_data,))
 
+    log.info("csv benchmark data successfully imported into table 'benchmark_data'.")
     # Commit the changes and close the connection
     conn.commit()
     cursor.close()
