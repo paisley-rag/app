@@ -24,17 +24,23 @@ app.add_middleware(
     allow_headers=['*']
 )
 
+class UserQuery(BaseModel):
+    query: str
+
 @app.get('/api')
 async def root():
     log.info("server running")
     log.info("server running")
     return {"message": "Server running"}
 
-@app.get('/api/evals')
-async def get_evals():
-    eval_table = evals.get_running_evals()
-    return {"message": eval_table}
 
+
+
+
+
+# QUERY/CHAT ROUTES
+
+# api route for document uploads to add to document collection
 @app.post('/api/upload')
 async def upload(file: UploadFile=File(...)):
     FILE_DIR = 'tmpfiles'
@@ -56,13 +62,42 @@ async def upload(file: UploadFile=File(...)):
 
     return {"message": f"{file.filename} received"}
 
-@app.post('/api/csv')
+# simple pipeline query with no side effects
+@app.post('/api/query')
+async def post_query(query: UserQuery):
+    print('user query: ', query)
+    response = load_vectors.submit_query(query.query)
+    return { "type": "response", "body":response }
+
+# pipeline query with side effects of the input/context/output being evaluated and stored in chat history
+@app.post('/api/chat')
+async def post_chat(query: UserQuery):
+    response = post_query(query)
+    evals.store_running_eval_data(query.query, response)
+
+# route for observing pipeline input/output history + associated evaluation scores
+@app.get('/api/history')
+async def get_evals():
+    eval_table = evals.get_running_evals()
+    return {"message": eval_table}
+
+
+
+
+
+# BENCHMARK ROUTES
+
+# benchmark api route for uploading of csv data for use as benchmark data
+@app.post('/api/benchmark/upload')
 async def upload(file: UploadFile=File(...)):
-    FILE_DIR = 'tmpfiles/csv'
+    FILE_DIR = 'tmpfiles'
 
     # write file to disk
     if not os.path.exists(f"./{FILE_DIR}"):
         os.makedirs(f"./{FILE_DIR}")
+
+    # import csv to postgres benchmark_data table
+    evals.pg.import_csv_benchmark_data(f"./{FILE_DIR}")
 
     file_location = f"./{FILE_DIR}/{file.filename}"
     with open(file_location, "wb+") as file_object:
@@ -72,18 +107,23 @@ async def upload(file: UploadFile=File(...)):
 
     return {"message": f"{file.filename} received"}
 
-class UserQuery(BaseModel):
-    query: str
+# benchmark api route for batch-evaluating stored benchmark data
+@app.get('/api/benchmark/evaluate')
+async def benchmark_evaluate():
+    evals.evaluate_benchmark_data()
+
+# benchmark api route for examining evaluation results of benchmark data
+@app.get('/api/benchmark/results')
+async def benchmark_results():
+    evals.evaluate_benchmark_data()
 
 
-@app.post('/api/query')
-async def post_query(query: UserQuery):
-    print('user query: ', query)
-    response = load_vectors.submit_query(query.query)
-    evals.store_running_eval_data(query.query, response)
-    return { "type": "response", "body":response }
 
 
+
+# HOUSEKEEPING
+
+# temporary route for api testing
 @app.post('/api/test')
 async def test_query(query: UserQuery):
     log.debug("/api/test accessed", query, query.query)

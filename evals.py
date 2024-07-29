@@ -38,7 +38,6 @@ def evaluate_and_store_running_entry(query, context, output):
     pg.insert_dict_in(entry, table='running_evals')
 
 def evaluate_benchmark_data():
-    
     table_data = pg.get_data_from('benchmark_data')
     data_list = pg.values_only(table_data)
     print(data_list)
