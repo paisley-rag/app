@@ -139,17 +139,15 @@ async def benchmark_results():
     return {"table_data": data}
 
 
+# benchmark api route for viewing uploaded benchmark data
+@app.get('/api/benchmark/view')
+async def benchmark_data():
+    data = evals.get_benchmark_data()
+    return {"table_data": data}
 
 
 
-# HOUSEKEEPING
 
-# temporary route for api testing
-@app.post('/api/test')
-async def test_query(query: UserQuery):
-    log.debug("/api/test accessed", query, query.query)
-    # print('user query: ', query.query)
-    return { "type": "response", "body": query }
 
 
 if __name__ == "__main__":

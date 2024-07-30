@@ -83,12 +83,9 @@ def evaluate_and_store_benchmark_data_entry(entry):
 
     score = utils.change_nans_to_zeros(score)
 
-    scored_entry = {
-        'input': entry['input'],
-        'context': entry['context'],
-        'output': entry['output'],
-        'scores': score
-    }
+    scored_entry = entry.copy()
+    scored_entry['scores'] = score
+    print('SCORED ENTRY IS:', scored_entry)
 
     pg.insert_dict_in(scored_entry, table='scored_benchmark_data')
 
