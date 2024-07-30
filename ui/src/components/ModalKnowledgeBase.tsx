@@ -25,11 +25,6 @@ interface ModalKnowledgeBaseProps {
 export function ModalKnowledgeBase({
   setModalVisible,
 }: ModalKnowledgeBaseProps) {
-  function handleOverlayClick(e: React.SyntheticEvent) {
-    e.stopPropagation();
-    setModalVisible(false);
-  }
-
   function handleCancelClick() {
     setModalVisible(false);
   }
@@ -42,7 +37,7 @@ export function ModalKnowledgeBase({
 
   return (
     <>
-      <Overlay handleOverlayClick={handleOverlayClick} />
+      <Overlay setModalVisible={setModalVisible} />
       <Card className="min-w-0.5 max-w-2xl fixed top-1/2 -translate-x-1/2 -translate-y-1/2 left-1/2 z-20">
         <CardHeader>
           <CardTitle>Create new knowledge base</CardTitle>

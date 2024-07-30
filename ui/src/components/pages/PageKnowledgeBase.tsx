@@ -2,6 +2,9 @@ import service from "../../service/service";
 import { useQuery } from "@tanstack/react-query";
 import { useLocation } from "wouter";
 import { Typography } from "../Typography";
+import { useState } from "react";
+import { ModalFileUpload } from "../ModalFileUpload";
+
 import {
   Table,
   TableBody,
@@ -18,6 +21,7 @@ export function PageKnowledgeBase({ id }: { id: number }) {
     queryFn: () => service.fetchFilesByKnolwedgeBaseId(id),
   });
   const [, setLocation] = useLocation();
+  const [modalVisible, setModalVisible] = useState(false);
 
   function handleBackClick(e: React.SyntheticEvent) {
     e.preventDefault();
@@ -73,7 +77,7 @@ export function PageKnowledgeBase({ id }: { id: number }) {
 
       <header className="flex items-center justify-between">
         <Typography variant="h3">Files</Typography>
-        <Button>Upload File</Button>
+        <Button onClick={() => setModalVisible(true)}>Upload File</Button>
       </header>
       <Table>
         <TableHeader>
@@ -95,6 +99,7 @@ export function PageKnowledgeBase({ id }: { id: number }) {
           ))}
         </TableBody>
       </Table>
+      {modalVisible && <ModalFileUpload setModalVisible={setModalVisible} />}
     </div>
   );
 }
