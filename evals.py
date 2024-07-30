@@ -46,7 +46,7 @@ async def evaluate_benchmark_data():
 
     for entry in data_list:
         log.debug('THIS ENTRY IS:', entry)
-        response = await post_query(entry['input'])
+        response = await post_query({ 'query': entry['input'] })
         log.debug('RESPONSE BODY IS:', response)
         context, output = utils.extract_from_response(response)
         entry['context'] = context

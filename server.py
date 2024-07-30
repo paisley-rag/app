@@ -112,13 +112,13 @@ async def upload(file: UploadFile=File(...)):
 
     file_location = f"./{FILE_DIR}/{file.filename}"
 
-    # import csv to postgres benchmark_data table
-    evals.pg.import_csv_benchmark_data(file_location)
-
     with open(file_location, "wb+") as file_object:
         shutil.copyfileobj(file.file, file_object)
 
     use_s3.ul_file(file.filename, dir=FILE_DIR)
+
+    # import csv to postgres benchmark_data table
+    evals.pg.import_csv_benchmark_data(file_location)
 
     return {"message": f"{file.filename} received"}
 
