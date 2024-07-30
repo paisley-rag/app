@@ -115,7 +115,7 @@ async def upload(file: UploadFile=File(...)):
     with open(file_location, "wb+") as file_object:
         shutil.copyfileobj(file.file, file_object)
 
-    use_s3.ul_file(file.filename, dir=FILE_DIR)
+    await use_s3.ul_file(file.filename, dir=FILE_DIR)
 
     # import csv to postgres benchmark_data table
     evals.pg.import_csv_benchmark_data(file_location)
