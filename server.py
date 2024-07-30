@@ -125,13 +125,12 @@ async def upload(file: UploadFile=File(...)):
 # benchmark api route for batch-evaluating stored benchmark data
 @app.post('/api/benchmark/evaluate')
 async def benchmark_evaluate():
-    await evals.evaluate_benchmark_data()
-    # try:
-    #     await evals.evaluate_benchmark_data()
-    #     return {"message": "Benchmark data evaluated successfully", "status_code": 200}
-    # except Exception as e:
-    #     print(f"Error evaluating benchmark data: {str(e)}")
-    #     return {"message": "Failed to evaluate benchmark data", "status_code": 500}
+    try:
+        await evals.evaluate_benchmark_data()
+        return {"message": "Benchmark data evaluated successfully", "status_code": 200}
+    except Exception as e:
+        print(f"Error evaluating benchmark data: {str(e)}")
+        return {"message": "Failed to evaluate benchmark data", "status_code": 500}
 
 # benchmark api route for examining evaluation results of benchmark data
 @app.get('/api/benchmark/results')

@@ -47,16 +47,16 @@ async def evaluate_benchmark_data():
     print(data_list)
 
     for entry in data_list:
-        log.debug('THIS ENTRY IS:', entry)
+        print('THIS ENTRY IS:', entry)
 
         user_query = UserQuery(query=entry['input'])
         response = await post_query(user_query)
-        
-        log.debug('RESPONSE BODY IS:', response)
+
+        print('RESPONSE BODY IS:', response)
         context, output = utils.extract_from_response(response)
         entry['context'] = context
         entry['output'] = output
-        log.debug('WITH OUTPUT AND CONTEXT, THIS ENTRY IS NOW:', entry)
+        print('WITH OUTPUT AND CONTEXT, THIS ENTRY IS NOW:', entry)
         evaluate_and_store_benchmark_data_entry(entry)
 
 def evaluate_and_store_benchmark_data_entry(entry):
