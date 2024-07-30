@@ -13,7 +13,7 @@ CREATE DATABASE paisley_evals2;
 \c paisley_evals2
 
 -- Create new tables
-CREATE TABLE running_evals (
+CREATE TABLE chat_history (
     id SERIAL PRIMARY KEY,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     data JSONB
@@ -32,10 +32,10 @@ CREATE TABLE scored_benchmark_data (
 -- Grant privileges to the new user on the database and table
 GRANT ALL PRIVILEGES ON DATABASE paisley_evals2 TO paisley;
 
-GRANT ALL PRIVILEGES ON TABLE running_evals TO paisley;
+GRANT ALL PRIVILEGES ON TABLE chat_history TO paisley;
 GRANT ALL PRIVILEGES ON TABLE benchmark_data TO paisley;
 GRANT ALL PRIVILEGES ON TABLE scored_benchmark_data TO paisley;
 
-GRANT USAGE, SELECT ON SEQUENCE running_evals_id_seq TO paisley;
+GRANT USAGE, SELECT ON SEQUENCE chat_history_id_seq TO paisley;
 GRANT USAGE, SELECT ON SEQUENCE benchmark_data_id_seq TO paisley;
 GRANT USAGE, SELECT ON SEQUENCE scored_benchmark_data_id_seq TO paisley;

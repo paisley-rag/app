@@ -12,13 +12,13 @@ from server import post_query
 import app_logger as log
 
 # called within the server /api/query route
-def store_running_eval_data(query, response):
+def store_chat_eval_data(query, response):
     context, output = utils.extract_from_response(response)
-    evaluate_and_store_running_entry(query, context, output)
+    evaluate_and_store_chat_entry(query, context, output)
 
 # takes query/context/output, scores on 'answer_relevancy' and 'faithfulness'
-# using RAGAs, inserts data into 'running_evals' table
-def evaluate_and_store_running_entry(query, context, output):
+# using RAGAs, inserts data into 'chat_history' table
+def evaluate_and_store_chat_entry(query, context, output):
     data_samples = {
         'question': [query],
         'answer': [output],
@@ -37,7 +37,7 @@ def evaluate_and_store_running_entry(query, context, output):
         'scores': score
     }
 
-    pg.insert_dict_in(entry, table='running_evals')
+    pg.insert_dict_in(entry, table='chat_history')
 
 from server import UserQuery
 
@@ -89,8 +89,8 @@ def evaluate_and_store_benchmark_data_entry(entry):
 
     pg.insert_dict_in(scored_entry, table='scored_benchmark_data')
 
-def get_running_evals():
-    data = pg.get_data_from('running_evals')
+def get_chat_history():
+    data = pg.get_data_from('chat_history')
     # print(pg.printable_table(data))
     return data
 
@@ -105,8 +105,8 @@ def get_benchmark_scores():
     return data
 
 # if __name__ == "__main__":
-    # evaluate_and_store_running_entry('this is a query', 'this was the context', 'and we got this for output')
-    # get_running_evals()
+    # evaluate_and_store_chat_entry('this is a query', 'this was the context', 'and we got this for output')
+    # get_chat_history()
     # pg.import_csv_benchmark_data('./tmpfiles/strawberries_bananas.csv')
     # evaluate_benchmark_data()
     # pg.print_table(pg.get_data_from('scored_benchmark_data'))

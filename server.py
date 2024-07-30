@@ -85,13 +85,13 @@ async def post_query(query: UserQuery):
 @app.post('/api/chat')
 async def post_chat(query: UserQuery):
     response = await post_query(query)
-    evals.store_running_eval_data(query.query, response)
+    evals.store_chat_eval_data(query.query, response)
 
 # route for observing pipeline input/output history + associated evaluation scores
 # TESTED, WORKING 7/29/24
 @app.get('/api/history')
 async def get_evals():
-    data = evals.get_running_evals()
+    data = evals.get_chat_history()
     return {"table_data": data}
 
 
