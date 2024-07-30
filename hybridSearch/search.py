@@ -15,6 +15,10 @@ def keyword_query(query, top_k=default_top_k):
     for node in nodes:
         print(node)
 
+def keyword_retriever(top_k=default_top_k):
+    return keyword.get_retriever(top_k=top_k)
+
+
 # vector
 def vector_write(file_path):
     vector.write_to_db(file_path)
@@ -26,6 +30,9 @@ def vector_query(query, top_k=default_top_k):
 
     for node in nodes:
         print(node)
+
+def vector_retriever(top_k=default_top_k):
+    return vector.get_retriever(top_k=top_k)
 
 
 # hybrid
