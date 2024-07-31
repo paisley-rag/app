@@ -1,0 +1,34 @@
+{
+<<<<<<< Updated upstream
+  "hash": "50329443",
+  "configHash": "f9fd87d4",
+  "lockfileHash": "2e634e55",
+  "browserHash": "bf9553d0",
+  "optimized": {
+    "react": {
+      "src": "../../node_modules/react/index.js",
+      "file": "react.js",
+      "fileHash": "1176a144",
+      "needsInterop": true
+    },
+    "react-dom/client": {
+      "src": "../../node_modules/react-dom/client.js",
+      "file": "react-dom_client.js",
+      "fileHash": "a31fa30c",
+      "needsInterop": true
+    }
+  },
+  "chunks": {
+    "chunk-GFWMZNU4": {
+      "file": "chunk-GFWMZNU4.js"
+    }
+  }
+=======
+  "hash": "412cb706",
+  "configHash": "3d3a9d36",
+  "lockfileHash": "e3b0c442",
+  "browserHash": "a41ac287",
+  "optimized": {},
+  "chunks": {}
+>>>>>>> Stashed changes
+}

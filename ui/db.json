@@ -1,0 +1,208 @@
+{
+<<<<<<< Updated upstream
+  "knowledge-bases": [
+    {
+      "id": 1,
+      "name": "kbconfigName2",
+      "ingest_method": "simple_ingest",
+      "splitter": "semantic",
+      "embed_model": "text-embedding-ada-002",
+      "chunk_size": "1024",
+      "chunk_overlap": "256",
+      "separator": ",",
+      "llm": "",
+      "files": [
+        {
+          "id": 1,
+          "file_type": "txt",
+          "name": "file1.txt",
+          "source": "path/to/file1.txt",
+          "date": "2024-07-26"
+        },
+        {
+          "id": 2,
+          "file_type": "txt",
+          "name": "file2.txt",
+          "source": "path/to/file2.txt",
+          "date": "2024-07-26"
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "name": "kbconfigName3",
+      "ingest_method": "advanced_ingest",
+      "splitter": "syntactic",
+      "embed_model": "text-embedding-babbage-001",
+      "chunk_size": "2048",
+      "chunk_overlap": "512",
+      "separator": ";",
+      "llm": "gpt-3",
+      "files": [
+        {
+          "id": 3,
+          "file_type": "csv",
+          "name": "file3.csv",
+          "source": "path/to/file3.csv",
+          "date": "2024-07-26"
+        },
+        {
+          "id": 4,
+          "file_type": "csv",
+          "name": "file4.csv",
+          "source": "path/to/file4.csv",
+          "date": "2024-07-26"
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "name": "kbconfigName4",
+      "ingest_method": "batch_ingest",
+      "splitter": "lexical",
+      "embed_model": "text-embedding-curie-001",
+      "chunk_size": "4096",
+      "chunk_overlap": "1024",
+      "separator": "|",
+      "llm": "gpt-2",
+      "files": [
+        {
+          "id": 5,
+          "file_type": "docx",
+          "name": "file5.docx",
+          "source": "path/to/file5.docx",
+          "date": "2024-07-26"
+        },
+        {
+          "id": 6,
+          "file_type": "docx",
+          "name": "file6.docx",
+          "source": "path/to/file6.docx",
+          "date": "2024-07-26"
+        }
+      ]
+    },
+    {
+      "id": 4,
+      "name": "kbconfigName5",
+      "ingest_method": "streaming_ingest",
+      "splitter": "semantic",
+      "embed_model": "text-embedding-davinci-003",
+      "chunk_size": "8192",
+      "chunk_overlap": "2048",
+      "separator": ",",
+      "llm": "gpt-3",
+      "files": [
+        {
+          "id": 7,
+          "file_type": "pdf",
+          "name": "file7.pdf",
+          "source": "path/to/file7.pdf",
+          "date": "2024-07-26"
+        },
+        {
+          "id": 8,
+          "file_type": "pdf",
+          "name": "file8.pdf",
+          "source": "path/to/file8.pdf",
+          "date": "2024-07-26"
+        }
+      ]
+    },
+    {
+      "id": 5,
+      "name": "kbconfigName6",
+      "ingest_method": "simple_ingest",
+      "splitter": "syntactic",
+      "embed_model": "text-embedding-babbage-001",
+      "chunk_size": "1024",
+      "chunk_overlap": "256",
+      "separator": ";",
+      "llm": "",
+      "files": [
+        {
+          "id": 9,
+          "file_type": "jpg",
+          "name": "file9.jpg",
+          "source": "path/to/file9.jpg",
+          "date": "2024-07-26"
+        },
+        {
+          "id": 10,
+          "file_type": "jpg",
+          "name": "file10.jpg",
+          "source": "path/to/file10.jpg",
+          "date": "2024-07-26"
+        }
+      ]
+    },
+    {
+      "id": 6,
+      "name": "kbconfigName7",
+      "ingest_method": "advanced_ingest",
+      "splitter": "lexical",
+      "embed_model": "text-embedding-curie-001",
+      "chunk_size": "2048",
+      "chunk_overlap": "512",
+      "separator": "|",
+      "llm": "gpt-2",
+      "files": []
+    },
+    {
+      "id": 7,
+      "name": "kbconfigName8",
+      "ingest_method": "batch_ingest",
+      "splitter": "semantic",
+      "embed_model": "text-embedding-davinci-003",
+      "chunk_size": "4096",
+      "chunk_overlap": "1024",
+      "separator": ",",
+      "llm": "gpt-3",
+      "files": []
+    },
+    {
+      "id": 8,
+      "name": "kbconfigName9",
+      "ingest_method": "streaming_ingest",
+      "splitter": "syntactic",
+      "embed_model": "text-embedding-babbage-001",
+      "chunk_size": "8192",
+      "chunk_overlap": "2048",
+      "separator": ";",
+      "llm": "gpt-2",
+      "files": []
+    },
+    {
+      "id": 9,
+      "name": "kbconfigName10",
+      "ingest_method": "simple_ingest",
+      "splitter": "lexical",
+      "embed_model": "text-embedding-curie-001",
+      "chunk_size": "4096",
+      "chunk_overlap": "1024",
+      "separator": "|",
+      "llm": "gpt-3",
+      "files": []
+    }
+  ]
+}
+=======
+  "posts": [
+    {
+      "id": 1,
+      "title": "json-server",
+      "author": "typicode"
+    }
+  ],
+  "comments": [
+    {
+      "id": 1,
+      "body": "some comment",
+      "postId": 1
+    }
+  ],
+  "profile": {
+    "name": "typicode"
+  }
+}
+>>>>>>> Stashed changes
