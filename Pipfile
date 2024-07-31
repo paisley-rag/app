@@ -21,6 +21,8 @@ nest-asyncio = "*"
 llama-index-vector-stores-mongodb = "*"
 rank-bm25 = "*"
 llama-index-postprocessor-colbert-rerank = "*"
+llama-index-retrievers-bm25 = "*"
+llama-index-storage-index-store-mongodb = "*"
 
 [dev-packages]
 
