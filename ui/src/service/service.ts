@@ -1,6 +1,28 @@
 import axios from "axios";
+import { z } from "zod";
 
 // need to add zod validation to response types
+
+export const pipelineConfigSchema = z.object({
+  id: z.string(),
+  name: z.string(),
+  knowledge_bases: z.array(z.string()),
+  generative_model: z.string(),
+  postprocessing: z.object({
+    similarity: z.object({
+      on: z.boolean(),
+      cutoff: z.number(),
+    }),
+    colbert_rerank: z.object({
+      on: z.boolean(),
+      top_n: z.number(),
+    }),
+    long_context_reorder: z.object({
+      on: z.boolean(),
+    }),
+  }),
+  prompt: z.string(),
+});
 
 async function fetchKnowledgeBases() {
   const response = await axios.get("/api/knowledge-bases");
@@ -27,10 +49,19 @@ async function sendMessage(id: number, message: string) {
   return response.data;
 }
 
+async function updateChatbot(
+  id: number,
+  data: z.infer<typeof pipelineConfigSchema>
+) {
+  const response = await axios.put(`/api/chatbots?id=${id}`, data);
+  return response.data;
+}
+
 export default {
   fetchKnowledgeBases,
   fetchFilesByKnolwedgeBaseId,
   fetchChatbots,
   fetchChatbotById,
   sendMessage,
+  updateChatbot,
 };
