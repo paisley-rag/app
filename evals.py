@@ -103,11 +103,3 @@ def get_benchmark_scores():
     data = pg.get_data_from('scored_benchmark_data')
     # print(pg.printable_table(data))
     return data
-
-# if __name__ == "__main__":
-    # evaluate_and_store_chat_entry('this is a query', 'this was the context', 'and we got this for output')
-    # get_chat_history()
-    # pg.import_csv_benchmark_data('./tmpfiles/strawberries_bananas.csv')
-    # evaluate_benchmark_data()
-    # pg.print_table(pg.get_data_from('scored_benchmark_data'))
-  

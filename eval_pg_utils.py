@@ -1,4 +1,5 @@
 import psycopg2
+from psycopg2 import sql
 from psycopg2.extras import Json
 import csv
 import os
@@ -33,8 +34,8 @@ def insert_dict_in(dict, table=''):
         log.info(f"table {table} not found.")
         return
     cursor = conn.cursor()
-    insert_query = "INSERT INTO {table} (data) VALUES (%s)".format(table=table)
-    cursor.execute(insert_query, (json_data,))
+    insert_query = "INSERT INTO %(table)s (data) VALUES (%(data)s)"
+    cursor.execute(insert_query, { 'table': table, 'data': json_data })
     conn.commit()
     cursor.close()
     conn.close()
@@ -47,7 +48,8 @@ def get_data_from(table=''):
         log.info(f"table {table} not found.")
         return
     cursor = conn.cursor()
-    cursor.execute(f"SELECT * FROM {table}")
+    query = "SELECT * FROM %s"
+    cursor.execute(query, (table))
     records = cursor.fetchall()
     
     log.info("data retrieved.")
@@ -82,7 +84,7 @@ def import_csv_benchmark_data(csv_file_path):
         log.info("Existing data in 'benchmark_data' table has been cleared.")
 
         # Prepare the SQL query
-        insert_query = f"INSERT INTO benchmark_data (data) VALUES (%s)"
+        insert_query = "INSERT INTO benchmark_data (data) VALUES (%s)"
 
         # Insert each row as a JSONB object
         for row in csvreader:
@@ -94,69 +96,3 @@ def import_csv_benchmark_data(csv_file_path):
     conn.commit()
     cursor.close()
     conn.close()
-
-def printable_table(table_data):
-    log.info("displaying table:")
-
-    if not table_data:
-        log.info("No data to display.")
-        return
-
-    data_list = values_only(table_data)
-    
-    # Get all unique keys from all dictionaries
-    all_keys = set()
-    for item in data_list:
-        all_keys.update(item.keys())
-    
-    # Convert to sorted list for consistent column order
-    headers = sorted(all_keys)
-
-    # Calculate column widths
-    col_widths = [len(header) for header in headers]
-    for item in data_list:
-        for i, key in enumerate(headers):
-            value = str(item.get(key, ''))
-            col_widths[i] = max(col_widths[i], len(max(value.split(), key=len, default='')))
-
-    # Adjust column widths to fit within 100 characters
-    total_width = sum(col_widths) + len(headers) * 3 + 1
-    if total_width > 100:
-        excess = total_width - 100
-        for i in range(len(col_widths)):
-            if col_widths[i] > 10:
-                reduction = min(excess, col_widths[i] - 10)
-                col_widths[i] -= reduction
-                excess -= reduction
-            if excess == 0:
-                break
-
-    # Create the table
-    table = []
-    
-    # Add header
-    header_row = '|' + '|'.join(f' {h:<{w}} ' for h, w in zip(headers, col_widths)) + '|'
-    table.append(header_row)
-    table.append('+' + '+'.join('-' * (w + 2) for w in col_widths) + '+')
-
-    # Add data rows
-    for item in data_list:
-        row_data = []
-        for key, width in zip(headers, col_widths):
-            value = str(item.get(key, ''))
-            wrapped = textwrap.wrap(value, width)
-            row_data.append(wrapped or [''])
-        
-        max_lines = max(len(cell) for cell in row_data)
-        for i in range(max_lines):
-            row = '|'
-            for j, cell in enumerate(row_data):
-                if i < len(cell):
-                    row += f' {cell[i]:<{col_widths[j]}} |'
-                else:
-                    row += ' ' * (col_widths[j] + 2) + '|'
-            table.append(row)
-        table.append('+' + '+'.join('-' * (w + 2) for w in col_widths) + '+')
-
-    return '\n'.join(table)
-
