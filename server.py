@@ -56,7 +56,9 @@ async def create_kb(request: Request):
 async def get_kb_files(kb_name: str):
     if KnowledgeBase.exists(kb_name):
         kb = KnowledgeBase(kb_name)
+        log.info(kb)
         files = kb.get_files()
+        log.info(files)
         return {
             "files": files,
             "status_code": 200

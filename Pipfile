@@ -19,6 +19,11 @@ llama-index-embeddings-openai = "*"
 llama-index-llms-openai = "*"
 nest-asyncio = "*"
 llama-index-vector-stores-mongodb = "*"
+llama-index-storage-docstore-mongodb = "*"
+llama-index-llms-cohere = "*"
+llama-index-embeddings-cohere = "*"
+llama-index-embeddings-huggingface = "*"
+llama-index-llms-anthropic = "*"
 
 [dev-packages]
 
