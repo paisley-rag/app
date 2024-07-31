@@ -1,4 +1,4 @@
-from fastapi import FastAPI, File, UploadFile
+from fastapi import FastAPI, File, UploadFile, Request
 from pydantic import BaseModel
 from fastapi.middleware.cors import CORSMiddleware
 
@@ -6,12 +6,15 @@ import app_logger as log
 import shutil
 import os
 import use_s3
-import load_vectors
+# import load_vectors
 # import lp_ingest
-import simple_ingest
+# import simple_ingest
 import evals
 import nest_asyncio
+from kb_config import KnowledgeBase
 
+
+# test if we need this w/n the server
 nest_asyncio.apply()
 
 app = FastAPI()
@@ -35,26 +38,53 @@ async def get_evals():
     eval_table = evals.get_running_evals()
     return {"message": eval_table}
 
-@app.post('/api/upload')
-async def upload(file: UploadFile=File(...)):
-    FILE_DIR = 'tmpfiles'
+# this route creates a new knowledge base
+@app.post('/api/create_kb')
+async def create_kb(request: Request):
+    body = await request.json()
+    # ensure that the kb_name is unique
+    if KnowledgeBase.exists(body["kb_name"]):
+        message = f"{body['kb_name']} already exists"
+        status = 400
+    else:
+        message = KnowledgeBase.create(body)
+        status = 201
 
-    # write file to disk
-    if not os.path.exists(f"./{FILE_DIR}"):
-        os.makedirs(f"./{FILE_DIR}")
+    return {"message": message, "status_code": status}
 
-    file_location = f"./{FILE_DIR}/{file.filename}"
-    with open(file_location, "wb+") as file_object:
-        shutil.copyfileobj(file.file, file_object)
+@app.get("/api/{kb_name}/files")
+async def get_kb_files(kb_name: str):
+    if KnowledgeBase.exists(kb_name):
+        kb = KnowledgeBase(kb_name)
+        log.info(kb)
+        files = kb.get_files(kb_name)
+        log.info(files)
+        return {
+            "files": files,
+            "status_code": 200
+        }
+    
+    else:
+        return {
+            "message": f"{kb_name} does not exist",
+            "status_code": 404
+        }
 
-    use_s3.ul_file(file.filename, dir=FILE_DIR)
-
-    # lp_ingest.ingest_file_to_docdb(file_location)
-    log.info('starting simple_ingest')
-    simple_ingest.ingest_file_to_docdb(file_location)
-    log.info('finishing simple_ingest')
-
-    return {"message": f"{file.filename} received"}
+# this route adds a file to a knowledge base
+@app.post('/api/{kb_name}/upload_file')
+async def upload(kb_name: str, file: UploadFile=File(...)):
+    if KnowledgeBase.exists(kb_name):
+        kb = KnowledgeBase(kb_name)
+        kb.ingest_file(file)
+        return {
+                "message": f"{file.filename} received",
+                "status_code": 201
+                }
+    else:
+        return {
+                "message": f"Knowledge base {kb_name} doesn't exist",
+                "status_code": 404
+                }
 
 @app.post('/api/csv')
 async def upload(file: UploadFile=File(...)):
