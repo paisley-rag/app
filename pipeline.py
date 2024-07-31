@@ -1,4 +1,5 @@
 import asyncio
+import os
 
 from llama_index.core import QueryBundle
 from llama_index.core.postprocessor import SimilarityPostprocessor
@@ -9,10 +10,11 @@ from llama_index.core.response_synthesizers import ResponseMode
 
 import app_logger as log
 import hybridSearch.search as search
+import mongo_util as mg
 
 class Pipeline:
-    def __init__(self, config_json):
-        self._config = self._parse_json(config_json)
+    def __init__(self, config_id):
+        self._config = self._get_config(config_id)
 
     def query(self, user_query):
         synthesizer, nodes = self._pipeline(user_query).values()
@@ -21,7 +23,7 @@ class Pipeline:
 
     def _pipeline(self, user_query):
         # get a retriever from each knowledge base
-        retrievers = self._process_kbs(['1']) # generic kb for testing
+        retrievers = self._process_kbs(self._config['knowledgebases'])
 
         # query each knowledge base and get returned_nodes
         # all_nodes = asyncio.run(self._query_retriever(retrievers, user_query))
@@ -57,7 +59,9 @@ class Pipeline:
 
     # Knowledge base methods
     def _process_kbs(self, kb_ids):
+        log.debug(f"pipeline.py _process_kbs: kb_ids {kb_ids}")
         retrievers = list(map(self._get_retriever, kb_ids))
+
         log.info(f"pipeline.py _process_kbs: returned {len(retrievers)} retrievers", retrievers)
         return retrievers
 
@@ -66,8 +70,8 @@ class Pipeline:
         log.info(f"pipeline.py _get_retriever: {kb_id} received")
 
         # just return existing knowledge bases for testing
-        vector_retriever = search.vector_retriever()
-        keyword_retriever = search.keyword_retriever()
+        vector_retriever = search.vector_retriever(kb_id)
+        keyword_retriever = search.keyword_retriever(kb_id)
         return { 'vector': vector_retriever, 'keyword': keyword_retriever }
 
 
@@ -151,44 +155,23 @@ class Pipeline:
 
 
 
-    # Misc helpers
+    # db helpers
 
-    def _parse_json(self, config_json):
-        log.info(f"pipeline.py _parse_json: ", config_json)
-        return {
-            'id': 'idstring',
-            'name': 'configName',
-            'knowledgebases': ['kb1', 'kb2'],
-            'retrieval': {
-                'vector': 'gpt-3.5-turbo',
-                'keyword': 'bm25',
-                'alpha': 0.7,
-            },
-            'postprocessing': {
-                'similarity': {
-                    'on': False,
-                    'similarity_cutoff': 0.7
-                },
-                'colbertRerank': {
-                    'on': False,
-                    'top_n': 5
-                },
-                'longContextReorder': {
-                    'on': True,
-                }
-            },
-            'generative_model': 'gpt-3.5-turbo',
-            'prompt': {
-                'on': True,
-                'template_str': 'answer the question - {query_str} - in French'
-            }
-        }
+    def _get_config(self, config_id):
+        result = mg.get(os.environ['CONFIG_DB'], os.environ['CONFIG_PIPELINE_COL'], {'id': config_id})
+        log.info('pipeline.py _get_config', result)
+        return result
+
+
+
+    # Misc helpers
 
     def _log_nodes(self, nodes):
         for node in nodes:
             log.info(node)
 
 
-
-testPipe = Pipeline({"id":"testjson"})
-log.info('FINAL RESPONSE: ', testPipe.query('what is the supersecretword?'))
+# for direct testing
+if __name__ == '__main__':
+  testPipe = Pipeline('pipeline4')
+  log.info('FINAL RESPONSE: ', testPipe.query('what is the supersecretword?'))

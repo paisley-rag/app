@@ -7,7 +7,7 @@ import pprint
 from dotenv import load_dotenv
 import os
 
-load_dotenv(dotenv_path='../.', override=True)
+load_dotenv(override=True)
 
 mongo_uri = os.environ["MONGO_URI"]
 client = pymongo.MongoClient(mongo_uri)

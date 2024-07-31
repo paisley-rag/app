@@ -10,26 +10,28 @@ import Stemmer
 
 import app_logger as log
 
-load_dotenv(dotenv_path='../.', override=True)
+load_dotenv(dotenv_path='../.env', override=True)
 
 # configs
-db_name = 'keyword1'
+# db_name = 'keyword1'
 # top_k = 5
 
 
 
 # general
-mongo_uri = os.environ["MONGO_URI"]
-store = MongoDocumentStore.from_uri(uri=mongo_uri, db_name=db_name)
+def get_store(db_name):
+    mongo_uri = os.environ["MONGO_URI"]
+    store = MongoDocumentStore.from_uri(uri=mongo_uri, db_name=db_name)
 
-storage_context = StorageContext.from_defaults(
-    docstore=store
-)
+    storage_context = StorageContext.from_defaults(
+        docstore=store
+    )
 
+    return { 'storage_context': storage_context, 'store': store }
 
 
 # methods
-def write_to_db(file_path):
+def write_to_db(db_name, file_path):
     if os.path.isdir(file_path):
         documents = SimpleDirectoryReader(file_path).load_data()
     else:
@@ -39,12 +41,16 @@ def write_to_db(file_path):
 
     nodes = splitter.get_nodes_from_documents(documents)
 
+    storage_context = get_store(db_name)['storage_context']
+
     storage_context.docstore.add_documents(nodes)
-    log.info(f"keyword.py write_to_db: {file_path} written to db {db_name}", mongo_uri)
+    log.info(f"keyword.py write_to_db: {file_path} written to db {db_name}")
 
 
 
-def get_retriever(top_k):
+def get_retriever(db_name, top_k):
+    store = get_store(db_name)['store']
+
     bm25_retriever = BM25Retriever.from_defaults(
         docstore=store,
         similarity_top_k=top_k,

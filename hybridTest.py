@@ -11,7 +11,7 @@ def print_nodes(nodes):
 query = 'tell me about promises'
 
 # get nodes
-nodes = search.hybrid_get_nodes(query, top_k=3)
+nodes = search.hybrid_get_nodes('kb3', query, top_k=5)
 
 all_nodes = nodes['keyword'] + nodes['vector']
 
