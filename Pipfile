@@ -24,6 +24,7 @@ llama-index-postprocessor-colbert-rerank = "*"
 llama-index-retrievers-bm25 = "*"
 llama-index-storage-index-store-mongodb = "*"
 llama-index-storage-docstore-mongodb = "*"
+motor = "*"
 
 [dev-packages]
 
