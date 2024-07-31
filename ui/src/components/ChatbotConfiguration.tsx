@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { Typography } from "./Typography";
 import { Card } from "./ui/card";
 import { z } from "zod";
@@ -32,7 +33,6 @@ import {
 import { DropdownMenuCheckboxItemProps } from "@radix-ui/react-dropdown-menu";
 
 import { Button } from "./ui/button";
-import { Input } from "./ui/input";
 import { pipelineConfigSchema } from "../service/service";
 import service from "../service/service";
 
@@ -55,23 +55,39 @@ export function ChatbotConfiguration({ id }: ChatbotConfigurationProps) {
       service.updateChatbot(id, data),
   });
 
-  const { data: knowledgeBases } = useQuery({
-    queryKey: ["knowledgeBases"],
-    queryFn: service.fetchKnowledgeBases,
+  const { data: knowledgeBases, isLoading: isKnowledgeBasesLoading } = useQuery(
+    {
+      queryKey: ["knowledgeBases"],
+      queryFn: service.fetchKnowledgeBases,
+    }
+  );
+
+  const { data: chatbot, isLoading: isChatbotLoading } = useQuery({
+    queryKey: ["chatbot", id],
+    queryFn: () => service.fetchChatbotById(id),
   });
+
+  useEffect(() => {
+    if (chatbot && !isChatbotLoading) {
+      form.setValue("knowledge_bases", chatbot.knowledge_bases);
+      form.setValue("generative_model", chatbot.generative_model);
+    }
+  }, [chatbot, isChatbotLoading, form]);
 
   const handleSubmit = form.handleSubmit((data) => {
     mutation.mutate(data);
   });
 
+  if (isKnowledgeBasesLoading || isChatbotLoading) return <div>Loading...</div>;
+
   return (
     <Card className="h-full flex flex-col px-6">
       <header>
-        <Typography variant="h4">Chatbot Configuration</Typography>
+        <Typography variant="h4">Configuration</Typography>
       </header>
       <Form {...form}>
         <form className="space-y-8" onSubmit={handleSubmit}>
-          <div>
+          <div className="mt-4">
             <FormField
               control={form.control}
               name="knowledge_bases"
@@ -83,13 +99,14 @@ export function ChatbotConfiguration({ id }: ChatbotConfigurationProps) {
                       <DropdownMenu>
                         <DropdownMenuTrigger asChild>
                           <Button variant="outline">
-                            Select Knowledge Bases
+                            {(form.getValues("knowledge_bases") ?? []).length}{" "}
+                            knowledge base(s) selected
                           </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent className="w-56">
                           <DropdownMenuLabel>Knowledge Bases</DropdownMenuLabel>
                           <DropdownMenuSeparator />
-                          {knowledgeBases?.map(
+                          {knowledgeBases.map(
                             (kb: z.infer<typeof pipelineConfigSchema>) => (
                               <DropdownMenuCheckboxItem
                                 key={kb.id}
@@ -108,7 +125,7 @@ export function ChatbotConfiguration({ id }: ChatbotConfigurationProps) {
                                     form.setValue(
                                       "knowledge_bases",
                                       currentKbs.filter(
-                                        (name) => name !== kb.name
+                                        (name: string) => name !== kb.name
                                       )
                                     );
                                   }
@@ -124,7 +141,7 @@ export function ChatbotConfiguration({ id }: ChatbotConfigurationProps) {
                     </div>
                   </FormControl>
                   <FormDescription>
-                    This is the knowledge bases that the chatbot will use to
+                    The knowledge base(s) that the chatbot will reference to
                     generate responses.
                   </FormDescription>
                   <FormMessage />
@@ -132,7 +149,7 @@ export function ChatbotConfiguration({ id }: ChatbotConfigurationProps) {
               )}
             />
           </div>
-          <div className="mt-4">
+          <div>
             <FormField
               control={form.control}
               name="generative_model"
@@ -162,7 +179,7 @@ export function ChatbotConfiguration({ id }: ChatbotConfigurationProps) {
               )}
             />
           </div>
-          <Button type="submit">Submit</Button>
+          <Button type="submit">Save</Button>
         </form>
       </Form>
     </Card>

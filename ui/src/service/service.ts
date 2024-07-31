@@ -1,8 +1,6 @@
 import axios from "axios";
 import { z } from "zod";
 
-// need to add zod validation to response types
-
 export const pipelineConfigSchema = z.object({
   id: z.string(),
   name: z.string(),
@@ -41,7 +39,7 @@ async function fetchChatbots() {
 
 async function fetchChatbotById(id: number) {
   const response = await axios.get(`/api/chatbots?id=${id}`);
-  return response.data;
+  return response.data[0];
 }
 
 async function sendMessage(id: number, message: string) {

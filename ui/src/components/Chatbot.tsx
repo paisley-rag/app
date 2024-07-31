@@ -5,7 +5,7 @@ import { Card } from "@/components/ui/card";
 import { Typography } from "./Typography";
 
 import { useState } from "react";
-import { useQuery, useMutation } from "@tanstack/react-query";
+import { useMutation } from "@tanstack/react-query";
 import service from "../service/service";
 
 interface ChatbotProps {
@@ -23,17 +23,12 @@ export function Chatbot({ id }: ChatbotProps) {
   ]);
   const [input, setInput] = useState("");
 
-  const { data: chatbot, isLoading } = useQuery({
-    queryKey: ["chatbot", id],
-    queryFn: () => service.fetchChatbotById(id),
-  });
-
   const mutation = useMutation({
     mutationFn: (message: string) => service.sendMessage(id, message),
     onSuccess: (data) => {
       const assistantMessage: Message = {
         role: "assistant",
-        content: data.response,
+        content: data.message,
       };
       setMessages((prev) => [...prev, assistantMessage]);
     },
@@ -51,10 +46,6 @@ export function Chatbot({ id }: ChatbotProps) {
 
     mutation.mutate(input);
   };
-
-  if (isLoading) {
-    return <div>Loading...</div>;
-  }
 
   return (
     <div className="flex flex-col h-[75vh]">
