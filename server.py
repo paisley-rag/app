@@ -1,16 +1,16 @@
+import shutil
+import os
+
 from fastapi import FastAPI, File, UploadFile
 from pydantic import BaseModel
 from fastapi.middleware.cors import CORSMiddleware
+import nest_asyncio
 
 import app_logger as log
-import shutil
-import os
 import use_s3
-import load_vectors
-# import lp_ingest
 import simple_ingest
 import evals
-import nest_asyncio
+import pipeline
 
 nest_asyncio.apply()
 
@@ -27,7 +27,6 @@ app.add_middleware(
 @app.get('/api')
 async def root():
     log.info("server running")
-    log.info("server running")
     return {"message": "Server running"}
 
 @app.get('/api/evals')
@@ -36,7 +35,7 @@ async def get_evals():
     return {"message": eval_table}
 
 @app.post('/api/upload')
-async def upload(file: UploadFile=File(...)):
+async def uploadfile(file: UploadFile=File(...)):
     FILE_DIR = 'tmpfiles'
 
     # write file to disk
@@ -50,45 +49,35 @@ async def upload(file: UploadFile=File(...)):
     use_s3.ul_file(file.filename, dir=FILE_DIR)
 
     # lp_ingest.ingest_file_to_docdb(file_location)
-    log.info('starting simple_ingest')
-    simple_ingest.ingest_file_to_docdb(file_location)
-    log.info('finishing simple_ingest')
+    #     log.info('starting simple_ingest')
+    #     simple_ingest.ingest_file_to_docdb(file_location)
+    #     log.info('finishing simple_ingest')
 
     return {"message": f"{file.filename} received"}
 
-@app.post('/api/csv')
-async def upload(file: UploadFile=File(...)):
-    FILE_DIR = 'tmpfiles/csv'
 
-    # write file to disk
-    if not os.path.exists(f"./{FILE_DIR}"):
-        os.makedirs(f"./{FILE_DIR}")
 
-    file_location = f"./{FILE_DIR}/{file.filename}"
-    with open(file_location, "wb+") as file_object:
-        shutil.copyfileobj(file.file, file_object)
-
-    use_s3.ul_file(file.filename, dir=FILE_DIR)
-
-    return {"message": f"{file.filename} received"}
-
-class UserQuery(BaseModel):
+class QueryBody(BaseModel):
     query: str
+    pipeline_config: str
 
 
 @app.post('/api/query')
-async def post_query(query: UserQuery):
-    print('user query: ', query)
-    response = load_vectors.submit_query(query.query)
-    evals.store_running_eval_data(query.query, response)
-    return { "type": "response", "body":response }
+async def post_query(body: QueryBody):
+    log.info('/api/query body received: ', body.query, body.pipeline_config)
+    pipe = pipeline.Pipeline(body.pipeline_config)
+    log.info('/api/query pipeline retrieved')
+    response = pipe.query(body.query)
+    log.info('/api/query response:', response)
+    return { "type": "response", "body": response }
+    # return { "type": "response", "body":response }
 
 
 @app.post('/api/test')
-async def test_query(query: UserQuery):
-    log.debug("/api/test accessed", query, query.query)
-    # print('user query: ', query.query)
-    return { "type": "response", "body": query }
+async def test_query(body: QueryBody):
+    log.debug("/api/test accessed", body)
+    return { "type": "response", "query": body.query }
+
 
 
 if __name__ == "__main__":
