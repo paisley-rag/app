@@ -183,5 +183,70 @@
       "llm": "gpt-3",
       "files": []
     }
+  ],
+  "chatbots": [
+    {
+      "id": 1,
+      "name": "chatbotName1",
+      "knowledge_bases": [4, 5, 6],
+      "similarity": {
+        "on": true,
+        "similarity_cutoff": 0.7
+      },
+      "colbertRerank": {
+        "on": true,
+        "top_n": 5
+      },
+      "longContextReorder": {
+        "on": true
+      },
+      "generative_model": "gpt-3.5-turbo",
+      "prompt": {
+        "on": true,
+        "template": "You are a helpful assistant that can answer questions about {contexts}."
+      }
+    },
+    {
+      "id": 2,
+      "name": "chatbotName2",
+      "knowledge_bases": [4, 5, 6],
+      "similarity": {
+        "on": true,
+        "similarity_cutoff": 0.7
+      },
+      "colbertRerank": {
+        "on": true,
+        "top_n": 3
+      },
+      "longContextReorder": {
+        "on": true
+      },
+      "generative_model": "gpt-3.5-turbo",
+      "prompt": {
+        "on": true,
+        "template": "You are a helpful assistant that can answer questions about {contexts}."
+      }
+    },
+    {
+      "id": 3,
+      "name": "chatbotName3",
+      "knowledge_bases": [1, 2, 3],
+      "similarity": {
+        "on": true,
+        "similarity_cutoff": 0.9
+      },
+      "colbertRerank": {
+        "on": true,
+        "top_n": 5
+      },
+      "longContextReorder": {
+        "on": true
+      },
+      "generative_model": "gpt-4-turbo",
+      "prompt": {
+        "on": true,
+        "template": "You are a helpful assistant that can answer questions about {contexts}."
+      }
+    }
   ]
 }

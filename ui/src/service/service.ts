@@ -12,4 +12,25 @@ async function fetchFilesByKnolwedgeBaseId(id: number) {
   return response.data;
 }
 
-export default { fetchKnowledgeBases, fetchFilesByKnolwedgeBaseId };
+async function fetchChatbots() {
+  const response = await axios.get(`/api/chatbots`);
+  return response.data;
+}
+
+async function fetchChatbotById(id: number) {
+  const response = await axios.get(`/api/chatbots?id=${id}`);
+  return response.data;
+}
+
+async function sendMessage(id: number, message: string) {
+  const response = await axios.post(`/api/query`, { message, chatbotId: id });
+  return response.data;
+}
+
+export default {
+  fetchKnowledgeBases,
+  fetchFilesByKnolwedgeBaseId,
+  fetchChatbots,
+  fetchChatbotById,
+  sendMessage,
+};

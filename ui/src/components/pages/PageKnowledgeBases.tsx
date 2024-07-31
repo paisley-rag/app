@@ -1,4 +1,4 @@
-import { TypographyH3 } from "../typography/TypographyH3";
+import { Typography } from "../Typography";
 import { Button } from "../ui/button";
 import { CardKnowledgeBase } from "../CardKnowledgeBase";
 import service from "../../service/service";
@@ -21,7 +21,7 @@ export function PageKnowledgeBases() {
   return (
     <>
       <div className="flex justify-between items-baseline mb-8">
-        <TypographyH3>Knowledge Bases</TypographyH3>
+        <Typography variant="h3">Knowledge Bases</Typography>
         <Button variant="default" onClick={handleNewKnowledgeBaseClick}>
           Create new knowledge base
         </Button>
