@@ -7,17 +7,18 @@ import eval_pg_utils as pg
 import eval_utils as utils
 import eval_test_utils as test
 
+from server import post_query
+
 import app_logger as log
 
 # called within the server /api/query route
-def store_running_eval_data(query, response):
+def store_chat_eval_data(query, response):
     context, output = utils.extract_from_response(response)
-    evaluate_and_store_running_entry(query, context, output)
-
+    evaluate_and_store_chat_entry(query, context, output)
 
 # takes query/context/output, scores on 'answer_relevancy' and 'faithfulness'
-# using RAGAs, inserts data into 'running_evals' table
-def evaluate_and_store_running_entry(query, context, output):
+# using RAGAs, inserts data into 'chat_history' table
+def evaluate_and_store_chat_entry(query, context, output):
     data_samples = {
         'question': [query],
         'answer': [output],
@@ -36,27 +37,33 @@ def evaluate_and_store_running_entry(query, context, output):
         'scores': score
     }
 
-    pg.insert_dict_in(entry, table='running_evals')
+    pg.insert_dict_in(entry, table='chat_history')
 
-def evaluate_golden_dataset():
-    table_data = pg.get_data_from('golden_dataset')
+from server import UserQuery
+
+async def evaluate_benchmark_data():
+    table_data = pg.get_data_from('benchmark_data')
     data_list = pg.values_only(table_data)
     print(data_list)
 
     for entry in data_list:
-        log.debug('THIS ENTRY IS:', entry)
-        response_body = test.mock_query(entry['query'])
-        log.debug('RESPONSE BODY IS:', response_body)
-        # context, output = utils.extract_from_response(response_body)
-        context, output = test.extract_from_mock_query_response(response_body)
+        print('THIS ENTRY IS:', entry)
+
+        user_query = UserQuery(query=entry['input'])
+        response = await post_query(user_query)
+
+        print('RESPONSE BODY IS:', response)
+        context, output = utils.extract_from_response(response)
         entry['context'] = context
         entry['output'] = output
-        log.info('WITH OUTPUT AND CONTEXT, THIS ENTRY IS NOW:', entry)
-        evaluate_and_store_golden_data_entry(entry)
+        print('WITH OUTPUT AND CONTEXT, THIS ENTRY IS NOW:', entry)
+        evaluate_and_store_benchmark_data_entry(entry)
 
-def evaluate_and_store_golden_data_entry(entry):
+def evaluate_and_store_benchmark_data_entry(entry):
+    log.debug('ENTRY TYPE:', type(entry))
+    log.debug('ENTRY KEYS:', entry.keys())
     data_samples = {
-        'question': [entry['query']],
+        'question': [entry['input']],
         'answer': [entry['output']],
         'contexts' : [[entry['context']]], # currently the context is globbed into one string, can change that later
         'ground_truth': [entry['ground_truth']]
@@ -76,26 +83,23 @@ def evaluate_and_store_golden_data_entry(entry):
 
     score = utils.change_nans_to_zeros(score)
 
-    scored_entry = {
-        'input': entry['query'],
-        'context': entry['context'],
-        'output': entry['output'],
-        'scores': score
-    }
+    scored_entry = entry.copy()
+    scored_entry['scores'] = score
+    print('SCORED ENTRY IS:', scored_entry)
 
-    pg.insert_dict_in(scored_entry, table='scored_golden_dataset')
+    pg.insert_dict_in(scored_entry, table='scored_benchmark_data')
 
-def get_running_evals():
-    return pg.get_table('running_evals')
+def get_chat_history():
+    data = pg.get_data_from('chat_history')
+    # print(pg.printable_table(data))
+    return data
 
-def get_batch_evals():
-    return pg.get_table('batch_evals')
+def get_benchmark_data():
+    data = pg.get_data_from('benchmark_data')
+    # print(pg.printable_table(data))
+    return data
 
-if __name__ == "__main__":
-    # evaluate_and_store_running_entry('this is a query', 'this was the context', 'and we got this for output')
-    # get_running_evals()
-    # evaluate_golden_dataset()
-    # pg.import_csv_to_golden_dataset('../side_files/strawberries_bananas_csv.csv')
-
-    pg.print_table(pg.get_data_from('scored_golden_dataset'))
-
+def get_benchmark_scores():
+    data = pg.get_data_from('scored_benchmark_data')
+    # print(pg.printable_table(data))
+    return data
