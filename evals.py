@@ -2,12 +2,13 @@
 from datasets import Dataset 
 from ragas import evaluate
 from ragas.metrics import answer_relevancy, faithfulness, context_precision, context_recall, context_entity_recall, answer_similarity, answer_correctness
+from pydantic import BaseModel
 
 import eval_pg_utils as pg
 import eval_utils as utils
-import eval_test_utils as test
 
 from server import post_query
+from server import QueryBody
 
 import app_logger as log
 
@@ -39,7 +40,6 @@ def evaluate_and_store_chat_entry(query, context, output):
 
     pg.insert_dict_in(entry, table='chat_history')
 
-from server import UserQuery
 
 async def evaluate_benchmark_data():
     table_data = pg.get_data_from('benchmark_data')
@@ -49,7 +49,7 @@ async def evaluate_benchmark_data():
     for entry in data_list:
         print('THIS ENTRY IS:', entry)
 
-        user_query = UserQuery(query=entry['input'])
+        user_query = QueryBody(query=entry['input'], pipeline_config='**FIX ME**')
         response = await post_query(user_query)
 
         print('RESPONSE BODY IS:', response)

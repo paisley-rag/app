@@ -220,8 +220,8 @@ class KnowledgeBase:
 
         file_path= f"./{FILE_DIR}/{file.filename}"
 
-        # with open(file_path, "wb+") as file_object:
-        #     shutil.copyfileobj(file.file, file_object)
+        with open(file_path, "wb+") as file_object:
+            shutil.copyfileobj(file.file, file_object)
 
         # use_s3.ul_file(file.filename, dir=FILE_DIR)
 
@@ -250,7 +250,7 @@ class KnowledgeBase:
         mongodb_client = mongo.client()
         # database name defines a knowledge base
         kb_id = str(self._config['_id'])
-        vector_index = "vectorIndex"
+        vector_index = "vector_index"
 
         vector_store = MongoDBAtlasVectorSearch(
             mongodb_client,
