@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "53880a142a94fcb486f6048d29f84df44c5c98c6da65bb901c89a00c9817b6c2"
+            "sha256": "f9b44a9c7880317d029700def7159bc3396ec8c654a9fa0716866fe658455a28"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -856,6 +856,15 @@
             "index": "pypi",
             "markers": "python_version < '4.0' and python_full_version >= '3.8.1'",
             "version": "==0.2.2"
+        },
+        "llama-index-storage-docstore-mongodb": {
+            "hashes": [
+                "sha256:e90e9abdb9d0e33b6d670ad499ad7c2b551dabb3deddf90c418484c5da10c9bf",
+                "sha256:fc5a4e0a3a3d29c157123c241f3ea88c843b8070d66d956445de5e7fd4ce0915"
+            ],
+            "index": "pypi",
+            "markers": "python_version < '4.0' and python_full_version >= '3.8.1'",
+            "version": "==0.1.3"
         },
         "llama-index-storage-index-store-mongodb": {
             "hashes": [
