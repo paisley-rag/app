@@ -6,18 +6,16 @@ export const pipelineConfigSchema = z.object({
   name: z.string(),
   knowledge_bases: z.array(z.string()),
   generative_model: z.string(),
-  postprocessing: z.object({
-    similarity: z.object({
-      on: z.boolean(),
-      cutoff: z.number(),
-    }),
-    colbert_rerank: z.object({
-      on: z.boolean(),
-      top_n: z.number(),
-    }),
-    long_context_reorder: z.object({
-      on: z.boolean(),
-    }),
+  similarity: z.object({
+    on: z.boolean(),
+    cutoff: z.number().optional(),
+  }),
+  colbert_rerank: z.object({
+    on: z.boolean(),
+    top_n: z.number().optional(),
+  }),
+  long_context_reorder: z.object({
+    on: z.boolean(),
   }),
   prompt: z.string(),
 });
@@ -51,6 +49,7 @@ async function updateChatbot(
   id: number,
   data: z.infer<typeof pipelineConfigSchema>
 ) {
+  console.log(data);
   const response = await axios.put(`/api/chatbots?id=${id}`, data);
   return response.data;
 }

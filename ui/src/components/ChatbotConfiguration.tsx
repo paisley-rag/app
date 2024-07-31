@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Typography } from "./Typography";
 import { Card } from "./ui/card";
 import { z } from "zod";
@@ -29,6 +29,8 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { Switch } from "@/components/ui/switch";
+import { Input } from "@/components/ui/input";
 
 import { DropdownMenuCheckboxItemProps } from "@radix-ui/react-dropdown-menu";
 
@@ -47,6 +49,8 @@ export function ChatbotConfiguration({ id }: ChatbotConfigurationProps) {
     resolver: zodResolver(pipelineConfigSchema),
     defaultValues: {
       generative_model: "",
+      similarity: { on: false, cutoff: 0 }, // Add default values
+      colbert_rerank: { on: false, top_n: 0 }, // Add default values
     },
   });
 
@@ -67,26 +71,52 @@ export function ChatbotConfiguration({ id }: ChatbotConfigurationProps) {
     queryFn: () => service.fetchChatbotById(id),
   });
 
+  const [displayCutoff, setDisplayCutoff] = useState(false);
+  const [displayTopN, setDisplayTopN] = useState(false);
+
   useEffect(() => {
     if (chatbot && !isChatbotLoading) {
-      form.setValue("knowledge_bases", chatbot.knowledge_bases);
-      form.setValue("generative_model", chatbot.generative_model);
+      Object.keys(chatbot).forEach((key) => {
+        if (key in pipelineConfigSchema.shape) {
+          form.setValue(
+            key as keyof z.infer<typeof pipelineConfigSchema>,
+            chatbot[key]
+          );
+        }
+      });
+      setDisplayCutoff(chatbot.similarity?.on || false);
+      setDisplayTopN(chatbot.colbert_rerank?.on || false);
     }
   }, [chatbot, isChatbotLoading, form]);
 
-  const handleSubmit = form.handleSubmit((data) => {
-    mutation.mutate(data);
-  });
+  const handleSubmit = form.handleSubmit(
+    (data) => {
+      console.log("Form submitted successfully with data:", data);
+      mutation.mutate(data);
+    },
+    (errors) => {
+      console.error("Form submission failed. Errors:", errors);
+    }
+  );
 
   if (isKnowledgeBasesLoading || isChatbotLoading) return <div>Loading...</div>;
 
   return (
     <Card className="h-full flex flex-col px-6">
-      <header>
+      <header className="flex justify-between items-baseline">
         <Typography variant="h4">Configuration</Typography>
+        <Button
+          type="submit"
+          onClick={(e) => {
+            e.preventDefault();
+            handleSubmit();
+          }}
+        >
+          Save
+        </Button>
       </header>
       <Form {...form}>
-        <form className="space-y-8" onSubmit={handleSubmit}>
+        <form className="space-y-8">
           <div className="mt-4">
             <FormField
               control={form.control}
@@ -153,11 +183,11 @@ export function ChatbotConfiguration({ id }: ChatbotConfigurationProps) {
             <FormField
               control={form.control}
               name="generative_model"
-              render={() => (
+              render={({ field }) => (
                 <FormItem>
                   <FormLabel>Generative Model</FormLabel>
                   <FormControl>
-                    <Select>
+                    <Select onValueChange={field.onChange} value={field.value}>
                       <SelectTrigger>
                         <SelectValue placeholder="Generative Model" />
                       </SelectTrigger>
@@ -179,7 +209,108 @@ export function ChatbotConfiguration({ id }: ChatbotConfigurationProps) {
               )}
             />
           </div>
-          <Button type="submit">Save</Button>
+          <div>
+            <FormField
+              control={form.control}
+              name="similarity.on"
+              render={({ field }) => (
+                <FormItem className="flex flex-row items-center justify-between">
+                  <div className="space-y-0.5">
+                    <FormLabel>Similarity Search</FormLabel>
+                    <FormDescription>
+                      Enable similarity search for context retrieval.
+                    </FormDescription>
+                  </div>
+                  <FormControl>
+                    <Switch
+                      checked={field.value}
+                      onCheckedChange={(checked) => {
+                        field.onChange(checked);
+                        setDisplayCutoff(checked);
+                      }}
+                    />
+                  </FormControl>
+                </FormItem>
+              )}
+            />
+          </div>
+          {displayCutoff && (
+            <div>
+              <FormField
+                control={form.control}
+                name="similarity.cutoff"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Similarity Cutoff</FormLabel>
+                    <FormControl>
+                      <Input
+                        type="number"
+                        min={0}
+                        max={1}
+                        step={0.01}
+                        value={field.value ?? 0}
+                        onChange={(e) => field.onChange(e.target.value)}
+                      />
+                    </FormControl>
+                    <FormDescription>
+                      Set the similarity cutoff threshold.
+                    </FormDescription>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+          )}
+          <div>
+            <FormField
+              control={form.control}
+              name="colbert_rerank.on"
+              render={({ field }) => (
+                <FormItem className="flex flex-row items-center justify-between">
+                  <div className="space-y-0.5">
+                    <FormLabel>ColBERT Rerank</FormLabel>
+                    <FormDescription>
+                      Enable ColBERT reranking for improved context retrieval.
+                    </FormDescription>
+                  </div>
+                  <FormControl>
+                    <Switch
+                      checked={field.value}
+                      onCheckedChange={(checked) => {
+                        field.onChange(checked);
+                        setDisplayTopN(checked);
+                      }}
+                    />
+                  </FormControl>
+                </FormItem>
+              )}
+            />
+          </div>
+          {displayTopN && (
+            <div>
+              <FormField
+                control={form.control}
+                name="colbert_rerank.top_n"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Top N</FormLabel>
+                    <FormControl>
+                      <Input
+                        type="number"
+                        value={field.value ?? 0}
+                        onChange={(e) => field.onChange(e.target.value)}
+                      />
+                    </FormControl>
+                    <FormDescription>
+                      Set the number of top results to rerank.
+                    </FormDescription>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+          )}
+          <div></div>
         </form>
       </Form>
     </Card>
