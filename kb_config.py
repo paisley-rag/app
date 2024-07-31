@@ -15,7 +15,7 @@ from datetime import datetime, timezone
 from llama_index.core import StorageContext
 from llama_index.core import VectorStoreIndex
 from llama_index.vector_stores.mongodb import MongoDBAtlasVectorSearch
-# from llama_index.vector_stores.awsdocdb import AWSDocDbVectorStore
+from llama_index.vector_stores.awsdocdb import AWSDocDbVectorStore
 from llama_index.storage.docstore.mongodb import MongoDocumentStore
 
 from kb_constants import (
@@ -252,17 +252,21 @@ class KnowledgeBase:
         kb_id = str(self._config['_id'])
         vector_index = "vector_index"
 
-        vector_store = MongoDBAtlasVectorSearch(
-            mongodb_client,
-            db_name=kb_id,
-            collection_name=vector_index
-        )
 
-        # vector_store = AWSDocDbAtlasVectorSearch(
-        #     mongodb_client,
-        #     db_name=kb_id,
-        #     collection_name=vector_index
-        # )
+        environment = os.environ["ENVIRONMENT"]
+
+        if environment == 'local':
+            vector_store = MongoDBAtlasVectorSearch(
+                mongodb_client,
+                db_name=kb_id,
+                collection_name=vector_index
+            )
+        else:
+            vector_store = AWSDocDbVectorStore(
+                mongodb_client,
+                db_name=kb_id,
+                collection_name=vector_index
+            )
 
         docstore = MongoDocumentStore.from_uri(
             uri=os.environ["MONGO_URI"],
