@@ -103,7 +103,7 @@ async def get_evals():
 # benchmark api route for uploading of csv data for use as benchmark data
 # TESTED, WORKING 7/29/24
 @app.post('/api/benchmark/upload')
-async def upload(file: UploadFile=File(...)):
+async def benchmark_upload(file: UploadFile=File(...)):
     FILE_DIR = 'tmpfiles'
 
     # write file to disk
