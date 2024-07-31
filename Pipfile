@@ -24,6 +24,7 @@ llama-index-llms-cohere = "*"
 llama-index-embeddings-cohere = "*"
 llama-index-embeddings-huggingface = "*"
 llama-index-llms-anthropic = "*"
+motor = "*"
 
 [dev-packages]
 

@@ -6,7 +6,7 @@ import app_logger as log
 import shutil
 import os
 import use_s3
-import load_vectors
+# import load_vectors
 # import lp_ingest
 # import simple_ingest
 import evals
@@ -52,12 +52,12 @@ async def create_kb(request: Request):
 
     return {"message": message, "status_code": status}
 
-@app.get("/api/{kb_name}")
+@app.get("/api/{kb_name}/files")
 async def get_kb_files(kb_name: str):
     if KnowledgeBase.exists(kb_name):
         kb = KnowledgeBase(kb_name)
         log.info(kb)
-        files = kb.get_files()
+        files = kb.get_files(kb_name)
         log.info(files)
         return {
             "files": files,
@@ -73,11 +73,18 @@ async def get_kb_files(kb_name: str):
 # this route adds a file to a knowledge base
 @app.post('/api/{kb_name}/upload_file')
 async def upload(kb_name: str, file: UploadFile=File(...)):
-
-    kb = KnowledgeBase(kb_name)
-    kb.ingest_file(file)
-    
-    return {"message": f"{file.filename} received"}
+    if KnowledgeBase.exists(kb_name):
+        kb = KnowledgeBase(kb_name)
+        kb.ingest_file(file)
+        return {
+                "message": f"{file.filename} received",
+                "status_code": 201
+                }
+    else:
+        return {
+                "message": f"Knowledge base {kb_name} doesn't exist",
+                "status_code": 404
+                }
 
 class UserQuery(BaseModel):
     query: str

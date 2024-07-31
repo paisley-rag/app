@@ -2,8 +2,8 @@ import os
 import pymongo
 
 MONGO_URI = os.environ["MONGO_URI"]
-KB_CONFIG_DOCDB = os.environ["KB_CONFIG_DOCDB"]
-KB_CONFIG_COLLECTION_DOCDB = os.environ["KB_CONFIG_COLLECTION_DOCDB"]
+CONFIG_DB = os.environ["CONFIG_DB"]
+CONFIG_KB_COL = os.environ["CONFIG_KB_COL"]
 PYMONGO_CLIENT = pymongo.MongoClient(MONGO_URI)
 
 def connect(db, collection):
@@ -16,7 +16,13 @@ def connect(db, collection):
         return None
     
 def connect_to_kb_config():
-    return connect(KB_CONFIG_DOCDB, KB_CONFIG_COLLECTION_DOCDB)
+    return connect(CONFIG_DB, CONFIG_KB_COL)
 
 def client():
     return PYMONGO_CLIENT
+
+# write helper to retrieve knowledge base id from name
+def get_kb_id(kb_name):
+    kb_col = connect_to_kb_config()
+    kb = kb_col.find_one({"kb_name": kb_name})
+    return kb["_id"]

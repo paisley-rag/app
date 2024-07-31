@@ -30,7 +30,7 @@ EMBEDDINGS = {
     "Cohere": CohereEmbedding,
 }
 
-INGESTION_METHODS = { 
+INGEST_METHODS = { 
     "LlamaParse": LlamaParse,
     "Simple": SimpleDirectoryReader
 }

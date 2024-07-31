@@ -31,7 +31,7 @@ class FileMetadata(TypedDict):
     time_uploaded: str
 
 class ClientKBConfig(TypedDict):
-    name: str
+    kb_name: str
     ingest_method: str
     splitter: str
     embed_config: EmbedConfig
@@ -40,7 +40,7 @@ class ClientKBConfig(TypedDict):
 
 class KBConfig(TypedDict):
     _id: int
-    name: str
+    kb_name: str
     embed_config: EmbedConfig
     ingestion_method: str
     splitter: str

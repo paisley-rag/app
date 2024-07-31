@@ -18,9 +18,9 @@ from llama_index.vector_stores.mongodb import MongoDBAtlasVectorSearch
 # from llama_index.vector_stores.awsdocdb import AWSDocDbVectorStore
 from llama_index.storage.docstore.mongodb import MongoDocumentStore
 
-from db.kb_constants import (
+from kb_constants import (
     EMBEDDINGS,
-    INGESTION_METHODS,
+    INGEST_METHODS,
     SPLITTERS,
     LLMS,
     API_KEYS,
@@ -36,6 +36,12 @@ from kb_type_definitions import (
     ClientKBConfig,
     KBConfig
 )
+
+# MONGO_URI = os.environ["MONGO_URI"]
+# CONFIG_DB = os.environ["CONFIG_DB"]
+# CONFIG_KB_COL = os.environ["CONFIG_KB_COL"]
+# PYMONGO_CLIENT = pymongo.MongoClient(MONGO_URI)
+# CONFIG_COLLECTION = PYMONGO_CLIENT[CONFIG_DB][CONFIG_KB_COL]
 
 CONFIG_COLLECTION = mongo.connect_to_kb_config()
 
@@ -57,18 +63,18 @@ def is_float(value):
 
 
 class KnowledgeBase:
-    
+
     # props in `self._config` are str names of the knowledge base configuration 
     # self._embed_model, self._llm, and self._splitter are instances of the classes
     # defined by properties in `self._config`
-    # self._ingestion_method is the class of the ingestion method defined by the
-    # ingestion_method property in `self._config`
+    # self._ingest_method is the class of the ingestion method defined by the
+    # ingest_method property in `self._config`
     def __init__(self, kb_name):
         self._config = self._get_kb_config(kb_name)
         self._embed_model = self._configure_embed_model()
         self._llm = self._configure_llm()
-        self._ingestion_method = INGESTION_METHODS[
-            self._config['ingestion_method']
+        self._ingest_method = INGEST_METHODS[
+            self._config['ingest_method']
         ]
         self._splitter = self._configure_splitter()
     
@@ -78,7 +84,8 @@ class KnowledgeBase:
         kb_config = cls._create_kb_config(client_config)           
         log.info(kb_config)
         # insert knowledge base configuration into database
-        CONFIG_COLLECTION.insert_one(kb_config)
+        result = CONFIG_COLLECTION.insert_one(kb_config)
+        log.info(result)
 
         # message for client
         return "Knowledge base created"
@@ -87,7 +94,7 @@ class KnowledgeBase:
     def _create_kb_config(cls, client_config):
         kb_config = copy.copy(client_config)
 
-        cls.str_to_nums(kb_config['splitter_config'])
+        kb_config['splitter_config'] = cls._str_to_nums(kb_config['splitter_config'])
         kb_config['files'] = []
 
         return kb_config
@@ -130,6 +137,9 @@ class KnowledgeBase:
 
     
     def _configure_llm(self):
+        if self._config.get('llm_config') is None:
+            return None
+        
         llm_provider = LLMS[self._config['llm_config']['llm_provider']]
         key_name = API_KEYS[self._config['llm_config']['llm_provider']]
         llm = llm_provider(
@@ -218,14 +228,14 @@ class KnowledgeBase:
         return file_path
     
     def _create_nodes(self, file_path):
-        if self._config['ingestion_method'] == 'LlamaParse':
-            llama_parse = self._ingestion_method(
+        if self._config['ingest_method'] == 'LlamaParse':
+            llama_parse = self._ingest_method(
                 api_key=os.environ["LLAMA_CLOUD_API_KEY"],
                 result_type="markdown"
             )
             documents = llama_parse.load_data(file_path)
         else:
-            documents = self._ingestion_method(input_files=[file_path]).load_data()
+            documents = self._ingest_method(input_files=[file_path]).load_data()
             
         
         if self._config['splitter'] == 'sentence':
@@ -239,8 +249,8 @@ class KnowledgeBase:
         
         mongodb_client = mongo.client()
         # database name defines a knowledge base
-        kb_id = self._config['_id']
-        vector_index = "vector_index"
+        kb_id = str(self._config['_id'])
+        vector_index = "vectorIndex"
 
         vector_store = MongoDBAtlasVectorSearch(
             mongodb_client,
@@ -277,7 +287,7 @@ class KnowledgeBase:
         time = now.strftime("%H:%M")
 
         CONFIG_COLLECTION.update_one(
-            {"kb_name": self.config['kb_name']},
+            {"kb_name": self._config['kb_name']},
             {"$push": {
                 "files": {
                     "file_name": file.filename,
@@ -294,6 +304,7 @@ class KnowledgeBase:
         file_path = self._save_file_locally(file)
         nodes = self._create_nodes(file_path)
         self._store_indexes(nodes)
+        self._add_file_to_kb_config(file)
 
 
         
