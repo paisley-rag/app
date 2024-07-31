@@ -1,17 +1,18 @@
 import shutil
 import os
 
-from fastapi import FastAPI, File, UploadFile
+from fastapi import FastAPI, File, UploadFile, Request
 from pydantic import BaseModel
 from fastapi.middleware.cors import CORSMiddleware
 import nest_asyncio
 
 import app_logger as log
 import use_s3
+# import lp_ingest
 import simple_ingest
 import evals
-import pipeline
 
+# test if we need this w/n the server
 nest_asyncio.apply()
 
 app = FastAPI()
@@ -66,6 +67,58 @@ async def upload(file: UploadFile=File(...)):
     #     log.info('finishing simple_ingest')
 
     return {"message": f"{file.filename} received"}
+@app.get('/api/evals')
+async def get_evals():
+    eval_table = evals.get_evals()
+    return {"message": eval_table}
+
+# this route creates a new knowledge base
+@app.post('/api/create_kb')
+async def create_kb(request: Request):
+    body = await request.json()
+    # ensure that the kb_name is unique
+    if KnowledgeBase.exists(body["kb_name"]):
+        message = f"{body['kb_name']} already exists"
+        status = 400
+    else:
+        message = KnowledgeBase.create(body)
+        status = 201
+
+    return {"message": message, "status_code": status}
+
+@app.get("/api/{kb_name}/files")
+async def get_kb_files(kb_name: str):
+    if KnowledgeBase.exists(kb_name):
+        kb = KnowledgeBase(kb_name)
+        log.info(kb)
+        files = kb.get_files(kb_name)
+        log.info(files)
+        return {
+            "files": files,
+            "status_code": 200
+        }
+    
+    else:
+        return {
+            "message": f"{kb_name} does not exist",
+            "status_code": 404
+        }
+
+# this route adds a file to a knowledge base
+@app.post('/api/{kb_name}/upload_file')
+async def upload(kb_name: str, file: UploadFile=File(...)):
+    if KnowledgeBase.exists(kb_name):
+        kb = KnowledgeBase(kb_name)
+        kb.ingest_file(file)
+        return {
+                "message": f"{file.filename} received",
+                "status_code": 201
+                }
+    else:
+        return {
+                "message": f"Knowledge base {kb_name} doesn't exist",
+                "status_code": 404
+                }
 
 
 class QueryBody(BaseModel):
