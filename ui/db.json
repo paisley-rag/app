@@ -188,20 +188,16 @@
     {
       "id": 1,
       "name": "chatbotName1",
-      "knowledge_bases": [
-        "kbconfigName5",
-        "kbconfigName6",
-        "kbconfigName7"
-      ],
+      "knowledge_bases": ["kbconfigName5", "kbconfigName6", "kbconfigName7"],
       "similarity": {
         "on": true,
-        "similarity_cutoff": 0.7
+        "cutoff": 0.7
       },
-      "colbertRerank": {
+      "colbert_rerank": {
         "on": true,
         "top_n": 5
       },
-      "longContextReorder": {
+      "long_context_reorder": {
         "on": true
       },
       "generative_model": "gpt-3.5-turbo",
@@ -213,20 +209,16 @@
     {
       "id": 2,
       "name": "chatbotName2",
-      "knowledge_bases": [
-        "kbconfigName5",
-        "kbconfigName6",
-        "kbconfigName7"
-      ],
+      "knowledge_bases": ["kbconfigName5", "kbconfigName6", "kbconfigName7"],
       "similarity": {
         "on": true,
-        "similarity_cutoff": 0.7
+        "cutoff": 0.7
       },
-      "colbertRerank": {
+      "colbert_rerank": {
         "on": true,
         "top_n": 3
       },
-      "longContextReorder": {
+      "long_context_reorder": {
         "on": true
       },
       "generative_model": "gpt-3.5-turbo",
@@ -238,20 +230,16 @@
     {
       "id": 3,
       "name": "chatbotName3",
-      "knowledge_bases": [
-        "kbconfigName2",
-        "kbconfigName3",
-        "kbconfigName4"
-      ],
+      "knowledge_bases": ["kbconfigName2", "kbconfigName3", "kbconfigName4"],
       "similarity": {
         "on": true,
-        "similarity_cutoff": 0.9
+        "cutoff": 0.9
       },
-      "colbertRerank": {
+      "colbert_rerank": {
         "on": true,
         "top_n": 5
       },
-      "longContextReorder": {
+      "long_context_reorder": {
         "on": true
       },
       "generative_model": "gpt-4-turbo",
@@ -266,13 +254,13 @@
       "knowledge_bases": [],
       "similarity": {
         "on": true,
-        "similarity_cutoff": 0.9
+        "cutoff": 0.9
       },
-      "colbertRerank": {
+      "colbert_rerank": {
         "on": true,
         "top_n": 5
       },
-      "longContextReorder": {
+      "long_context_reorder": {
         "on": true
       },
       "generative_model": "gpt-4-turbo",

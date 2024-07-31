@@ -45,15 +45,6 @@ interface ChatbotConfigurationProps {
 type Checked = DropdownMenuCheckboxItemProps["checked"];
 
 export function ChatbotConfiguration({ id }: ChatbotConfigurationProps) {
-  const form = useForm<z.infer<typeof pipelineConfigSchema>>({
-    resolver: zodResolver(pipelineConfigSchema),
-    defaultValues: {
-      generative_model: "",
-      similarity: { on: false, cutoff: 0 }, // Add default values
-      colbert_rerank: { on: false, top_n: 0 }, // Add default values
-    },
-  });
-
   const mutation = useMutation({
     mutationFn: (data: z.infer<typeof pipelineConfigSchema>) =>
       service.updateChatbot(id, data),
@@ -74,18 +65,15 @@ export function ChatbotConfiguration({ id }: ChatbotConfigurationProps) {
   const [displayCutoff, setDisplayCutoff] = useState(false);
   const [displayTopN, setDisplayTopN] = useState(false);
 
+  const form = useForm<z.infer<typeof pipelineConfigSchema>>({
+    resolver: zodResolver(pipelineConfigSchema),
+  });
+
   useEffect(() => {
     if (chatbot && !isChatbotLoading) {
-      Object.keys(chatbot).forEach((key) => {
-        if (key in pipelineConfigSchema.shape) {
-          form.setValue(
-            key as keyof z.infer<typeof pipelineConfigSchema>,
-            chatbot[key]
-          );
-        }
-      });
-      setDisplayCutoff(chatbot.similarity?.on || false);
-      setDisplayTopN(chatbot.colbert_rerank?.on || false);
+      form.reset(chatbot);
+      setDisplayCutoff(chatbot.similarity.on);
+      setDisplayTopN(chatbot.colbert_rerank.on);
     }
   }, [chatbot, isChatbotLoading, form]);
 
@@ -116,7 +104,7 @@ export function ChatbotConfiguration({ id }: ChatbotConfigurationProps) {
         </Button>
       </header>
       <Form {...form}>
-        <form className="space-y-8">
+        <form className="space-y-8 mb-8">
           <div className="mt-4">
             <FormField
               control={form.control}
@@ -310,7 +298,29 @@ export function ChatbotConfiguration({ id }: ChatbotConfigurationProps) {
               />
             </div>
           )}
-          <div></div>
+          <div>
+            <FormField
+              control={form.control}
+              name="long_context_reorder.on"
+              render={({ field }) => (
+                <FormItem className="flex flex-row items-center justify-between">
+                  <div className="space-y-0.5">
+                    <FormLabel>Long Context Reorder</FormLabel>
+                    <FormDescription>
+                      Enable long context reordering for improved context
+                      handling.
+                    </FormDescription>
+                  </div>
+                  <FormControl>
+                    <Switch
+                      checked={field.value}
+                      onCheckedChange={field.onChange}
+                    />
+                  </FormControl>
+                </FormItem>
+              )}
+            />
+          </div>
         </form>
       </Form>
     </Card>
