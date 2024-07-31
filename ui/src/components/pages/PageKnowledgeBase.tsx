@@ -14,7 +14,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { ModalFileUpload } from "../ModalFileUpload";
 
-export function PageKnowledgeBase({ id }: { id: number }) {
+export function PageKnowledgeBase({ id }: { id: string }) {
   const { data, isLoading, error } = useQuery({
     queryKey: ["knowledge-base", id],
     queryFn: () => service.fetchFilesByKnolwedgeBaseId(id),

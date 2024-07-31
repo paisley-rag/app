@@ -9,7 +9,7 @@ import { useMutation } from "@tanstack/react-query";
 import service from "../service/service";
 
 interface ChatbotProps {
-  id: number;
+  id: string;
 }
 
 interface Message {
