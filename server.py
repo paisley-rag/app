@@ -1,19 +1,30 @@
 import shutil
 import os
+import json
 
 from fastapi import FastAPI, File, UploadFile, Request
 from pydantic import BaseModel
 from fastapi.middleware.cors import CORSMiddleware
 import nest_asyncio
+import pymongo
+from dotenv import load_dotenv
 
 import app_logger as log
 import use_s3
 import evals
 import pipeline
 from kb_config import KnowledgeBase
+import mongo_util as mutil
+import config_util as cutil
 
 # test if we need this w/n the server
 nest_asyncio.apply()
+
+load_dotenv(override=True)
+MONGO_URI = os.environ["MONGO_URI"]
+CONFIG_DB = os.environ["CONFIG_DB"]
+CONFIG_PIPELINE_COL = os.environ["CONFIG_PIPELINE_COL"]
+PYMONGO_CLIENT = pymongo.MongoClient(MONGO_URI)
 
 app = FastAPI()
 
@@ -30,75 +41,104 @@ async def root():
     log.info("server running")
     return {"message": "Server running"}
 
-@app.get('/api/evals')
-async def get_evals():
-    eval_table = evals.get_running_evals()
-    return {"message": eval_table}
 
+# knowledge base routes
+@app.get("/api/knowledge-bases")
+async def get_knowledge_bases():
+    knowledge_bases = KnowledgeBase.get_knowledge_bases()
+    return knowledge_bases
 
-@app.post('/api/create_kb')
+# consider adding id to the body of the request sent from the client
+# to create a new knowledge base
+# otherwise, we will use the kb_name prop to see if knowledge base exists
+@app.post('/api/knowledge-bases')
 async def create_kb(request: Request):
     body = await request.json()
     # ensure that the kb_name is unique
     if KnowledgeBase.exists(body["kb_name"]):
         message = f"{body['kb_name']} already exists"
-        status = 400
     else:
         message = KnowledgeBase.create(body)
-        status = 201
 
-    return {"message": message, "status_code": status}
+    return {"message": message}
 
-@app.get("/api/{kb_name}/files")
-async def get_kb_files(kb_name: str):
-    if KnowledgeBase.exists(kb_name):
-        kb = KnowledgeBase(kb_name)
-        log.info(kb)
-        files = kb.get_files(kb_name)
-        log.info(files)
-        return {
-            "files": files,
-            "status_code": 200
-        }
-
+@app.get("/api/knowledge-base/{id}")
+async def get_knowledge_base(id: str):
+    kb_config = KnowledgeBase.exists(id)
+    if kb_config:
+        return kb_config
     else:
-        return {
-            "message": f"{kb_name} does not exist",
-            "status_code": 404
-        }
+        return { "message": f"{id} does not exist" }
 
 # this route adds a file to a knowledge base
-@app.post('/api/{kb_name}/upload_file')
-async def upload(kb_name: str, file: UploadFile=File(...)):
-    if KnowledgeBase.exists(kb_name):
-        kb = KnowledgeBase(kb_name)
+@app.post('/api/knowledge-bases/{id}/upload')
+async def upload(id: str, file: UploadFile=File(...)):
+    if KnowledgeBase.exists(id):
+        kb = KnowledgeBase(id)
         kb.ingest_file(file)
-        return {
-                "message": f"{file.filename} received",
-                "status_code": 201
-                }
+        return {"message": f"{file.filename} uploaded"}
     else:
-        return {
-                "message": f"Knowledge base {kb_name} doesn't exist",
-                "status_code": 404
-                }
+        return {"message": f"Knowledge base {id} doesn't exist"}
 
-
+# pipeline routes
 class UserQuery(BaseModel):
     query: str
 
 class QueryBody(UserQuery):
-    pipeline_config: str
-
+    chatbot_id: str
 
 @app.post('/api/query')
 async def post_query(body: QueryBody):
-    log.info('/api/query body received: ', body.query, body.pipeline_config)
-    pipe = pipeline.Pipeline(body.pipeline_config)
+    log.info('/api/query body received: ', body.query, body.chatbot_id)
+    pipe = pipeline.Pipeline(body.chatbot_id)
     log.info('/api/query pipeline retrieved')
     response = pipe.query(body.query)
+    evals.store_running_eval_data(body.query, response)
     log.info('/api/query response:', response)
     return { "type": "response", "body": response }
+
+@app.get('/api/chatbots')
+async def get_chatbots():
+    log.info('/api/chatbots loaded')
+    results = mutil.get_all('configs', 'config_pipeline', {}, { '_id': 0 })
+    log.info('/api/chatbots results:', results)
+    return json.dumps(results)
+
+@app.get('/api/chatbots/{id}')
+async def get_chatbot_id(id: str):
+    results = mutil.get('configs', 'config_pipeline', {"id": id}, {'_id': 0})
+    log.info(f"/api/chatbots/{id}: ", results)
+    return json.dumps(results)
+
+
+    # JSON Shape from UI
+    # {
+    #       "id": "test1",
+    #       "name": "test1",
+    #       "knowledge_bases": ["giraffes"],
+    #       "generative_model": "gpt-4-o",
+    #       "similarity": {
+    #             "on": "True",
+    #             "cutoff": 0.5
+    #           },
+    #       "colbert_rerank": {
+    #             "on": "True",
+    #             "top_n": 0.4
+    #           },
+    #       "long_context_reorder": "True",
+    #       "prompt": "hello"
+    # }
+
+@app.post('/api/chatbots')
+async def post_chatbots(request: Request):
+    body = await request.json()
+    log.info(f"/api/chatbots POST body: ", body)
+    pipeline_obj = cutil.ui_to_pipeline(json.dumps(body))
+    log.info(f"/api/chatbots POST: pipeline_obj", pipeline_obj)
+    mutil.insert_one(CONFIG_DB, CONFIG_PIPELINE_COL, pipeline_obj)
+    pipeline_json = json.dumps(pipeline_obj)
+    log.info(f"/api/chatbots POST: pipeline_obj", pipeline_obj, pipeline_json)
+    return pipeline_json
 
 
 @app.post('/api/test')
@@ -107,8 +147,12 @@ async def test_query(body: QueryBody):
     return { "type": "response", "query": body.query }
 
 
-# QUERY/CHAT ROUTES
+# evals routes
 
+@app.get('/api/evals')
+async def get_evals():
+    eval_table = evals.get_running_evals()
+    return {"message": eval_table}
 
 @app.post('/api/csv')
 async def upload(file: UploadFile=File(...)):
@@ -125,18 +169,6 @@ async def upload(file: UploadFile=File(...)):
     use_s3.ul_file(file.filename, dir=FILE_DIR)
 
     return {"message": f"{file.filename} received"}
-
-class UserQuery(BaseModel):
-    query: str
-
-
-@app.post('/api/query')
-async def post_query(query: UserQuery):
-    print('user query: ', query)
-    response = load_vectors.submit_query(query.query)
-    evals.store_running_eval_data(query.query, response)
-    return { "type": "response", "body":response }
-
 
 @app.post('/api/test')
 async def test_query(query: UserQuery):

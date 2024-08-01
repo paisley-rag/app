@@ -118,8 +118,8 @@ class KnowledgeBase:
     
     # returns None if not found, otherwise returns the document
     @classmethod
-    def exists(cls, id):
-        doc = CONFIG_COLLECTION.find_one({"id": id}, {"_id": 0})
+    def exists(cls, kb_name):
+        doc = CONFIG_COLLECTION.find_one({"kb_name": kb_name}, {"_id": 0})
         log.info('kb_config.py exists: ', doc)
         return doc
 
