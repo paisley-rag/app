@@ -2,7 +2,7 @@ import axios from "axios";
 import { z } from "zod";
 
 export const pipelineConfigSchema = z.object({
-  id: z.string(),
+  id: z.number(),
   name: z.string(),
   knowledge_bases: z.array(z.string()),
   generative_model: z.string(),
@@ -25,7 +25,7 @@ async function fetchKnowledgeBases() {
   return response.data;
 }
 
-async function fetchFilesByKnolwedgeBaseId(id: string) {
+async function fetchFilesByKnolwedgeBaseId(id: number) {
   const response = await axios.get(`/api/knowledge-bases?id=${id}`);
   return response.data;
 }
@@ -35,21 +35,18 @@ async function fetchChatbots() {
   return response.data;
 }
 
-async function fetchChatbotById(id: string) {
+async function fetchChatbotById(id: number) {
   const response = await axios.get(`/api/chatbots?id=${id}`);
-
-  // for testing only, should be removed when connected to backend with correct datatype of `id`
-  response.data[0].id = String(response.data[0].id);
   return response.data[0];
 }
 
-async function sendMessage(id: string, message: string) {
+async function sendMessage(id: number, message: string) {
   const response = await axios.post(`/api/query`, { message, chatbotId: id });
   return response.data;
 }
 
 async function updateChatbot(
-  id: string,
+  id: number,
   data: z.infer<typeof pipelineConfigSchema>
 ) {
   console.log(data);

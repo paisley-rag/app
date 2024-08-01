@@ -18,13 +18,13 @@ function App() {
             <PageKnowledgeBases />
           </Route>
           <Route path="/knowledge-bases/:id">
-            {(params) => <PageKnowledgeBase id={params.id} />}
+            {(params) => <PageKnowledgeBase id={+params.id} />}
           </Route>
           <Route path="/chatbots">
             <PageChatbots />
           </Route>
           <Route path="/chatbots/:id">
-            {(params) => <PageChatbot id={params.id} />}
+            {(params) => <PageChatbot id={+params.id} />}
           </Route>
         </Router>
       </main>

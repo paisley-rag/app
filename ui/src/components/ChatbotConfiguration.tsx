@@ -1,24 +1,27 @@
 import { useEffect, useState } from "react";
-import { Typography } from "./Typography";
-import { Card } from "./ui/card";
-import { z } from "zod";
 import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { Form } from "./ui/form";
 
-import { Button } from "./ui/button";
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
+
 import { pipelineConfigSchema } from "../service/service";
 import service from "../service/service";
+
+import { Typography } from "./Typography";
+import { Card } from "./ui/card";
+import { Form } from "./ui/form";
+import { Button } from "./ui/button";
 
 import { KnowledgeBasesField } from "./form_fields/KnowledgeBasesField";
 import { GenerativeModelField } from "./form_fields/GenerativeModelField";
 import { SimilaritySearchField } from "./form_fields/SimilaritySearchField";
 import { ColbertRerankField } from "./form_fields/ColbertRerankField";
 import { LongContextReorderField } from "./form_fields/LongContextReorderField";
+import { PromptField } from "./form_fields/PromptField";
 
 interface ChatbotConfigurationProps {
-  id: string;
+  id: number;
 }
 
 export function ChatbotConfiguration({ id }: ChatbotConfigurationProps) {
@@ -98,6 +101,7 @@ export function ChatbotConfiguration({ id }: ChatbotConfigurationProps) {
             setDisplayTopN={setDisplayTopN}
           />
           <LongContextReorderField control={form.control} />
+          <PromptField control={form.control} />
         </form>
       </Form>
     </Card>

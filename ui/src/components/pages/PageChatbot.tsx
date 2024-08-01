@@ -3,7 +3,7 @@ import { Chatbot } from "../Chatbot";
 import { ChatbotConfiguration } from "../ChatbotConfiguration";
 
 interface PageChatbotProps {
-  id: string;
+  id: number;
 }
 
 export function PageChatbot({ id }: PageChatbotProps) {
@@ -12,13 +12,9 @@ export function PageChatbot({ id }: PageChatbotProps) {
       <Typography variant="h2" className="mb-4">
         Chatbot Name
       </Typography>
-      <div className="grid grid-cols-2 gap-8">
-        <div>
-          <Chatbot id={id} />
-        </div>
-        <div>
-          <ChatbotConfiguration id={id} />
-        </div>
+      <div className="grid grid-cols-2 gap-4">
+        <Chatbot id={id} />
+        <ChatbotConfiguration id={id} />
       </div>
     </header>
   );

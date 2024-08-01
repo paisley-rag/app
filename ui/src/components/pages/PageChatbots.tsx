@@ -1,8 +1,10 @@
+import { useQuery } from "@tanstack/react-query";
+
 import { Typography } from "../Typography";
 import { Button } from "@/components/ui/button";
-import { useQuery } from "@tanstack/react-query";
-import service from "../../service/service";
 import { CardChatbot } from "../CardChatbot";
+
+import service from "../../service/service";
 
 export function PageChatbots() {
   const { data: chatbots, isLoading } = useQuery({
