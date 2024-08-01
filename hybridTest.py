@@ -5,13 +5,13 @@ def print_nodes(nodes):
         print(node)
 
 
+kb_file_path = './tmpfiles/giraffes.pdf'
+search.hybrid_write('giraffes', kb_file_path) # only need to do this the first time
 
-# search.vector_write('./tmpfiles') # only need to do this the first time
-
-query = 'tell me about promises'
+query = 'how long are giraffe necks?'
 
 # get nodes
-nodes = search.hybrid_get_nodes('kb3', query, top_k=5)
+nodes = search.hybrid_get_nodes('giraffes', query, top_k=5)
 
 all_nodes = nodes['keyword'] + nodes['vector']
 

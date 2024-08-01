@@ -173,5 +173,5 @@ class Pipeline:
 
 # for direct testing
 if __name__ == '__main__':
-  testPipe = Pipeline('pipeline4')
-  log.info('FINAL RESPONSE: ', testPipe.query('what is the supersecretword?'))
+  testPipe = Pipeline('giraffe2')
+  log.info('FINAL RESPONSE: ', testPipe.query('how long are giraffe necks?'))

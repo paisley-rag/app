@@ -12,18 +12,18 @@ mongo_uri = os.environ["MONGO_URI"]
 mongo = pymongo.MongoClient(mongo_uri)
 
 
-# # kb1
-# kb1_file_path = './tmpfiles/AsyncJS.md'
-# search.keyword_write('kb1', kb1_file_path)
-# search.vector_write('kb1', kb1_file_path)
-# 
-# #kb2
-# kb2_file_path = './tmpfiles/cpumemory.pdf'
-# search.hybrid_write('kb2', kb2_file_path)
-# 
-# #kb3
-# kb3_file_path = './tmpfiles/newfile.txt'
-# search.hybrid_write('kb3', kb3_file_path)
+# kb1
+kb1_file_path = './tmpfiles/AsyncJS.md'
+search.keyword_write('kb1', kb1_file_path)
+search.vector_write('kb1', kb1_file_path)
+
+#kb2
+kb2_file_path = './tmpfiles/cpumemory.pdf'
+search.hybrid_write('kb2', kb2_file_path)
+
+#kb3
+kb3_file_path = './tmpfiles/newfile.txt'
+search.hybrid_write('kb3', kb3_file_path)
 
 
 # config db setup
