@@ -16,12 +16,12 @@ import {
   DropdownMenuCheckboxItem,
 } from "../ui/dropdown-menu";
 import { Control } from "react-hook-form";
-import { z } from "zod";
-import { pipelineConfigSchema } from "../../service/service";
+import { ClientPipelineConfig } from "../../services/chatbot-service";
+import { ServerKnowledgeBaseConfig } from "../../services/knowledge-base-service";
 
 type KnowledgeBasesFieldProps = {
-  control: Control<z.infer<typeof pipelineConfigSchema>>;
-  knowledgeBases: z.infer<typeof pipelineConfigSchema>[];
+  control: Control<ClientPipelineConfig>;
+  knowledgeBases: ServerKnowledgeBaseConfig[];
 };
 
 export function KnowledgeBasesField({
@@ -49,18 +49,18 @@ export function KnowledgeBasesField({
                   {knowledgeBases.map((kb) => (
                     <DropdownMenuCheckboxItem
                       key={kb.id}
-                      checked={field.value?.includes(kb.name)}
+                      checked={field.value?.includes(kb.kb_name)}
                       onCheckedChange={(checked) => {
                         const updatedValue = checked
-                          ? [...(field.value ?? []), kb.name]
+                          ? [...(field.value ?? []), kb.kb_name]
                           : (field.value ?? []).filter(
-                              (name) => name !== kb.name
+                              (name) => name !== kb.kb_name
                             );
                         field.onChange(updatedValue);
                       }}
                       onSelect={(e) => e.preventDefault()}
                     >
-                      {kb.name}
+                      {kb.kb_name}
                     </DropdownMenuCheckboxItem>
                   ))}
                 </DropdownMenuContent>

@@ -4,12 +4,12 @@ import { Typography } from "../Typography";
 import { Button } from "@/components/ui/button";
 import { CardChatbot } from "../CardChatbot";
 
-import service from "../../service/service";
+import { chatbotService } from "../../services/chatbot-service";
 
 export function PageChatbots() {
   const { data: chatbots, isLoading } = useQuery({
     queryKey: ["chatbots"],
-    queryFn: () => service.fetchChatbots(),
+    queryFn: () => chatbotService.fetchChatbots(),
   });
 
   if (isLoading) {
