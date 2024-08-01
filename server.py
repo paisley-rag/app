@@ -30,6 +30,10 @@ async def root():
     log.info("server running")
     return {"message": "Server running"}
 
+@app.get('/api/evals')
+async def get_evals():
+    eval_table = evals.get_running_evals()
+    return {"message": eval_table}
 
 
 @app.post('/api/create_kb')
@@ -105,61 +109,40 @@ async def test_query(body: QueryBody):
 
 # QUERY/CHAT ROUTES
 
-@app.post('/api/chat')
-async def post_chat(query: QueryBody):
-    response = await post_query(query)
-    evals.store_chat_eval_data(query.query, response)
 
-@app.get('/api/history')
-async def get_evals():
-    data = evals.get_chat_history()
-    return {"table_data": data}
-
-
-# BENCHMARK ROUTES
-
-@app.post('/api/benchmark/upload')
-async def benchmark_upload(file: UploadFile=File(...)):
-    FILE_DIR = 'tmpfiles'
+@app.post('/api/csv')
+async def upload(file: UploadFile=File(...)):
+    FILE_DIR = 'tmpfiles/csv'
 
     # write file to disk
     if not os.path.exists(f"./{FILE_DIR}"):
         os.makedirs(f"./{FILE_DIR}")
 
     file_location = f"./{FILE_DIR}/{file.filename}"
-
     with open(file_location, "wb+") as file_object:
         shutil.copyfileobj(file.file, file_object)
 
     use_s3.ul_file(file.filename, dir=FILE_DIR)
 
-    # import csv to postgres benchmark_data table
-    evals.pg.import_csv_benchmark_data(file_location)
-
     return {"message": f"{file.filename} received"}
 
-# benchmark api route for batch-evaluating stored benchmark data
-@app.post('/api/benchmark/evaluate')
-async def benchmark_evaluate():
-    try:
-        await evals.evaluate_benchmark_data()
-        return {"message": "Benchmark data evaluated successfully", "status_code": 200}
-    except Exception as e:
-        print(f"Error evaluating benchmark data: {str(e)}")
-        return {"message": "Failed to evaluate benchmark data", "status_code": 500}
-
-# benchmark api route for examining evaluation results of benchmark data
-@app.get('/api/benchmark/results')
-async def benchmark_results():
-    data = evals.get_benchmark_scores()
-    return {"table_data": data}
+class UserQuery(BaseModel):
+    query: str
 
 
-# benchmark api route for viewing uploaded benchmark data
-@app.get('/api/benchmark/view')
-async def benchmark_data():
-    data = evals.get_benchmark_data()
-    return {"table_data": data}
+@app.post('/api/query')
+async def post_query(query: UserQuery):
+    print('user query: ', query)
+    response = load_vectors.submit_query(query.query)
+    evals.store_running_eval_data(query.query, response)
+    return { "type": "response", "body":response }
+
+
+@app.post('/api/test')
+async def test_query(query: UserQuery):
+    log.debug("/api/test accessed", query, query.query)
+    # print('user query: ', query.query)
+    return { "type": "response", "body": query }
 
 
 
