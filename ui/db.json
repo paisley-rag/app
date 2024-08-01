@@ -1,5 +1,4 @@
 {
-<<<<<<< Updated upstream
   "knowledge-bases": [
     {
       "id": 1,
@@ -184,25 +183,117 @@
       "llm": "gpt-3",
       "files": []
     }
+  ],
+  "chatbots": [
+    {
+      "id": 1,
+      "name": "chatbotName1",
+      "knowledge_bases": ["kbconfigName5", "kbconfigName6", "kbconfigName7"],
+      "similarity": {
+        "on": true,
+        "cutoff": 0.7
+      },
+      "colbert_rerank": {
+        "on": true,
+        "top_n": 5
+      },
+      "long_context_reorder": {
+        "on": true
+      },
+      "generative_model": "gpt-3.5-turbo",
+      "prompt": "You are a helpful assistant that can answer questions about the world."
+    },
+    {
+      "id": 2,
+      "name": "chatbotName2",
+      "knowledge_bases": ["kbconfigName5", "kbconfigName6", "kbconfigName7"],
+      "similarity": {
+        "on": true,
+        "cutoff": 0.7
+      },
+      "colbert_rerank": {
+        "on": true,
+        "top_n": 3
+      },
+      "long_context_reorder": {
+        "on": true
+      },
+      "generative_model": "gpt-3.5-turbo",
+      "prompt": "You are a helpful assistant that can answer questions about the world."
+    },
+    {
+      "id": 3,
+      "name": "chatbotName3",
+      "knowledge_bases": ["kbconfigName2", "kbconfigName3", "kbconfigName4"],
+      "similarity": {
+        "on": true,
+        "cutoff": 0.9
+      },
+      "colbert_rerank": {
+        "on": true,
+        "top_n": 5
+      },
+      "long_context_reorder": {
+        "on": true
+      },
+      "generative_model": "gpt-4-turbo",
+      "prompt": "You are a helpful assistant that can answer questions about the world."
+    },
+    {
+      "id": 4,
+      "name": "chatbotName3",
+      "knowledge_bases": [],
+      "similarity": {
+        "on": true,
+        "cutoff": 0.9
+      },
+      "colbert_rerank": {
+        "on": true,
+        "top_n": 5
+      },
+      "long_context_reorder": {
+        "on": true
+      },
+      "generative_model": "gpt-4-turbo",
+      "prompt": "You are a helpful assistant that can answer questions about the world."
+    }
+  ],
+  "query": [
+    {
+      "id": 1,
+      "name": "queryName1",
+      "query": "What is the capital of the world?",
+      "chatbot": "chatbotName1"
+    },
+    {
+      "message": "hello!",
+      "chatbotId": 1,
+      "id": 2
+    },
+    {
+      "message": "hello",
+      "chatbotId": 1,
+      "id": 3
+    },
+    {
+      "message": "hello",
+      "chatbotId": 1,
+      "id": 4
+    },
+    {
+      "message": "how are you?",
+      "chatbotId": 1,
+      "id": 5
+    },
+    {
+      "message": "that's cool",
+      "chatbotId": 1,
+      "id": 6
+    },
+    {
+      "message": "hi there!",
+      "chatbotId": 1,
+      "id": 7
+    }
   ]
 }
-=======
-  "posts": [
-    {
-      "id": 1,
-      "title": "json-server",
-      "author": "typicode"
-    }
-  ],
-  "comments": [
-    {
-      "id": 1,
-      "body": "some comment",
-      "postId": 1
-    }
-  ],
-  "profile": {
-    "name": "typicode"
-  }
-}
->>>>>>> Stashed changes
