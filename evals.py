@@ -2,10 +2,14 @@
 from datasets import Dataset 
 from ragas import evaluate
 from ragas.metrics import answer_relevancy, faithfulness, context_precision, context_recall, context_entity_recall, answer_similarity, answer_correctness
+from pydantic import BaseModel
 
 import eval_pg_utils as pg
 import eval_utils as utils
-import eval_test_utils as test
+
+from server import post_query
+from server import QueryBody
+
 
 import app_logger as log
 
@@ -37,6 +41,7 @@ def evaluate_and_store_running_entry(query, context, output):
     }
 
     pg.insert_dict_in(entry, table='running_evals')
+
 
 def evaluate_golden_dataset():
     table_data = pg.get_data_from('golden_dataset')
