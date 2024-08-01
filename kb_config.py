@@ -1,16 +1,15 @@
-import json
-import copy
 import os
+import copy
 import shutil
 from datetime import datetime, timezone
 
 from dotenv import load_dotenv
-# import pymongo
+import pymongo
 import nest_asyncio
 
 import use_s3
 import app_logger as log
-import mongo_helper as mongo
+# import mongo_helper as mongo
 
 # storage imports
 from llama_index.core import StorageContext
@@ -38,15 +37,17 @@ from kb_type_definitions import (
     KBConfig
 )
 
-# MONGO_URI = os.environ["MONGO_URI"]
-# CONFIG_DB = os.environ["CONFIG_DB"]
-# CONFIG_KB_COL = os.environ["CONFIG_KB_COL"]
-# PYMONGO_CLIENT = pymongo.MongoClient(MONGO_URI)
-# CONFIG_COLLECTION = PYMONGO_CLIENT[CONFIG_DB][CONFIG_KB_COL]
-
-CONFIG_COLLECTION = mongo.connect_to_kb_config()
-
 load_dotenv(override=True)
+
+MONGO_URI = os.environ["MONGO_URI"]
+CONFIG_DB = os.environ["CONFIG_DB"]
+CONFIG_KB_COL = os.environ["CONFIG_KB_COL"]
+PYMONGO_CLIENT = pymongo.MongoClient(MONGO_URI)
+CONFIG_COLLECTION = PYMONGO_CLIENT[CONFIG_DB][CONFIG_KB_COL]
+
+# CONFIG_COLLECTION = mongo.connect_to_kb_config()
+
+
 
 def is_int(s):
     try:
@@ -93,9 +94,10 @@ class KnowledgeBase:
 
     @classmethod
     def _create_kb_config(cls, client_config):
-        kb_config = json.loads(copy.copy(client_config))
+        kb_config = copy.copy(client_config)
         log.info('kb_config.py _create_kb_config: ', client_config, kb_config)
-        # kb_config['splitter_config'] = cls._str_to_nums(kb_config['splitter_config'])
+        kb_config['id'] = kb_config['kb_name']
+        kb_config['splitter_config'] = cls._str_to_nums(kb_config['splitter_config'])
         kb_config['files'] = []
 
         return kb_config
@@ -116,16 +118,27 @@ class KnowledgeBase:
     
     # returns None if not found, otherwise returns the document
     @classmethod
-    def exists(cls, kb_name):
-        return CONFIG_COLLECTION.find_one({"kb_name": kb_name})
+    def exists(cls, id):
+        doc = CONFIG_COLLECTION.find_one({"id": id}, {"_id": 0})
+        log.info('kb_config.py exists: ', doc)
+        return doc
 
+    @classmethod
+    def get_knowledge_bases(cls):
+        kbs_cursor = CONFIG_COLLECTION.find({}, {"_id": 0})
+        kbs_list = list(kbs_cursor)
+        print('kb_config.py get_knowledge_bases: ', kbs_list)
+        # log.info('kb_config.py get_knowledge_bases: ', kbs)
+        return kbs_list
     # returns list of file metadata objects for a knowledge base
-    def get_files(self, kb_name):
-        return CONFIG_COLLECTION.find_one({"kb_name": kb_name})['files']
+    # def get_files(self, kb_name):
+    #     return CONFIG_COLLECTION.find_one({"kb_name": kb_name})['files']
 
     # returns the configuration object for a knowledge base
-    def _get_kb_config(self, kb_name):
-        return CONFIG_COLLECTION.find_one({"kb_name": kb_name})
+    def _get_kb_config(self, id):
+        kb_config = CONFIG_COLLECTION.find_one({"id": id})
+        log.info('kb_config.py _get_kb_config: ', kb_config)
+        return kb_config
     
     def _configure_embed_model(self):
         embed_provider = self._config['embed_config']['embed_provider']
@@ -203,7 +216,7 @@ class KnowledgeBase:
     
     def _store_indexes(self, nodes):
         
-        mongodb_client = mongo.client()
+        # mongodb_client = mongo.client()
         # database name defines a knowledge base
         log.info('kb_config.py _store_indexes: ********* ', self._config)
 
@@ -216,13 +229,13 @@ class KnowledgeBase:
 
         if environment == 'local' or environment == 'mongoatlas':
             vector_store = MongoDBAtlasVectorSearch(
-                mongodb_client,
+                PYMONGO_CLIENT,
                 db_name=kb_id,
                 collection_name=vector_index
             )
         else:
             vector_store = AWSDocDbVectorStore(
-                mongodb_client,
+                PYMONGO_CLIENT,
                 db_name=kb_id,
                 collection_name=vector_index
             )
@@ -240,7 +253,7 @@ class KnowledgeBase:
         )
 
         docstore = MongoDocumentStore.from_uri(
-            uri=os.environ["MONGO_URI"],
+            uri=MONGO_URI,
             db_name=kb_id
         )
 
@@ -252,32 +265,32 @@ class KnowledgeBase:
         time = now.strftime("%H:%M")
 
         # for testing
-        # CONFIG_COLLECTION.update_one(
-        #     {"kb_name": self._config['kb_name']},
-        #     {"$push": {
-        #         "files": {
-        #             "file_name": file.filename,
-        #             "content_type": file.headers['content-type'],
-        #             "date_uploaded": date,
-        #             "time_uploaded": time
-        #             }
-        #         }
-        #     }
-        # )
         CONFIG_COLLECTION.update_one(
             {"kb_name": self._config['kb_name']},
-            {
-                "$set": {"id": self._config['kb_name']},
-                "$push": {
-                    "files": {
-                        "file_name": file,
-                        "content_type": file,
-                        "date_uploaded": date,
-                        "time_uploaded": time
+            {"$push": {
+                "files": {
+                    "file_name": file.filename,
+                    "content_type": file.headers['content-type'],
+                    "date_uploaded": date,
+                    "time_uploaded": time
                     }
                 }
             }
         )
+        # CONFIG_COLLECTION.update_one(
+        #     {"kb_name": self._config['kb_name']},
+        #     {
+        #         "$set": {"id": self._config['kb_name']},
+        #         "$push": {
+        #             "files": {
+        #                 "file_name": file,
+        #                 "content_type": file,
+        #                 "date_uploaded": date,
+        #                 "time_uploaded": time
+        #             }
+        #         }
+        #     }
+        # )
 
 
     def ingest_file(self, file):
