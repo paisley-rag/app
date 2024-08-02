@@ -118,8 +118,8 @@ class KnowledgeBase:
     
     # returns None if not found, otherwise returns the document
     @classmethod
-    def exists(cls, id):
-        doc = CONFIG_COLLECTION.find_one({"id": id}, {"_id": 0})
+    def exists(cls, kb_name):
+        doc = CONFIG_COLLECTION.find_one({"kb_name": kb_name}, {"_id": 0})
         log.info('kb_config.py exists: ', doc)
         return doc
 
@@ -265,7 +265,8 @@ class KnowledgeBase:
         time = now.strftime("%H:%M")
 
         # for testing
-        CONFIG_COLLECTION.update_one(
+        # PYMONGO_CLIENT[CONFIG_DB][CONFIG_KB_COL].update_one(
+        pymongo.MongoClient(MONGO_URI)[CONFIG_DB][CONFIG_KB_COL].update_one(
             {"kb_name": self._config['kb_name']},
             {"$push": {
                 "files": {

@@ -106,8 +106,8 @@ class Pipeline:
     # Post-processing methods
     def _process_similarity(self, nodes):
         options = self._get_options('similarity')
-
-        if not options['on']:
+        log.info(f"pipeline.py _process_similarity: options", options)
+        if options['on'] != 'True':
             return nodes
 
         log.debug(f"pipeline.py _process_similarity: ", self._remove_on(options))
@@ -121,7 +121,7 @@ class Pipeline:
         options = self._get_options('colbertRerank')
         log.debug(f"_process_colbert", options)
 
-        if not options['on']:
+        if options['on'] != 'True':
             return nodes
 
         log.debug(f"_process_colbert", self._remove_on(options))
@@ -135,7 +135,7 @@ class Pipeline:
     def _process_reorder(self, nodes):
         options = self._get_options('longContextReorder')
 
-        if not options['on']:
+        if options['on'] != 'True':
             return nodes
 
         reorder = LongContextReorder()
