@@ -149,13 +149,13 @@ async def post_chatbots(request: Request):
     return pipeline_json
 
 
-
-# evals routes
-
 @app.get('/api/history/{chatbot_id}')
 async def get_evals(chatbot_id):
     data = evals.get_chat_history(chatbot_id)
     return {"table_data": data}
+
+
+
 
 
 
