@@ -1,41 +1,73 @@
 import axios from "axios";
 import { z } from "zod";
 
+// Common Schemas
+const markdownSplitterConfig = z.object({
+  splitter: z.literal("markdown"),
+  splitter_config: z.object({
+    num_workers: z.number(),
+  }),
+});
+
+const semanticSplitterConfig = z.object({
+  splitter: z.literal("semantic"),
+  splitter_config: z.object({
+    buffer_size: z.number(),
+    breakpoint_percentile_threshold: z.number(),
+  }),
+});
+
+const sentenceSplitterConfig = z.object({
+  splitter: z.literal("sentence"),
+  splitter_config: z.object({
+    chunk_size: z.number(),
+    chunk_overlap: z.number(),
+  }),
+});
+
+const openAIEmbedConfig = z.object({
+  embed_provider: z.literal("OpenAI"),
+  embed_model: z.enum(["text-embedding-3-small", "text-embedding-3-large"]),
+});
+
+const cohereEmbedConfig = z.object({
+  embed_provider: z.literal("Cohere"),
+  embed_model: z.enum([
+    "embed-english-light-v3.0",
+    "embed-english-v3.0",
+    "embed-multilingual-light-v3.0",
+    "embed-multilingual-v3.0",
+  ]),
+});
+
+// Main Schemas
 const splitterConfigSchema = z.discriminatedUnion("splitter", [
-  z.object({
-    splitter: z.literal("markdown"),
-    splitter_config: z.object({
-      num_workers: z.number(),
-    }),
-  }),
-  z.object({
-    splitter: z.literal("semantic"),
-    splitter_config: z.object({
-      buffer_size: z.number(),
-      breakpoint_percentile_threshold: z.number(),
-    }),
-  }),
-  z.object({
-    splitter: z.literal("sentence"),
-    splitter_config: z.object({
-      chunk_size: z.number(),
-      chunk_overlap: z.number(),
-    }),
-  }),
+  markdownSplitterConfig,
+  semanticSplitterConfig,
+  sentenceSplitterConfig,
 ]);
 
 const embeddingConfigSchema = z.discriminatedUnion("embed_provider", [
+  openAIEmbedConfig,
+  cohereEmbedConfig,
+]);
+
+const llmConfigSchema = z.discriminatedUnion("llm_provider", [
   z.object({
-    embed_provider: z.literal("OpenAI"),
-    embed_model: z.enum(["text-embedding-3-small", "text-embedding-3-large"]),
+    llm_provider: z.literal("OpenAI"),
+    llm_model: z.enum([
+      "gpt-3.5-turbo",
+      "gpt-4-turbo",
+      "gpt-4o-mini",
+      "gpt-4o",
+    ]),
   }),
   z.object({
-    embed_provider: z.literal("Cohere"),
-    embed_model: z.enum([
-      "embed-english-light-v3.0",
-      "embed-english-v3.0",
-      "embed-multilingual-light-v3.0",
-      "embed-multilingual-v3.0",
+    llm_provider: z.literal("Anthropic"),
+    llm_model: z.enum([
+      "claude-4-haiku-20240307",
+      "claude-3-sonnet-20240229",
+      "claude-3-5-sonnet-20240620",
     ]),
   }),
 ]);
@@ -45,25 +77,7 @@ export const clientKnowledgeBaseConfigSchema = z.intersection(
     z.object({
       kb_name: z.string(),
       ingestion_method: z.literal("LlamaParse"),
-      llm_config: z.discriminatedUnion("llm_provider", [
-        z.object({
-          llm_provider: z.literal("OpenAI"),
-          llm_model: z.enum([
-            "gpt-3.5-turbo",
-            "gpt-4-turbo",
-            "gpt-4o-mini",
-            "gpt-4o",
-          ]),
-        }),
-        z.object({
-          llm_provider: z.literal("Anthropic"),
-          llm_model: z.enum([
-            "claude-4-haiku-20240307",
-            "claude-3-sonnet-20240229",
-            "claude-3-5-sonnet-20240620",
-          ]),
-        }),
-      ]),
+      llm_config: llmConfigSchema,
       embed_config: embeddingConfigSchema,
     }),
     z.object({
@@ -104,15 +118,7 @@ export type ServerKnowledgeBaseConfig = z.infer<
 
 async function fetchKnowledgeBases() {
   const response = await axios.get("/api/knowledge-bases");
-  try {
-    return knowledgeBasesSchema.parse(response.data);
-  } catch (error) {
-    if (error instanceof z.ZodError) {
-      console.error("Zod validation error:", error.errors);
-      console.log("Received data:", response.data);
-    }
-    throw error;
-  }
+  return knowledgeBasesSchema.parse(response.data);
 }
 
 async function fetchKnowledgeBaseById(id: string) {
