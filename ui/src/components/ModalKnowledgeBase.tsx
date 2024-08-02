@@ -101,7 +101,7 @@ export function ModalKnowledgeBase({
                 )}
               />
               <FormField
-                name="ingestion_method"
+                name="ingest_method"
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Ingestion Method</FormLabel>
@@ -135,9 +135,9 @@ export function ModalKnowledgeBase({
                       onValueChange={(value) => {
                         field.onChange(value);
                         form.resetField("splitter_config");
-                        if (value === "markdown") {
+                        if (value === "Markdown") {
                           form.setValue("splitter_config.num_workers", 8);
-                        } else if (value === "semantic") {
+                        } else if (value === "Semantic") {
                           form.setValue("splitter_config.buffer_size", 100);
                           form.setValue(
                             "splitter_config.breakpoint_percentile_threshold",
@@ -156,12 +156,12 @@ export function ModalKnowledgeBase({
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
-                        {form.getValues("ingestion_method") === "LlamaParse" ? (
-                          <SelectItem value="markdown">Markdown</SelectItem>
+                        {form.getValues("ingest_method") === "LlamaParse" ? (
+                          <SelectItem value="Markdown">Markdown</SelectItem>
                         ) : (
                           <>
-                            <SelectItem value="sentence">Sentence</SelectItem>
-                            <SelectItem value="semantic">Semantic</SelectItem>
+                            <SelectItem value="Sentence">Sentence</SelectItem>
+                            <SelectItem value="Semantic">Semantic</SelectItem>
                           </>
                         )}
                       </SelectContent>
@@ -177,7 +177,7 @@ export function ModalKnowledgeBase({
 
                   return (
                     <FormItem>
-                      {splitterValue === "markdown" ? (
+                      {splitterValue === "Markdown" ? (
                         <FormField
                           name="splitter_config.num_workers"
                           render={({ field }) => (
@@ -198,7 +198,7 @@ export function ModalKnowledgeBase({
                         />
                       ) : (
                         <>
-                          {splitterValue === "semantic" && (
+                          {splitterValue === "Semantic" && (
                             <>
                               <FormField
                                 name="splitter_config.buffer_size"
@@ -238,7 +238,7 @@ export function ModalKnowledgeBase({
                               />
                             </>
                           )}
-                          {splitterValue === "sentence" && (
+                          {splitterValue === "Sentence" && (
                             <>
                               <FormField
                                 name="splitter_config.chunk_size"
@@ -339,7 +339,7 @@ export function ModalKnowledgeBase({
                   </FormItem>
                 )}
               />
-              {form.watch("ingestion_method") === "LlamaParse" && (
+              {form.watch("ingest_method") === "LlamaParse" && (
                 <FormField
                   name="llm_config"
                   render={() => {
