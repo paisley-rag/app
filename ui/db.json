@@ -228,6 +228,124 @@
           "time_uploaded": "13:10:00"
         }
       ]
+    },
+    {
+      "kb_name": "asdf",
+      "ingestion_method": "Simple",
+      "embed_config": {
+        "embed_provider": "OpenAI",
+        "embed_model": "text-embedding-3-small"
+      },
+      "splitter": "sentence",
+      "splitter_config": {
+        "chunk_size": 1024,
+        "chunk_overlap": 200
+      },
+      "id": "2cKjQ7H"
+    }
+  ],
+  "chatbots": [
+    {
+      "id": "customer-support",
+      "name": "Customer Support Bot",
+      "knowledge_bases": [
+        "ProductDocumentation",
+        "CustomerSupportFAQs"
+      ],
+      "generative_model": "gpt-4-turbo",
+      "similarity": {
+        "on": true,
+        "cutoff": 0.7
+      },
+      "colbert_rerank": {
+        "on": true,
+        "top_n": 5
+      },
+      "long_context_reorder": {
+        "on": false
+      },
+      "prompt": "You are a helpful customer support assistant. Answer questions based on the provided context."
+    },
+    {
+      "id": "legal-advisor",
+      "name": "Legal Advisor Bot",
+      "knowledge_bases": [
+        "LegalDocuments"
+      ],
+      "generative_model": "claude-3-sonnet-20240229",
+      "similarity": {
+        "on": true,
+        "cutoff": 0.8
+      },
+      "colbert_rerank": {
+        "on": false
+      },
+      "long_context_reorder": {
+        "on": true
+      },
+      "prompt": "You are a legal advisor AI. Provide information based on legal documents, but always advise consulting with a qualified attorney for specific legal advice."
+    },
+    {
+      "id": "tech-support",
+      "name": "Technical Support Bot",
+      "knowledge_bases": [
+        "TechnicalSpecifications",
+        "ProductDocumentation"
+      ],
+      "generative_model": "gpt-3.5-turbo",
+      "similarity": {
+        "on": true,
+        "cutoff": 0.6
+      },
+      "colbert_rerank": {
+        "on": true,
+        "top_n": 3
+      },
+      "long_context_reorder": {
+        "on": true
+      },
+      "prompt": "You are a technical support assistant. Help users troubleshoot issues and provide technical information based on product specifications and documentation."
+    },
+    {
+      "id": "hr-assistant",
+      "name": "HR Assistant Bot",
+      "knowledge_bases": [
+        "CompanyPolicies",
+        "InternalProcesses"
+      ],
+      "generative_model": "gpt-4o-mini",
+      "similarity": {
+        "on": true,
+        "cutoff": 0.75
+      },
+      "colbert_rerank": {
+        "on": false
+      },
+      "long_context_reorder": {
+        "on": false
+      },
+      "prompt": "You are an HR assistant AI. Provide information about company policies, procedures, and answer general HR-related questions based on the company's documentation."
+    },
+    {
+      "id": "product-info",
+      "name": "Product Information Bot",
+      "knowledge_bases": [
+        "ProductDocumentation",
+        "TechnicalSpecifications"
+      ],
+      "generative_model": "claude-3-5-sonnet-20240620",
+      "similarity": {
+        "on": true,
+        "cutoff": 0.65
+      },
+      "colbert_rerank": {
+        "on": true,
+        "top_n": 4
+      },
+      "long_context_reorder": {
+        "on": true
+      },
+      "prompt": "You are a product information assistant. Provide detailed information about our products, their features, and specifications based on the available documentation."
     }
   ]
 }

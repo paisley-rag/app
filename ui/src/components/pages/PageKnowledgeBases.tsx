@@ -18,6 +18,7 @@ export function PageKnowledgeBases() {
     queryFn: knowledgeBaseService.fetchKnowledgeBases,
   });
 
+  if (isLoading) return <div>Loading...</div>;
   if (data)
     return (
       <>

@@ -1,44 +1,50 @@
 import axios from "axios";
 import { z } from "zod";
 
-const markdownConfigSchema = z.object({
-  num_workers: z.number(),
-});
-const semanticConfigSchema = z.object({
-  buffer_size: z.number(),
-  breakpoint_percentile_threshold: z.number(),
-});
-const sentenceConfigSchema = z.object({
-  chunk_size: z.number(),
-  chunk_overlap: z.number(),
-});
+const splitterConfigSchema = z.discriminatedUnion("splitter", [
+  z.object({
+    splitter: z.literal("markdown"),
+    splitter_config: z.object({
+      num_workers: z.number(),
+    }),
+  }),
+  z.object({
+    splitter: z.literal("semantic"),
+    splitter_config: z.object({
+      buffer_size: z.number(),
+      breakpoint_percentile_threshold: z.number(),
+    }),
+  }),
+  z.object({
+    splitter: z.literal("sentence"),
+    splitter_config: z.object({
+      chunk_size: z.number(),
+      chunk_overlap: z.number(),
+    }),
+  }),
+]);
 
-export const clientKnowledgeBaseConfigSchema = z.discriminatedUnion(
-  "ingestion_method",
-  [
+const embeddingConfigSchema = z.discriminatedUnion("embed_provider", [
+  z.object({
+    embed_provider: z.literal("OpenAI"),
+    embed_model: z.enum(["text-embedding-3-small", "text-embedding-3-large"]),
+  }),
+  z.object({
+    embed_provider: z.literal("Cohere"),
+    embed_model: z.enum([
+      "embed-english-light-v3.0",
+      "embed-english-v3.0",
+      "embed-multilingual-light-v3.0",
+      "embed-multilingual-v3.0",
+    ]),
+  }),
+]);
+
+export const clientKnowledgeBaseConfigSchema = z.intersection(
+  z.union([
     z.object({
       kb_name: z.string(),
       ingestion_method: z.literal("LlamaParse"),
-      splitter: z.string(),
-      embed_config: z.discriminatedUnion("embed_provider", [
-        z.object({
-          embed_provider: z.literal("OpenAI"),
-          embed_model: z.enum([
-            "text-embedding-3-small",
-            "text-embedding-3-large",
-          ]),
-        }),
-        z.object({
-          embed_provider: z.literal("Cohere"),
-          embed_model: z.enum([
-            "embed-english-light-v3.0",
-            "embed-english-v3.0",
-            "embed-multilingual-light-v3.0",
-            "embed-multilingual-v3.0",
-          ]),
-        }),
-      ]),
-      splitter_config: z.union([semanticConfigSchema, sentenceConfigSchema]),
       llm_config: z.discriminatedUnion("llm_provider", [
         z.object({
           llm_provider: z.literal("OpenAI"),
@@ -58,19 +64,24 @@ export const clientKnowledgeBaseConfigSchema = z.discriminatedUnion(
           ]),
         }),
       ]),
+      embed_config: embeddingConfigSchema,
     }),
     z.object({
       kb_name: z.string(),
       ingestion_method: z.literal("Simple"),
-      splitter: z.string(),
-      embed_config: z.object({
-        embed_provider: z.string(),
-        embed_model: z.string(),
-      }),
-      splitter_config: markdownConfigSchema,
+      embed_config: embeddingConfigSchema,
     }),
-  ]
+  ]),
+  splitterConfigSchema
 );
+
+// export const clientKnowledgeBaseConfigSchema = z.intersection(
+//   z.object({
+//     kb_name: z.string(),
+//     ingestion_method: z.enum(["LlamaParse", "Simple"]),
+//   }),
+//   splitterConfigSchema
+// );
 
 const fileSchema = z.object({
   file_name: z.string(),
