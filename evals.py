@@ -85,7 +85,7 @@ def evaluate_and_store_benchmark_data_entry(entry):
 
 def get_chat_history(chatbot_id):
     data = pg.get_data_from('chat_history')
-    data = utils.filter_by_chatbot(data, chatbot_id)
+    data = pg.filter_by_chatbot(data, chatbot_id)
     return data
 
 def get_benchmark_data():
