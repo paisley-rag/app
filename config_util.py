@@ -8,10 +8,10 @@ def ui_to_pipeline(ui_json):
     # note:  takes in json, returns an obj
 
     ui_obj = json.loads(ui_json)
-    log.info('config_util.py ui_to_pipeline: ui_obj', ui_obj)
+    log.debug('config_util.py ui_to_pipeline: ui_obj', ui_obj)
 
     pipeline_obj = {
-        'id': str(ui_obj['id']),
+        'id': ui_obj['id'],
         'name': ui_obj['name'],
         'knowledgebases': ui_obj['knowledge_bases'],
         'postprocessing': {
@@ -34,7 +34,7 @@ def ui_to_pipeline(ui_json):
         }
     }
 
-    log.info('config_util.py ui_to_pipeline: pipeline_obj', pipeline_obj)
+    log.debug('config_util.py ui_to_pipeline: pipeline_obj', pipeline_obj)
     return pipeline_obj
 
 

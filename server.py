@@ -62,7 +62,7 @@ async def create_kb(request: Request):
 
     return {"message": message}
 
-@app.get("/api/knowledge-base/{id}")
+@app.get("/api/knowledge-bases/{id}")
 async def get_knowledge_base(id: str):
     kb_config = KnowledgeBase.exists(id)
     if kb_config:
@@ -72,7 +72,7 @@ async def get_knowledge_base(id: str):
 
 # this route adds a file to a knowledge base
 @app.post('/api/knowledge-bases/{id}/upload')
-async def upload(id: str, file: UploadFile=File(...)):
+async def upload_file(id: str, file: UploadFile=File(...)):
     if KnowledgeBase.exists(id):
         kb = KnowledgeBase(id)
         kb.ingest_file(file)
@@ -93,21 +93,26 @@ async def post_query(body: QueryBody):
     pipe = pipeline.Pipeline(body.chatbot_id)
     log.info('/api/query pipeline retrieved')
     response = pipe.query(body.query)
-    evals.store_running_eval_data(body.query, response)
+    # evals.store_running_eval_data(body.query, response)  # this line returned an error - no answer generated
     log.info('/api/query response:', response)
     return { "type": "response", "body": response }
+
 
 @app.get('/api/chatbots')
 async def get_chatbots():
     log.info('/api/chatbots loaded')
-    results = mutil.get_all('configs', 'config_pipeline', {}, { '_id': 0 })
+    results = mutil.get_all(CONFIG_DB, CONFIG_PIPELINE_COL, {}, { '_id': 0 })
     log.info('/api/chatbots results:', results)
     return json.dumps(results)
 
+
 @app.get('/api/chatbots/{id}')
 async def get_chatbot_id(id: str):
-    results = mutil.get('configs', 'config_pipeline', {"id": id}, {'_id': 0})
+    results = mutil.get(CONFIG_DB, CONFIG_PIPELINE_COL, {"id": id}, {'_id': 0})
     log.info(f"/api/chatbots/{id}: ", results)
+    if not results:
+        return json.dumps({"message": "no chatbot configuration found"})
+
     return json.dumps(results)
 
 
@@ -125,26 +130,25 @@ async def get_chatbot_id(id: str):
     #             "on": "True",
     #             "top_n": 0.4
     #           },
-    #       "long_context_reorder": "True",
+    #       "long_contet_reorder": "True",
     #       "prompt": "hello"
     # }
+
 
 @app.post('/api/chatbots')
 async def post_chatbots(request: Request):
     body = await request.json()
     log.info(f"/api/chatbots POST body: ", body)
     pipeline_obj = cutil.ui_to_pipeline(json.dumps(body))
-    log.info(f"/api/chatbots POST: pipeline_obj", pipeline_obj)
+
     mutil.insert_one(CONFIG_DB, CONFIG_PIPELINE_COL, pipeline_obj)
+    # insert_one seems to include the '_id' property which cannot be serialized by json.dumps
+    del pipeline_obj['_id']
+
     pipeline_json = json.dumps(pipeline_obj)
-    log.info(f"/api/chatbots POST: pipeline_obj", pipeline_obj, pipeline_json)
+    log.debug(f"/api/chatbots POST: pipeline_obj, pipeline_json", pipeline_obj, pipeline_json)
     return pipeline_json
 
-
-@app.post('/api/test')
-async def test_query(body: QueryBody):
-    log.debug("/api/test accessed", body)
-    return { "type": "response", "query": body.query }
 
 
 # evals routes
@@ -155,7 +159,7 @@ async def get_evals():
     return {"message": eval_table}
 
 @app.post('/api/csv')
-async def upload(file: UploadFile=File(...)):
+async def upload_csv(file: UploadFile=File(...)):
     FILE_DIR = 'tmpfiles/csv'
 
     # write file to disk
@@ -173,7 +177,6 @@ async def upload(file: UploadFile=File(...)):
 @app.post('/api/test')
 async def test_query(query: UserQuery):
     log.debug("/api/test accessed", query, query.query)
-    # print('user query: ', query.query)
     return { "type": "response", "body": query }
 
 
