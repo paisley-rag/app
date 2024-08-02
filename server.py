@@ -62,7 +62,7 @@ async def create_kb(request: Request):
 
     return {"message": message}
 
-@app.get("/api/knowledge-bases/{id}")
+@app.get("/api/knowledge-base/{id}")
 async def get_knowledge_base(id: str):
     kb_config = KnowledgeBase.exists(id)
     if kb_config:
