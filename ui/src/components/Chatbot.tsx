@@ -6,10 +6,10 @@ import { Typography } from "./Typography";
 
 import { useState } from "react";
 import { useMutation } from "@tanstack/react-query";
-import service from "../service/service";
+import { queryService } from "../services/query-service";
 
 interface ChatbotProps {
-  id: number;
+  id: string;
 }
 
 interface Message {
@@ -24,7 +24,7 @@ export function Chatbot({ id }: ChatbotProps) {
   const [input, setInput] = useState("");
 
   const mutation = useMutation({
-    mutationFn: (message: string) => service.sendMessage(id, message),
+    mutationFn: (message: string) => queryService.sendMessage(id, message),
     onSuccess: (data) => {
       const assistantMessage: Message = {
         role: "assistant",

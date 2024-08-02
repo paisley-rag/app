@@ -9,11 +9,10 @@ import {
 import { Switch } from "../ui/switch";
 import { Input } from "../ui/input";
 import { Control } from "react-hook-form";
-import { z } from "zod";
-import { pipelineConfigSchema } from "../../service/service";
+import { ClientPipelineConfig } from "../../services/chatbot-service";
 
 type ColbertRerankFieldProps = {
-  control: Control<z.infer<typeof pipelineConfigSchema>>;
+  control: Control<ClientPipelineConfig>;
   displayTopN: boolean;
   setDisplayTopN: (value: boolean) => void;
 };
