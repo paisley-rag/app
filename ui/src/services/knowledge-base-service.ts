@@ -3,14 +3,14 @@ import { z } from "zod";
 
 // Common Schemas
 const markdownSplitterConfig = z.object({
-  splitter: z.literal("markdown"),
+  splitter: z.literal("Markdown"),
   splitter_config: z.object({
     num_workers: z.number(),
   }),
 });
 
 const semanticSplitterConfig = z.object({
-  splitter: z.literal("semantic"),
+  splitter: z.literal("Semantic"),
   splitter_config: z.object({
     buffer_size: z.number(),
     breakpoint_percentile_threshold: z.number(),
@@ -18,7 +18,7 @@ const semanticSplitterConfig = z.object({
 });
 
 const sentenceSplitterConfig = z.object({
-  splitter: z.literal("sentence"),
+  splitter: z.literal("Sentence"),
   splitter_config: z.object({
     chunk_size: z.number(),
     chunk_overlap: z.number(),
@@ -76,13 +76,13 @@ export const clientKnowledgeBaseConfigSchema = z.intersection(
   z.union([
     z.object({
       kb_name: z.string(),
-      ingestion_method: z.literal("LlamaParse"),
+      ingest_method: z.literal("LlamaParse"),
       llm_config: llmConfigSchema,
       embed_config: embeddingConfigSchema,
     }),
     z.object({
       kb_name: z.string(),
-      ingestion_method: z.literal("Simple"),
+      ingest_method: z.literal("Simple"),
       embed_config: embeddingConfigSchema,
     }),
   ]),
@@ -118,7 +118,15 @@ export type ServerKnowledgeBaseConfig = z.infer<
 
 async function fetchKnowledgeBases() {
   const response = await axios.get("/api/knowledge-bases");
-  return knowledgeBasesSchema.parse(response.data);
+  console.log(response);
+  try {
+    return knowledgeBasesSchema.parse(response.data);
+  } catch (error) {
+    if (error instanceof z.ZodError) {
+      console.error("Zod validation error:", error.errors);
+    }
+    throw error;
+  }
 }
 
 async function fetchKnowledgeBaseById(id: string) {
