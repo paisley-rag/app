@@ -75,14 +75,6 @@ export const clientKnowledgeBaseConfigSchema = z.intersection(
   splitterConfigSchema
 );
 
-// export const clientKnowledgeBaseConfigSchema = z.intersection(
-//   z.object({
-//     kb_name: z.string(),
-//     ingestion_method: z.enum(["LlamaParse", "Simple"]),
-//   }),
-//   splitterConfigSchema
-// );
-
 const fileSchema = z.object({
   file_name: z.string(),
   content_type: z.string(),

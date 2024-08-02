@@ -21,6 +21,7 @@ export const clientPipelineConfigSchema = z.object({
 });
 
 export type ClientPipelineConfig = z.infer<typeof clientPipelineConfigSchema>;
+export type ServerPipelineConfig = ClientPipelineConfig;
 
 async function updateChatbot(id: string, data: ClientPipelineConfig) {
   const response = await axios.put(`/api/chatbots?id=${id}`, data);
