@@ -2,10 +2,14 @@
 from datasets import Dataset 
 from ragas import evaluate
 from ragas.metrics import answer_relevancy, faithfulness, context_precision, context_recall, context_entity_recall, answer_similarity, answer_correctness
+from pydantic import BaseModel
 
 import eval_pg_utils as pg
 import eval_utils as utils
-import eval_test_utils as test
+
+from server import post_query
+from server import QueryBody
+
 
 import app_logger as log
 
@@ -13,6 +17,7 @@ import app_logger as log
 def store_running_eval_data(query, response):
     context, output = utils.extract_from_response(response)
     evaluate_and_store_running_entry(query, context, output)
+
 
 # takes query/context/output, scores on 'answer_relevancy' and 'faithfulness'
 # using RAGAs, inserts data into 'running_evals' table
@@ -37,6 +42,7 @@ def evaluate_and_store_running_entry(query, context, output):
 
     pg.insert_dict_in(entry, table='running_evals')
 
+
 def evaluate_golden_dataset():
     table_data = pg.get_data_from('golden_dataset')
     data_list = pg.values_only(table_data)
@@ -44,13 +50,13 @@ def evaluate_golden_dataset():
 
     for entry in data_list:
         log.debug('THIS ENTRY IS:', entry)
-        response_body = test.mock_query(entry['input'])
+        response_body = test.mock_query(entry['query'])
         log.debug('RESPONSE BODY IS:', response_body)
-        context, output = utils.extract_from_response(response_body)
-        # context, output = test.extract_from_mock_query_response(response_body)
+        # context, output = utils.extract_from_response(response_body)
+        context, output = test.extract_from_mock_query_response(response_body)
         entry['context'] = context
         entry['output'] = output
-        log.debug('WITH OUTPUT AND CONTEXT, THIS ENTRY IS NOW:', entry)
+        log.info('WITH OUTPUT AND CONTEXT, THIS ENTRY IS NOW:', entry)
         evaluate_and_store_golden_data_entry(entry)
 
 def evaluate_and_store_golden_data_entry(entry):
@@ -76,7 +82,7 @@ def evaluate_and_store_golden_data_entry(entry):
     score = utils.change_nans_to_zeros(score)
 
     scored_entry = {
-        'input': entry['input'],
+        'input': entry['query'],
         'context': entry['context'],
         'output': entry['output'],
         'scores': score
@@ -93,8 +99,8 @@ def get_batch_evals():
 if __name__ == "__main__":
     # evaluate_and_store_running_entry('this is a query', 'this was the context', 'and we got this for output')
     # get_running_evals()
-    evaluate_golden_dataset()
+    # evaluate_golden_dataset()
     # pg.import_csv_to_golden_dataset('../side_files/strawberries_bananas_csv.csv')
 
-    # pg.print_table(pg.get_data_from('scored_golden_dataset'))
+    pg.print_table(pg.get_data_from('scored_golden_dataset'))
 

@@ -166,5 +166,6 @@ cython_debug/
 # JC added
 tmpfiles/
 *.pem
+vectorstorage/
 
 # node_modules stuff

@@ -1,21 +1,21 @@
-import copy
 import os
-import use_s3
-import shutil
-import app_logger as log
-from dotenv import load_dotenv
-# import pymongo
-import mongo_helper as mongo
-import nest_asyncio
-import use_s3
+import copy
 import shutil
 from datetime import datetime, timezone
+
+from dotenv import load_dotenv
+import pymongo
+import nest_asyncio
+
+import use_s3
+import app_logger as log
+# import mongo_helper as mongo
 
 # storage imports
 from llama_index.core import StorageContext
 from llama_index.core import VectorStoreIndex
 from llama_index.vector_stores.mongodb import MongoDBAtlasVectorSearch
-# from llama_index.vector_stores.awsdocdb import AWSDocDbVectorStore
+from llama_index.vector_stores.awsdocdb import AWSDocDbVectorStore
 from llama_index.storage.docstore.mongodb import MongoDocumentStore
 
 from kb_constants import (
@@ -37,15 +37,17 @@ from kb_type_definitions import (
     KBConfig
 )
 
-# MONGO_URI = os.environ["MONGO_URI"]
-# CONFIG_DB = os.environ["CONFIG_DB"]
-# CONFIG_KB_COL = os.environ["CONFIG_KB_COL"]
-# PYMONGO_CLIENT = pymongo.MongoClient(MONGO_URI)
-# CONFIG_COLLECTION = PYMONGO_CLIENT[CONFIG_DB][CONFIG_KB_COL]
+load_dotenv(override=True)
 
-CONFIG_COLLECTION = mongo.connect_to_kb_config()
+MONGO_URI = os.environ["MONGO_URI"]
+CONFIG_DB = os.environ["CONFIG_DB"]
+CONFIG_KB_COL = os.environ["CONFIG_KB_COL"]
+PYMONGO_CLIENT = pymongo.MongoClient(MONGO_URI)
+CONFIG_COLLECTION = PYMONGO_CLIENT[CONFIG_DB][CONFIG_KB_COL]
 
-load_dotenv()
+# CONFIG_COLLECTION = mongo.connect_to_kb_config()
+
+
 
 def is_int(s):
     try:
@@ -81,11 +83,11 @@ class KnowledgeBase:
     @classmethod
     def create(cls, client_config):
         # add properties to client_config
-        kb_config = cls._create_kb_config(client_config)           
-        log.info(kb_config)
+        kb_config = cls._create_kb_config(client_config)
+        log.info("kb_config.py create (classmethod): ", kb_config)
         # insert knowledge base configuration into database
         result = CONFIG_COLLECTION.insert_one(kb_config)
-        log.info(result)
+        log.info("kb_config.py create (classmethod): ", result)
 
         # message for client
         return "Knowledge base created"
@@ -93,7 +95,8 @@ class KnowledgeBase:
     @classmethod
     def _create_kb_config(cls, client_config):
         kb_config = copy.copy(client_config)
-
+        log.info('kb_config.py _create_kb_config: ', client_config, kb_config)
+        kb_config['id'] = kb_config['kb_name']
         kb_config['splitter_config'] = cls._str_to_nums(kb_config['splitter_config'])
         kb_config['files'] = []
 
@@ -116,15 +119,26 @@ class KnowledgeBase:
     # returns None if not found, otherwise returns the document
     @classmethod
     def exists(cls, kb_name):
-        return CONFIG_COLLECTION.find_one({"kb_name": kb_name})
+        doc = CONFIG_COLLECTION.find_one({"kb_name": kb_name}, {"_id": 0})
+        log.info('kb_config.py exists: ', doc)
+        return doc
 
+    @classmethod
+    def get_knowledge_bases(cls):
+        kbs_cursor = CONFIG_COLLECTION.find({}, {"_id": 0})
+        kbs_list = list(kbs_cursor)
+        print('kb_config.py get_knowledge_bases: ', kbs_list)
+        # log.info('kb_config.py get_knowledge_bases: ', kbs)
+        return kbs_list
     # returns list of file metadata objects for a knowledge base
-    def get_files(self, kb_name):
-        return CONFIG_COLLECTION.find_one({"kb_name": kb_name})['files']
+    # def get_files(self, kb_name):
+    #     return CONFIG_COLLECTION.find_one({"kb_name": kb_name})['files']
 
     # returns the configuration object for a knowledge base
-    def _get_kb_config(self, kb_name):
-        return CONFIG_COLLECTION.find_one({"kb_name": kb_name})
+    def _get_kb_config(self, id):
+        kb_config = CONFIG_COLLECTION.find_one({"id": id})
+        log.info('kb_config.py _get_kb_config: ', kb_config)
+        return kb_config
     
     def _configure_embed_model(self):
         embed_provider = self._config['embed_config']['embed_provider']
@@ -163,51 +177,6 @@ class KnowledgeBase:
         return splitter_class(**self._config['splitter_config'])        
     
     
-    # handles llama parse ingestion, returns semantic markdown nodes
-    # def _run_llama_parse(self, file_path):
-    #     llama_parse = self._config_llama_parse()
-    #     markdown_documents = llama_parse.load_data(file_path)
-    #     markdown_chunker = self._config_markdown_chunker()
-    #     nodes = markdown_chunker.get_nodes_from_documents(markdown_documents)
-    #     return nodes
-    
-    # def _config_llama_parse(self):
-    #     parser = LlamaParse(
-    #         api_key=os.environ["LLAMA_CLOUD_API_KEY"],
-    #         result_type="markdown"
-    #     )
-    #     return parser
-    
-    # def _config_markdown_chunker(self):
-    #     # make llm configurable
-    #     markdown_parser = MarkdownElementNodeParser(
-    #         llm=OpenAI(api_key=os.environ["OPENAI_API_KEY"], model="gpt-3.5-turbo"),
-    #         num_workers=8,
-    #     )
-
-    #     return markdown_parser
-    
-    # def _config_semantic_splitter(self):
-    #     # make embed model configurable
-    #     embed_model = OpenAIEmbedding(
-    #         api_key=os.environ["OPENAI_API_KEY"],
-    #         model="text-embedding-ada-002"
-    #     )
-    #     # make configurable
-    #     splitter = SemanticSplitterNodeParser(
-    #         buffer_size=100,
-    #         breakpoint_percentile_threshold=95,
-    #         embed_model=embed_model,
-    #     )
-
-    #     return splitter
-    
-    # def _config_sentence_splitter(self):
-    #     splitter = SentenceSplitter(
-    #         chunk_overlap=self.chunk_overlap
-    #     )
-
-    #     return splitter
            
     # saves file locally, returns file path
     def _save_file_locally(self, file):
@@ -220,8 +189,8 @@ class KnowledgeBase:
 
         file_path= f"./{FILE_DIR}/{file.filename}"
 
-        # with open(file_path, "wb+") as file_object:
-        #     shutil.copyfileobj(file.file, file_object)
+        with open(file_path, "wb+") as file_object:
+            shutil.copyfileobj(file.file, file_object)
 
         # use_s3.ul_file(file.filename, dir=FILE_DIR)
 
@@ -247,57 +216,82 @@ class KnowledgeBase:
     
     def _store_indexes(self, nodes):
         
-        mongodb_client = mongo.client()
+        # mongodb_client = mongo.client()
         # database name defines a knowledge base
-        kb_id = str(self._config['_id'])
-        vector_index = "vectorIndex"
+        log.info('kb_config.py _store_indexes: ********* ', self._config)
 
-        vector_store = MongoDBAtlasVectorSearch(
-            mongodb_client,
-            db_name=kb_id,
-            collection_name=vector_index
-        )
+        kb_id = self._config['kb_name']
+        log.info('kb_config.py _store_indexes: ', kb_id)
+        vector_index = "vector_index"
 
-        # vector_store = AWSDocDbAtlasVectorSearch(
-        #     mongodb_client,
-        #     db_name=kb_id,
-        #     collection_name=vector_index
-        # )
 
-        docstore = MongoDocumentStore.from_uri(
-            uri=os.environ["MONGO_URI"],
-            db_name=kb_id
-        )
+        environment = os.environ["ENVIRONMENT"]
+
+        if environment == 'local' or environment == 'mongoatlas':
+            vector_store = MongoDBAtlasVectorSearch(
+                PYMONGO_CLIENT,
+                db_name=kb_id,
+                collection_name=vector_index
+            )
+        else:
+            vector_store = AWSDocDbVectorStore(
+                PYMONGO_CLIENT,
+                db_name=kb_id,
+                collection_name=vector_index
+            )
+
 
         storage_context = StorageContext.from_defaults(
             vector_store=vector_store,
             # docstore=docstore    
         )
 
-        docstore.add_documents(nodes)
         VectorStoreIndex(
             nodes,
             storage_context=storage_context,
             embed_model=self._embed_model
         )
-        
+
+        docstore = MongoDocumentStore.from_uri(
+            uri=MONGO_URI,
+            db_name=kb_id
+        )
+
+        docstore.add_documents(nodes)
+ 
     def _add_file_to_kb_config(self, file):
         now = datetime.now(timezone.utc)
         date = now.strftime("%m-%d-%y")
         time = now.strftime("%H:%M")
 
-        CONFIG_COLLECTION.update_one(
+        # for testing
+        # PYMONGO_CLIENT[CONFIG_DB][CONFIG_KB_COL].update_one(
+        pymongo.MongoClient(MONGO_URI)[CONFIG_DB][CONFIG_KB_COL].update_one(
             {"kb_name": self._config['kb_name']},
             {"$push": {
                 "files": {
                     "file_name": file.filename,
-                    "content_type":file.headers['content-type'],
+                    "content_type": file.headers['content-type'],
                     "date_uploaded": date,
                     "time_uploaded": time
                     }
                 }
             }
         )
+        # CONFIG_COLLECTION.update_one(
+        #     {"kb_name": self._config['kb_name']},
+        #     {
+        #         "$set": {"id": self._config['kb_name']},
+        #         "$push": {
+        #             "files": {
+        #                 "file_name": file,
+        #                 "content_type": file,
+        #                 "date_uploaded": date,
+        #                 "time_uploaded": time
+        #             }
+        #         }
+        #     }
+        # )
 
 
     def ingest_file(self, file):
@@ -306,200 +300,14 @@ class KnowledgeBase:
         self._store_indexes(nodes)
         self._add_file_to_kb_config(file)
 
+    def ingest_file_path(self, file_path):
+        nodes = self._create_nodes(file_path)
+        self._store_indexes(nodes)
+        self._add_file_to_kb_config(file_path)
 
-        
+
 
 
     def print_config(self):
         print(self.chunk_overlap)
     
-
-
-# client_kb_config = {
-# 	"name": "kbconfigName2",
-# 	"ingest_method": "simple_ingest", 
-#     "splitter": "semantic",
-#     "embed_model_class": "openai",
-#     "embed_model_name": "text-embedding-ada-002",
-#     "chunk_size": "",    # blank for default
-# 	  "chunk_overlap": "", # blank for default, number input?  must be smaller than chunk size 
-#     "separator": "",     # blank for default (" ")
-#     "llm":
-# }
-
-
-
-
-# KnowledgeBase.create_knowledge_base(client_kb_config)
-
-# # initializing local variable to class test
-# value = OpenAIEmbedding
-# print(value)
-# print(value.__name__)
-# embed_model = value(api_key='key', model='text-embedding-ada-002')
-
-# class Test:
-#     def __init__(self, data):
-#       self.updated_data = self.update_data(data)
-    
-#     def update_data(self, data):
-#       return data + 1
-    
-#     def get_data(self):
-#       return self.updated_data
-    
-#     def set_d2(self):
-#       self.d2 = 4
-
-#     def get_d2(self):
-#       return self.d2
-	
-
-	
-# value = Test(1)
-# value.set_d2()
-# print(value.get_d2())
-
-'''
-
-Input:
-client_kb_config = {
-	"name": "kbconfigName",
-	"ingest_method": "llama_parse", 
-    "splitter": "semantic",
-    "embed_model": "openai"
-    "chunk_size": "",    # blank for default
-	"chunk_overlap": "", # blank for default, number input?  must be smaller than chunk size 
-    "separator": "",     # blank for default (" ")
-
-
-	},
-}
-
-kb_config = {
-	"name": "kbconfigName",
-	"ingest_method": "llama_parse", 
-    "splitter": "semantic",
-    "embed_model": "openai"
-    "chunk_size": "",    # blank for default
-	"chunk_overlap": "", # blank for default, number input?  must be smaller than chunk size 
-    "separator": "",     # blank for default (" ")
-
-
-	},
-    "files": [],
-    "vector_index": "vector_store"
-    "keyword_index": "keyword_index"
-}
-
-We want this to:
-- create a kb_config object and store it in docdb {docdb_name: 'kb_config', docdb_collection: 'kb_config'}
-    - docdb should create a unique id for each knowledge base configuration
-    - this id will be used to reference the knowledge base configuration in the front end
-      ex. when the user selects an already created knowledge base and wants to ingest a new file, that
-      file will be associated with the knowledge base configuration id
-      ex. when a user creates a knowledge base, the client_kb_config object will be passed into the
-      KB_CREATE class to create a new knowledge base
-
-- When the user uploads a file to a particular knowledge base, the kb_config object will be passed into 
-	KB_Instaintiate class to define file ingestion pipeline
-
-
-CreateKB
-- api/create_kb takes a client_kb_config object
-- validate cliet_kb_config['name'] is unique
-- creates a kb_config object
-- stores the kb_config object in docdb
-- responds to client with the kb_config_id
-
-AddDataToKB class:
-for skateboard
-- api/upload_file (name for temporary clarity assuming other data sources in the future and the possibility they are routed elsewhere)
-- recieves a file and a kb_config_id from the client
-	{
-		"file": file,
-		"kb_config_id": kb_config_id
-	}
-- uses the kb_config_id to retrieve the kb_config object from docdb
-- instantiates AddDataToKB class with the kb_config object
-- calls the ingest_file method on the AddDataToKB object, passing in the file path
-
-
-
-AddDataToKB class:
--ingestion methods:
-	- ingest_file method
-	future tripping:
-		- ingest_url method
-		- ingest_repo method
-
-- ingest_file method:
-	- takes a file path
-	- chunks and embeds according to the AddDataToKB configuration
-	- stores indexes in docdb
-		- VectorStoreIndex
-		- KeywordIndex
-		- etc. 
-
-
-'''
-
-'''
-Implementation Plan:
-
-- test adding file to vector index
-
-    - create_knowledge_base accepts a simplified client_kb_config object 
-    (ingest_method, spliter, embed_model) and stores it in docdb
-- create simple instance of class with id 
-    - use id to retrieve kb_config object from docdb
-    - use config object to define ingestion pipeline
-- ingest file with pipeline defined by kb_config object
-    - load file according to ingest_method
-    - split file according to splitter
-    - embed file according to embed_model
-    - store indexes in docdb
-
-- consider replacing with built in ingestion pipeline
-
-- obscure the id values used to fetch the knowledge base from
-    the client side for now, this is implemented to use the 
-    name of the mongo(docdb) db to store the knowledge base
-
-- add bedrock functionality
-
-- be sure to convert strings to integers when necessary
-
-- pull file from s3 bucket rather than local file system
-
-- add flexibility for llms in MarkdownElementNodeParser
-    - currently only OpenAI is supported
-
-- do we want to store nodes or documents in keyword index?
-    - currently storing nodes
-
-- write `_config` methods for embed model
-
-- refactor 
-    - make duplicate values/ opperations properties of the class
-
-- integrate with front end
-
-- update 'name' in vector index and keyword index to be database name
-
-- update line 264 to manage empty strings
-
-- add s3 bucket functionality
-
-- write down database names
-
-- when a file is uploaded, store the file metadata in the assiciated knowledge base
-    configuration file in knowledge base configuration database
-
-
-- each knowledge base's vector index and keyword index are stored in the same database
-    Database defines knowledge base
-
-
-
-'''

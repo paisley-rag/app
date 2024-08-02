@@ -21,8 +21,6 @@ def mock_query(string):
 def extract_from_mock_query_response(response):
     # creates context using 'text' from each 'node' in response's 'source_nodes'. also deletes any instances of '\n'
     log.debug('RESPONSE IS:', response)
-    log.debug('RESPONSE TYPE IS:', type(response))
-
     source_nodes = response['source_nodes']
     context_list = [source_node['node']['text'].replace('\n', '') for source_node in source_nodes] 
     context = '\n\n'.join(context_list)

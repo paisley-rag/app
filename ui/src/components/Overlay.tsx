@@ -1,4 +1,4 @@
-import { SetStateAction, Dispatch } from "react";
+import { Dispatch, SetStateAction } from "react";
 
 interface OverlayProps {
   setModalVisible: Dispatch<SetStateAction<boolean>>;

@@ -3,8 +3,6 @@ import { useQuery } from "@tanstack/react-query";
 import { useLocation } from "wouter";
 import { Typography } from "../Typography";
 import { useState } from "react";
-import { ModalFileUpload } from "../ModalFileUpload";
-
 import {
   Table,
   TableBody,
@@ -14,6 +12,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
+import { ModalFileUpload } from "../ModalFileUpload";
 
 export function PageKnowledgeBase({ id }: { id: number }) {
   const { data, isLoading, error } = useQuery({
@@ -37,7 +36,7 @@ export function PageKnowledgeBase({ id }: { id: number }) {
   }
 
   return (
-    <div>
+    <>
       <div className="mb-8">
         <Button variant="ghost" onClick={handleBackClick}>
           Back
@@ -100,6 +99,6 @@ export function PageKnowledgeBase({ id }: { id: number }) {
         </TableBody>
       </Table>
       {modalVisible && <ModalFileUpload setModalVisible={setModalVisible} />}
-    </div>
+    </>
   );
 }

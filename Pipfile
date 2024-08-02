@@ -25,6 +25,10 @@ llama-index-embeddings-cohere = "*"
 llama-index-embeddings-huggingface = "*"
 llama-index-llms-anthropic = "*"
 motor = "*"
+rank-bm25 = "*"
+llama-index-postprocessor-colbert-rerank = "*"
+llama-index-retrievers-bm25 = "*"
+llama-index-storage-index-store-mongodb = "*"
 
 [dev-packages]
 

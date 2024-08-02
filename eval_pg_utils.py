@@ -8,7 +8,7 @@ import textwrap
 import app_logger as log
 
 from dotenv import load_dotenv
-load_dotenv(override=True)
+load_dotenv()
 
 def connect_to_db():
     try:
@@ -51,14 +51,13 @@ def values_only(table_data):
     return [data[1] for data in table_data]
 
 def import_csv_to_golden_dataset(csv_file_path):
-    log.info('Importing csv file...')
-    log.info(f"Current working directory: {os.getcwd()}")
+    print(f"Current working directory: {os.getcwd()}")
 
     # Print the absolute path
-    log.info(f"Attempting to open file: {os.path.abspath(csv_file_path)}")
+    print(f"Attempting to open file: {os.path.abspath(csv_file_path)}")
 
     if not os.path.exists(csv_file_path):
-        log.info(f"Error: File not found: {csv_file_path}")
+        print(f"Error: File not found: {csv_file_path}")
         return
 
     # Connect to the PostgreSQL database
