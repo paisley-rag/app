@@ -13,12 +13,18 @@ export function PageKnowledgeBases() {
     setModalVisible(true);
   }
 
-  const { data, isLoading } = useQuery({
+  const { data, isLoading, isError } = useQuery({
     queryKey: ["knowledge-bases"],
     queryFn: knowledgeBaseService.fetchKnowledgeBases,
   });
 
   if (isLoading) return <div>Loading...</div>;
+
+  if (isError) {
+    console.error("Error fetching knowledge bases:", isError);
+    return <div>Error loading knowledge bases</div>;
+  }
+
   if (data)
     return (
       <>

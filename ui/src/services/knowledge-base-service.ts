@@ -104,7 +104,15 @@ export type ServerKnowledgeBaseConfig = z.infer<
 
 async function fetchKnowledgeBases() {
   const response = await axios.get("/api/knowledge-bases");
-  return knowledgeBasesSchema.parse(response.data);
+  try {
+    return knowledgeBasesSchema.parse(response.data);
+  } catch (error) {
+    if (error instanceof z.ZodError) {
+      console.error("Zod validation error:", error.errors);
+      console.log("Received data:", response.data);
+    }
+    throw error;
+  }
 }
 
 async function fetchKnowledgeBaseById(id: string) {

@@ -228,30 +228,13 @@
           "time_uploaded": "13:10:00"
         }
       ]
-    },
-    {
-      "kb_name": "asdf",
-      "ingestion_method": "Simple",
-      "embed_config": {
-        "embed_provider": "OpenAI",
-        "embed_model": "text-embedding-3-small"
-      },
-      "splitter": "sentence",
-      "splitter_config": {
-        "chunk_size": 1024,
-        "chunk_overlap": 200
-      },
-      "id": "2cKjQ7H"
     }
   ],
   "chatbots": [
     {
       "id": "customer-support",
       "name": "Customer Support Bot",
-      "knowledge_bases": [
-        "ProductDocumentation",
-        "CustomerSupportFAQs"
-      ],
+      "knowledge_bases": ["ProductDocumentation", "CustomerSupportFAQs"],
       "generative_model": "gpt-4-turbo",
       "similarity": {
         "on": true,
@@ -269,9 +252,7 @@
     {
       "id": "legal-advisor",
       "name": "Legal Advisor Bot",
-      "knowledge_bases": [
-        "LegalDocuments"
-      ],
+      "knowledge_bases": ["LegalDocuments"],
       "generative_model": "claude-3-sonnet-20240229",
       "similarity": {
         "on": true,
@@ -288,10 +269,7 @@
     {
       "id": "tech-support",
       "name": "Technical Support Bot",
-      "knowledge_bases": [
-        "TechnicalSpecifications",
-        "ProductDocumentation"
-      ],
+      "knowledge_bases": ["TechnicalSpecifications", "ProductDocumentation"],
       "generative_model": "gpt-3.5-turbo",
       "similarity": {
         "on": true,
@@ -309,10 +287,7 @@
     {
       "id": "hr-assistant",
       "name": "HR Assistant Bot",
-      "knowledge_bases": [
-        "CompanyPolicies",
-        "InternalProcesses"
-      ],
+      "knowledge_bases": ["CompanyPolicies", "InternalProcesses"],
       "generative_model": "gpt-4o-mini",
       "similarity": {
         "on": true,
@@ -329,10 +304,7 @@
     {
       "id": "product-info",
       "name": "Product Information Bot",
-      "knowledge_bases": [
-        "ProductDocumentation",
-        "TechnicalSpecifications"
-      ],
+      "knowledge_bases": ["ProductDocumentation", "TechnicalSpecifications"],
       "generative_model": "claude-3-5-sonnet-20240620",
       "similarity": {
         "on": true,
