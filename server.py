@@ -24,7 +24,6 @@ load_dotenv(override=True)
 MONGO_URI = os.environ["MONGO_URI"]
 CONFIG_DB = os.environ["CONFIG_DB"]
 CONFIG_PIPELINE_COL = os.environ["CONFIG_PIPELINE_COL"]
-PYMONGO_CLIENT = pymongo.MongoClient(MONGO_URI)
 
 app = FastAPI()
 

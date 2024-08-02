@@ -265,7 +265,8 @@ class KnowledgeBase:
         time = now.strftime("%H:%M")
 
         # for testing
-        CONFIG_COLLECTION.update_one(
+        # PYMONGO_CLIENT[CONFIG_DB][CONFIG_KB_COL].update_one(
+        pymongo.MongoClient(MONGO_URI)[CONFIG_DB][CONFIG_KB_COL].update_one(
             {"kb_name": self._config['kb_name']},
             {"$push": {
                 "files": {
