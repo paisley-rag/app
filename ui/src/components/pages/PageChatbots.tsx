@@ -4,12 +4,15 @@ import { Typography } from "../Typography";
 import { Button } from "@/components/ui/button";
 import { CardChatbot } from "../CardChatbot";
 
-import service from "../../service/service";
+import {
+  chatbotService,
+  ServerPipelineConfig,
+} from "../../services/chatbot-service";
 
 export function PageChatbots() {
   const { data: chatbots, isLoading } = useQuery({
     queryKey: ["chatbots"],
-    queryFn: () => service.fetchChatbots(),
+    queryFn: () => chatbotService.fetchChatbots(),
   });
 
   if (isLoading) {
@@ -24,7 +27,7 @@ export function PageChatbots() {
       </header>
       {chatbots ? (
         <ul className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {chatbots.map((chatbot) => (
+          {chatbots.map((chatbot: ServerPipelineConfig) => (
             <CardChatbot key={chatbot.id} chatbot={chatbot} />
           ))}
         </ul>

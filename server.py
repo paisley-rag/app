@@ -92,7 +92,7 @@ async def post_query(body: QueryBody):
     pipe = pipeline.Pipeline(body.chatbot_id)
     log.info('/api/query pipeline retrieved')
     response = pipe.query(body.query)
-    # evals.store_running_eval_data(body.query, response)  # this line returned an error - no answer generated
+    evals.store_running_eval_data(body.chatbot_id, body.query, response)
     log.info('/api/query response:', response)
     return { "type": "response", "body": response }
 
@@ -149,29 +149,15 @@ async def post_chatbots(request: Request):
     return pipeline_json
 
 
+@app.get('/api/history/{chatbot_id}')
+async def get_evals(chatbot_id):
+    data = evals.get_chat_history(chatbot_id)
+    return {"table_data": data}
 
-# evals routes
 
-@app.get('/api/evals')
-async def get_evals():
-    eval_table = evals.get_running_evals()
-    return {"message": eval_table}
 
-@app.post('/api/csv')
-async def upload_csv(file: UploadFile=File(...)):
-    FILE_DIR = 'tmpfiles/csv'
 
-    # write file to disk
-    if not os.path.exists(f"./{FILE_DIR}"):
-        os.makedirs(f"./{FILE_DIR}")
 
-    file_location = f"./{FILE_DIR}/{file.filename}"
-    with open(file_location, "wb+") as file_object:
-        shutil.copyfileobj(file.file, file_object)
-
-    use_s3.ul_file(file.filename, dir=FILE_DIR)
-
-    return {"message": f"{file.filename} received"}
 
 @app.post('/api/test')
 async def test_query(query: UserQuery):

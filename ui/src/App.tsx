@@ -5,6 +5,7 @@ import { PageKnowledgeBases } from "./components/pages/PageKnowledgeBases.tsx";
 import { PageKnowledgeBase } from "./components/pages/PageKnowledgeBase.tsx";
 import { PageChatbots } from "./components/pages/PageChatbots.tsx";
 import { PageChatbot } from "./components/pages/PageChatbot.tsx";
+import { PageEvaluations } from "./components/pages/PageEvaluations.tsx";
 
 const queryClient = new QueryClient();
 
@@ -18,13 +19,16 @@ function App() {
             <PageKnowledgeBases />
           </Route>
           <Route path="/knowledge-bases/:id">
-            {(params) => <PageKnowledgeBase id={+params.id} />}
+            {(params) => <PageKnowledgeBase id={params.id} />}
           </Route>
           <Route path="/chatbots">
             <PageChatbots />
           </Route>
           <Route path="/chatbots/:id">
-            {(params) => <PageChatbot id={+params.id} />}
+            {(params) => <PageChatbot id={params.id} />}
+          </Route>
+          <Route path="/evaluations">
+            <PageEvaluations />
           </Route>
         </Router>
       </main>
