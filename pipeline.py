@@ -1,18 +1,25 @@
-import asyncio
+""" Contains Pipeline class, can be executed for testing """
+
 import os
 
-from llama_index.core import QueryBundle
+from llama_index.core import get_response_synthesizer, QueryBundle
 from llama_index.core.postprocessor import SimilarityPostprocessor
 from llama_index.core.postprocessor import LongContextReorder
 from llama_index.postprocessor.colbert_rerank import ColbertRerank
-from llama_index.core import get_response_synthesizer, PromptTemplate
-from llama_index.core.response_synthesizers import ResponseMode
+from llama_index.core.response_synthesizers import  ResponseMode
 
 import app_logger as log
-import hybridSearch.search as search
+from hybridSearch import search
 import mongo_util as mg
 
 class Pipeline:
+    """
+
+    Pipeline class used to create a RAG pipeline from JSON config file
+    - exposes a "query" method to run user queries
+
+    """
+
     def __init__(self, config_id):
         self._config = self._get_config(config_id)
 
@@ -29,7 +36,7 @@ class Pipeline:
         # all_nodes = asyncio.run(self._query_retriever(retrievers, user_query))
         all_nodes = self._query_retriever(retrievers, user_query)
 
-        log.info(f"pipeline.py _pipeline: all_nodes")
+        log.info("pipeline.py _pipeline: all_nodes")
         self._log_nodes(all_nodes)
 
         # post-processing
@@ -106,25 +113,28 @@ class Pipeline:
     # Post-processing methods
     def _process_similarity(self, nodes):
         options = self._get_options('similarity')
-        log.info(f"pipeline.py _process_similarity: options", options)
+        log.info("pipeline.py _process_similarity: options", options)
         if options['on'] != 'True':
             return nodes
 
-        log.debug(f"pipeline.py _process_similarity: ", self._remove_on(options))
+        log.debug("pipeline.py _process_similarity: ", self._remove_on(options))
 
         similarity_pp = SimilarityPostprocessor(**self._remove_on(options))
-        log.info(f"pipeline.py _process_similarity: cutoff of {options['similarity_cutoff']} applied")
+        log.info(
+            "pipeline.py _process_similarity: cutoff applied",
+            options['similarity_cutoff']
+        )
         return similarity_pp.postprocess_nodes(nodes)
 
 
     def _process_colbert(self, nodes, query):
         options = self._get_options('colbertRerank')
-        log.debug(f"_process_colbert", options)
+        log.debug("_process_colbert", options)
 
         if options['on'] != 'True':
             return nodes
 
-        log.debug(f"_process_colbert", self._remove_on(options))
+        log.debug("_process_colbert", self._remove_on(options))
         reranker = ColbertRerank(**self._remove_on(options))
         query_bundle = QueryBundle(query)
 
@@ -140,7 +150,7 @@ class Pipeline:
 
         reorder = LongContextReorder()
 
-        log.info(f"pipeline.py _process_reorder: executed (no options)")
+        log.info("pipeline.py _process_reorder: executed (no options)")
         return reorder.postprocess_nodes(nodes)
 
 
@@ -158,7 +168,11 @@ class Pipeline:
     # db helpers
 
     def _get_config(self, config_id):
-        result = mg.get(os.environ['CONFIG_DB'], os.environ['CONFIG_PIPELINE_COL'], {'id': config_id})
+        result = mg.get(
+            os.environ['CONFIG_DB'],
+            os.environ['CONFIG_PIPELINE_COL'],
+            {'id': config_id}
+        )
         log.info('pipeline.py _get_config', result)
         return result
 
@@ -173,5 +187,5 @@ class Pipeline:
 
 # for direct testing
 if __name__ == '__main__':
-  testPipe = Pipeline('giraffe2')
-  log.info('FINAL RESPONSE: ', testPipe.query('how long are giraffe necks?'))
+    testPipe = Pipeline('giraffe2')
+    log.info('FINAL RESPONSE: ', testPipe.query('how long are giraffe necks?'))

@@ -1,3 +1,4 @@
+""" utility functions supporting server.py routes for pipeline.py (Pipeline class) """
 import json
 
 import app_logger as log
@@ -29,12 +30,10 @@ def ui_to_pipeline(ui_json):
         },
         'generative_model': ui_obj['generative_model'],
         'prompt': {
-            'on': True if ui_obj.get('prompt') else False,
+            'on': 'True' if ui_obj.get('prompt') else 'False',
             'template_str': ui_obj.get('prompt', '')
         }
     }
 
     log.debug('config_util.py ui_to_pipeline: pipeline_obj', pipeline_obj)
     return pipeline_obj
-
-
