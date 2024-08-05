@@ -1,6 +1,6 @@
 import { z } from "zod";
-import { pipelineConfigSchema } from "./services/chatbot";
+import { clientPipelineConfigSchema } from "./services/chatbot-service";
 
-type PipelineConfig = z.infer<typeof pipelineConfigSchema>;
+type PipelineConfig = z.infer<typeof clientPipelineConfigSchema>;
 
 export type { PipelineConfig };
