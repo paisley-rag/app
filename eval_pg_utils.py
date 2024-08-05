@@ -9,10 +9,6 @@ import app_logger as log
 from dotenv import load_dotenv
 load_dotenv()
 
-def filter_by_chatbot(data, chatbot_id):
-    filtered_data = [entry for entry in data if entry[2].get('chatbot_id') == chatbot_id]
-    return filtered_data
-
 def connect_to_db():
     try:
         conn = psycopg2.connect(
