@@ -53,7 +53,7 @@ export function PageKnowledgeBase({ id }: PageKnowledgeBaseProps) {
           <div className="grid grid-cols-2 gap-4">
             <div>
               <Typography variant="h4">Ingest Method:</Typography>
-              <Typography variant="p">{data.ingestion_method}</Typography>
+              <Typography variant="p">{data.ingest_method}</Typography>
             </div>
             <div>
               <Typography variant="h4">Splitter:</Typography>
