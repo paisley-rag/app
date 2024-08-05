@@ -9,8 +9,8 @@ from llama_index.postprocessor.colbert_rerank import ColbertRerank
 from llama_index.core.response_synthesizers import  ResponseMode
 
 import app_logger as log
-from hybridSearch import search
-import mongo_util as mg
+from pipeline.hybridSearch import search
+import pipeline.mongo_util as mg
 
 class Pipeline:
     """
