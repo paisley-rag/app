@@ -1,7 +1,7 @@
 import json
 
 # import unittest
-import config_util as cutil
+import db.pipeline.config_util as cutil
 
 # class TestConfigUtil(unittest.TestCase):
 

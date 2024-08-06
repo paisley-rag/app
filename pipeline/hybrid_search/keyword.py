@@ -8,7 +8,7 @@ from llama_index.core import StorageContext
 from dotenv import load_dotenv
 import Stemmer
 
-import app_logger as log
+import db.app_logger as log
 
 load_dotenv(dotenv_path='../.env', override=True)
 
