@@ -1,3 +1,10 @@
+"""
+
+Main back-end server file 
+- run with `python server.py`
+  (fastapi syntax does not seem to work with asyncio)
+
+"""
 # import shutil
 # import os
 
@@ -90,21 +97,21 @@ async def post_query(body: pipeline.query.QueryBody):
 # async def get_evals():
 #     eval_table = evals.get_running_evals()
 #     return {"message": eval_table}
-# 
+#
 # @app.post('/api/csv')
 # async def upload_csv(file: UploadFile=File(...)):
 #     FILE_DIR = 'tmpfiles/csv'
-# 
+#
 #     # write file to disk
 #     if not os.path.exists(f"./{FILE_DIR}"):
 #         os.makedirs(f"./{FILE_DIR}")
-# 
+#
 #     file_location = f"./{FILE_DIR}/{file.filename}"
 #     with open(file_location, "wb+") as file_object:
 #         shutil.copyfileobj(file.file, file_object)
-# 
+#
 #     util.use_s3.ul_file(file.filename, dir=FILE_DIR)
-# 
+#
 #     return {"message": f"{file.filename} received"}
 
 

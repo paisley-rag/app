@@ -167,5 +167,6 @@ cython_debug/
 tmpfiles/
 *.pem
 vectorstorage/
+.DS_Store
 
 # node_modules stuff
