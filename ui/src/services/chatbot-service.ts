@@ -1,6 +1,8 @@
 import axios from "axios";
 import { z } from "zod";
 
+const baseUrl = import.meta.env.VITE_BASE_URL;
+
 export const clientPipelineConfigSchema = z.object({
   id: z.string(),
   name: z.string(),
@@ -47,12 +49,12 @@ export type ClientPipelineConfig = z.infer<typeof clientPipelineConfigSchema>;
 export type ServerPipelineConfig = z.infer<typeof serverPipelineConfigSchema>;
 
 async function updateChatbot(id: string, data: ClientPipelineConfig) {
-  const response = await axios.put(`/api/chatbots/${id}`, data);
+  const response = await axios.put(`${baseUrl}/api/chatbots/${id}`, data);
   return serverPipelineConfigSchema.parse(JSON.parse(response.data));
 }
 
 async function fetchChatbots() {
-  const response = await axios.get(`/api/chatbots`);
+  const response = await axios.get(`${baseUrl}/api/chatbots`);
   const chatbots = serverPipelinesConfigSchema.parse(JSON.parse(response.data));
   const clientChatbots: ClientPipelineConfig[] = chatbots.map((chatbot) => ({
     id: chatbot.id,
@@ -76,7 +78,7 @@ async function fetchChatbots() {
 }
 
 async function fetchChatbotById(id: string) {
-  const response = await axios.get(`/api/chatbots/${id}`);
+  const response = await axios.get(`${baseUrl}/api/chatbots/${id}`);
   const chatbot = serverPipelineConfigSchema.parse(JSON.parse(response.data));
   console.log(chatbot);
   const clientChatbot: ClientPipelineConfig = {

@@ -1,6 +1,8 @@
 import axios from "axios";
 import { z } from "zod";
 
+const baseUrl = import.meta.env.VITE_BASE_URL;
+
 // Common Schemas
 const markdownSplitterConfig = z.object({
   splitter: z.literal("Markdown"),
@@ -117,7 +119,7 @@ export type ServerKnowledgeBaseConfig = z.infer<
 >;
 
 async function fetchKnowledgeBases() {
-  const response = await axios.get("/api/knowledge-bases");
+  const response = await axios.get(`${baseUrl}/api/knowledge-bases`);
   console.log(response);
   try {
     return knowledgeBasesSchema.parse(response.data);
@@ -130,12 +132,12 @@ async function fetchKnowledgeBases() {
 }
 
 async function fetchKnowledgeBaseById(id: string) {
-  const response = await axios.get(`/api/knowledge-bases?id=${id}`);
+  const response = await axios.get(`${baseUrl}/api/knowledge-bases?id=${id}`);
   return serverKnowledgeBaseConfigSchema.parse(response.data[0]);
 }
 
 async function createKnowledgeBase(config: ClientKnowledgeBaseConfig) {
-  const response = await axios.post("/api/knowledge-bases", config);
+  const response = await axios.post(`${baseUrl}/api/knowledge-bases`, config);
   return serverKnowledgeBaseConfigSchema.parse(response.data);
 }
 
