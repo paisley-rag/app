@@ -167,6 +167,5 @@ cython_debug/
 tmpfiles/
 *.pem
 vectorstorage/
-
-# etc
 .DS_Store
+
