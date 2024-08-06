@@ -168,4 +168,5 @@ tmpfiles/
 *.pem
 vectorstorage/
 
-# node_modules stuff
+# etc
+.DS_Store

@@ -6,6 +6,7 @@ import { PageKnowledgeBase } from "./components/pages/PageKnowledgeBase.tsx";
 import { PageChatbots } from "./components/pages/PageChatbots.tsx";
 import { PageChatbot } from "./components/pages/PageChatbot.tsx";
 import { PageEvaluations } from "./components/pages/PageEvaluations.tsx";
+// import { DataTableDemo } from "./components/pages/DataTableDemo.tsx"; // testing only
 
 const queryClient = new QueryClient();
 
