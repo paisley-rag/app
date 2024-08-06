@@ -1,10 +1,9 @@
 import os
-import copy
 import shutil
 from datetime import datetime, timezone
 
 import pymongo
-import use_s3
+# import use_s3
 import nest_asyncio
 from dotenv import load_dotenv
 from llama_index.core import StorageContext
@@ -14,10 +13,10 @@ from llama_index.vector_stores.awsdocdb import AWSDocDbVectorStore
 from llama_index.storage.docstore.mongodb import MongoDocumentStore
 
 
-import app_logger as log
-from . import mongo_helper as mongo
+import db.app_logger as log
+from db.knowledge_base import mongo_helper as mongo
 
-from .kb_constants import (
+from db.knowledge_base.kb_constants import (
     EMBEDDINGS,
     INGEST_METHODS,
     SPLITTERS,
@@ -25,7 +24,7 @@ from .kb_constants import (
     API_KEYS,
 )
 
-from .kb_type_definitions import (
+from db.knowledge_base.kb_type_definitions import (
     EmbedConfig,
     LLMConfig,
     MarkdownConfig,
@@ -37,40 +36,18 @@ from .kb_type_definitions import (
 )
 
 
-# env = os.getenv("ENV")
-# print("env: ", env)
-# if env == 'testing':
-#     load_dotenv(override=True, dotenv_path='../.env.testing')
-# else:
-load_dotenv(override=True)
+env = os.getenv("ENV")
+print("env: ", env)
+if env == 'testing':
+    load_dotenv(override=True, dotenv_path='../.env.testing')
+else:
+    load_dotenv(override=True)
 
 MONGO_URI = os.environ["MONGO_URI"]
-CONFIG_DB = os.environ["CONFIG_DB"]
-CONFIG_KB_COL = os.environ["CONFIG_KB_COL"]
-PYMONGO_CLIENT = pymongo.MongoClient(MONGO_URI)
-CONFIG_COLLECTION = PYMONGO_CLIENT[CONFIG_DB][CONFIG_KB_COL]
 
-# CONFIG_COLLECTION = mongo.connect_to_kb_config()
-
-
-
-def is_int(s):
-    try:
-        int(s)
-        return True
-    except ValueError:
-        return False
-
-def is_float(value):
-    try:
-        float(value)
-        return True
-    except ValueError:
-        return False
-
+nest_asyncio.apply()
 
 class KnowledgeBase:
-
     # props in `self._config` are str names of the knowledge base configuration 
     # self._embed_model, self._llm, and self._splitter are instances of the classes
     # defined by properties in `self._config`
@@ -84,59 +61,6 @@ class KnowledgeBase:
             self._config['ingest_method']
         ]
         self._splitter = self._configure_splitter()
-    
-    @classmethod
-    def create(cls, client_config):
-        # add properties to client_config
-        kb_config = cls._create_kb_config(client_config)
-        log.info("kb_config.py create (classmethod): ", kb_config)
-        # insert knowledge base configuration into database
-        result = mongo.insert_knowledge_base(kb_config)
-        log.info("kb_config.py create (classmethod): ", result)
-        name = kb_config["kb_name"]
-        # message for client
-        return f"{name} created"
-
-    @classmethod
-    def _create_kb_config(cls, client_config):
-        kb_config = copy.copy(client_config)
-        log.info('kb_config.py _create_kb_config: ', client_config, kb_config)
-        kb_config['id'] = kb_config['kb_name']
-        kb_config['splitter_config'] = cls._str_to_nums(kb_config['splitter_config'])
-        kb_config['files'] = []
-
-        return kb_config
-    
-    # converts ints and floats in a dictionary to their respective types
-    @classmethod
-    def _str_to_nums(cls, config_dict):
-        result = {}
-        for key in config_dict:
-            if is_int(config_dict[key]):
-                result[key] = int(config_dict[key])
-            elif is_float(config_dict[key]):
-                result[key] = float(config_dict[key])
-            else:
-                result[key] = config_dict[key]
-        
-        return result
-    
-    # returns None if not found, otherwise returns the document
-    @classmethod
-    def exists(cls, kb_name):
-        print(kb_name)
-        doc = mongo.get_knowledge_base(kb_name)
-        print(doc)
-        log.info('kb_config.py exists: ', doc)
-        return doc
-
-    @classmethod
-    def get_knowledge_bases(cls):
-        kbs_cursor = mongo.get_knowledge_bases()
-        kbs_list = list(kbs_cursor)
-        print('kb_config.py get_knowledge_bases: ', kbs_list)
-        # log.info('kb_config.py get_knowledge_bases: ', kbs)
-        return kbs_list
     
     # returns the configuration object for a knowledge base
     def _get_kb_config(self, id):
@@ -226,8 +150,8 @@ class KnowledgeBase:
     
     def _store_indexes(self, nodes):
         
-        # mongodb_client = mongo.client()
-        # database name defines a knowledge base
+        client = pymongo.MongoClient(MONGO_URI)
+        
         log.info('kb_config.py _store_indexes: ********* ', self._config)
 
         kb_id = self._config['kb_name']
@@ -239,13 +163,13 @@ class KnowledgeBase:
 
         if environment == 'local' or environment == 'mongoatlas':
             vector_store = MongoDBAtlasVectorSearch(
-                PYMONGO_CLIENT,
+                client,
                 db_name=kb_id,
                 collection_name=vector_index
             )
         else:
             vector_store = AWSDocDbVectorStore(
-                PYMONGO_CLIENT,
+                client,
                 db_name=kb_id,
                 collection_name=vector_index
             )
@@ -268,17 +192,21 @@ class KnowledgeBase:
         )
 
         docstore.add_documents(nodes)
+        client.close()
  
     def _add_file_to_kb_config(self, file):
         now = datetime.now(timezone.utc)
         date = now.strftime("%m-%d-%y")
         time = now.strftime("%H:%M")
+        size = file.size
+
 
         file_metadata = {
             "file_name": file.filename,
-            "content_type": file.headers['content-type'],
+            "content_type": file.headers["content-type"],
             "date_uploaded": date,
-            "time_uploaded": time
+            "time_uploaded": time,
+            "size": size
         }
 
         mongo.add_file_metadata_to_kb(
@@ -301,3 +229,56 @@ class KnowledgeBase:
     # def print_config(self):
     #     print(self.chunk_overlap)
     
+
+    # # @classmethod
+    # # def create(cls, client_config):
+    # #     # add properties to client_config
+    # #     kb_config = cls._create_kb_config(client_config)
+    # #     log.info("kb_config.py create (classmethod): ", kb_config)
+    # #     # insert knowledge base configuration into database
+    # #     result = mongo.insert_knowledge_base(kb_config)
+    # #     log.info("kb_config.py create (classmethod): ", result)
+    # #     name = kb_config["kb_name"]
+    # #     # message for client
+    # #     return f"{name} created"
+
+    # # @classmethod
+    # # def _create_kb_config(cls, client_config):
+    # #     kb_config = copy.copy(client_config)
+    # #     log.info('kb_config.py _create_kb_config: ', client_config, kb_config)
+    # #     kb_config['id'] = kb_config['kb_name']
+    # #     kb_config['splitter_config'] = cls._str_to_nums(kb_config['splitter_config'])
+    # #     kb_config['files'] = []
+
+    # #     return kb_config
+    
+    # # # converts ints and floats in a dictionary to their respective types
+    # # @classmethod
+    # # def _str_to_nums(cls, config_dict):
+    # #     result = {}
+    # #     for key in config_dict:
+    # #         if is_int(config_dict[key]):
+    # #             result[key] = int(config_dict[key])
+    # #         elif is_float(config_dict[key]):
+    # #             result[key] = float(config_dict[key])
+    # #         else:
+    # #             result[key] = config_dict[key]
+        
+    # #     return result
+    
+    # # returns None if not found, otherwise returns the document
+    # @classmethod
+    # def exists(cls, kb_name):
+    #     print(kb_name)
+    #     doc = mongo.get_knowledge_base(kb_name)
+    #     print(doc)
+    #     log.info('kb_config.py exists: ', doc)
+    #     return doc
+
+    # @classmethod
+    # def get_knowledge_bases(cls):
+    #     kbs_cursor = mongo.get_knowledge_bases()
+    #     kbs_list = list(kbs_cursor)
+    #     print('kb_config.py get_knowledge_bases: ', kbs_list)
+    #     # log.info('kb_config.py get_knowledge_bases: ', kbs)
+    #     return kbs_list
