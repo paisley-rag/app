@@ -8,11 +8,10 @@ import {
 } from "../ui/form";
 import { Textarea } from "../ui/textarea";
 import { Control } from "react-hook-form";
-import { z } from "zod";
-import { pipelineConfigSchema } from "../../service/service";
+import { ClientPipelineConfig } from "@/services/chatbot-service";
 
 type PromptFieldProps = {
-  control: Control<z.infer<typeof pipelineConfigSchema>>;
+  control: Control<ClientPipelineConfig>;
 };
 
 export function PromptField({ control }: PromptFieldProps) {

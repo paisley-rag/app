@@ -3,7 +3,6 @@ from psycopg2.extras import Json
 import csv
 import os
 import json
-import textwrap
 
 import app_logger as log
 
@@ -25,13 +24,24 @@ def connect_to_db():
         log.info("An error occurred while connecting to the database:", e)
         return None
     
+def insert_chat_history(dict):
+    insert_dict_in(dict, 'chat_history')
+
+def insert_benchmark_data(dict):
+    insert_dict_in(dict, 'benchmark_data')
+
+def insert_scored_benchmark_data(dict):
+    insert_dict_in(dict, 'scored_benchmark_data')
+
 def insert_dict_in(dict, table=''):
+    log.info(f"inserting data into {table}")
     json_data = json.dumps(dict)
     conn = connect_to_db()
     if conn is None:
+        log.info(f"table {table} not found.")
         return
     cursor = conn.cursor()
-    insert_query = "INSERT INTO {table} (data) VALUES (%s)".format(table=table)
+    insert_query = f"INSERT INTO {table} (data) VALUES (%s)"
     cursor.execute(insert_query, (json_data,))
     conn.commit()
     cursor.close()
@@ -39,25 +49,27 @@ def insert_dict_in(dict, table=''):
     print(f"JSONB data stored in '{table}' successfully.")
 
 def get_data_from(table=''):
+    log.info(f"retrieving data from {table}")
     conn = connect_to_db()
     if conn is None:
+        log.info(f"table {table} not found.")
         return
     cursor = conn.cursor()
     cursor.execute(f"SELECT * FROM {table}")
     records = cursor.fetchall()
+
+    log.info("data retrieved.")
     return records
 
-def values_only(table_data):
-    return [data[1] for data in table_data]
-
-def import_csv_to_golden_dataset(csv_file_path):
-    print(f"Current working directory: {os.getcwd()}")
+def import_csv_benchmark_data(csv_file_path):
+    log.info('Importing csv file...')
+    log.info(f"Current working directory: {os.getcwd()}")
 
     # Print the absolute path
-    print(f"Attempting to open file: {os.path.abspath(csv_file_path)}")
+    log.info(f"Attempting to open file: {os.path.abspath(csv_file_path)}")
 
     if not os.path.exists(csv_file_path):
-        print(f"Error: File not found: {csv_file_path}")
+        log.info(f"Error: File not found: {csv_file_path}")
         return
 
     # Connect to the PostgreSQL database
@@ -68,8 +80,12 @@ def import_csv_to_golden_dataset(csv_file_path):
     with open(csv_file_path, 'r') as csvfile:
         csvreader = csv.DictReader(csvfile)
         
+        # Clear the existing data from the benchmark_data table
+        cursor.execute("DELETE FROM benchmark_data")
+        log.info("Existing data in 'benchmark_data' table has been cleared.")
+        
         # Prepare the SQL query
-        insert_query = f"INSERT INTO golden_dataset (data) VALUES (%s)"
+        insert_query = "INSERT INTO golden_dataset (data) VALUES (%s)"
 
         # Insert each row as a JSONB object
         for row in csvreader:
@@ -77,69 +93,7 @@ def import_csv_to_golden_dataset(csv_file_path):
             cursor.execute(insert_query, (json_data,))
 
     # Commit the changes and close the connection
+    log.info("csv benchmark data successfully imported into table 'benchmark_data'.")
     conn.commit()
     cursor.close()
     conn.close()
-
-def print_table(table_data):
-    if not table_data:
-        return "No data to display"
-
-    data_list = values_only(table_data)
-    
-    # Get all unique keys from all dictionaries
-    all_keys = set()
-    for item in data_list:
-        all_keys.update(item.keys())
-    
-    # Convert to sorted list for consistent column order
-    headers = sorted(all_keys)
-
-    # Calculate column widths
-    col_widths = [len(header) for header in headers]
-    for item in data_list:
-        for i, key in enumerate(headers):
-            value = str(item.get(key, ''))
-            col_widths[i] = max(col_widths[i], len(max(value.split(), key=len, default='')))
-
-    # Adjust column widths to fit within 100 characters
-    total_width = sum(col_widths) + len(headers) * 3 + 1
-    if total_width > 100:
-        excess = total_width - 100
-        for i in range(len(col_widths)):
-            if col_widths[i] > 10:
-                reduction = min(excess, col_widths[i] - 10)
-                col_widths[i] -= reduction
-                excess -= reduction
-            if excess == 0:
-                break
-
-    # Create the table
-    table = []
-    
-    # Add header
-    header_row = '|' + '|'.join(f' {h:<{w}} ' for h, w in zip(headers, col_widths)) + '|'
-    table.append(header_row)
-    table.append('+' + '+'.join('-' * (w + 2) for w in col_widths) + '+')
-
-    # Add data rows
-    for item in data_list:
-        row_data = []
-        for key, width in zip(headers, col_widths):
-            value = str(item.get(key, ''))
-            wrapped = textwrap.wrap(value, width)
-            row_data.append(wrapped or [''])
-        
-        max_lines = max(len(cell) for cell in row_data)
-        for i in range(max_lines):
-            row = '|'
-            for j, cell in enumerate(row_data):
-                if i < len(cell):
-                    row += f' {cell[i]:<{col_widths[j]}} |'
-                else:
-                    row += ' ' * (col_widths[j] + 2) + '|'
-            table.append(row)
-        table.append('+' + '+'.join('-' * (w + 2) for w in col_widths) + '+')
-
-    print('\n'.join(table))
-

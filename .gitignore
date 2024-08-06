@@ -14,7 +14,7 @@ dist/
 downloads/
 eggs/
 .eggs/
-lib/
+# lib/
 lib64/
 parts/
 sdist/
@@ -169,4 +169,3 @@ tmpfiles/
 vectorstorage/
 .DS_Store
 
-# node_modules stuff

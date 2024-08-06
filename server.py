@@ -90,7 +90,6 @@ async def post_query(body: pipeline.query.QueryBody):
     return pipeline.query.post_query(body)
 
 
-
 # evals routes
 
 # @app.get('/api/evals')
@@ -113,6 +112,12 @@ async def post_query(body: pipeline.query.QueryBody):
 #     util.use_s3.ul_file(file.filename, dir=FILE_DIR)
 #
 #     return {"message": f"{file.filename} received"}
+
+
+@app.get('/api/history')
+async def get_evals():
+    data = evals.get_chat_history()
+    return {"table_data": data}
 
 
 

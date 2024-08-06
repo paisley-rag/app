@@ -3,7 +3,7 @@ import { Chatbot } from "../Chatbot";
 import { ChatbotConfiguration } from "../ChatbotConfiguration";
 
 interface PageChatbotProps {
-  id: number;
+  id: string;
 }
 
 export function PageChatbot({ id }: PageChatbotProps) {
