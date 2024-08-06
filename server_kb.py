@@ -1,16 +1,12 @@
-import shutil
-import os
-import json
 
 from fastapi import FastAPI, File, UploadFile, Request
 from fastapi.middleware.cors import CORSMiddleware
 import nest_asyncio
-import pymongo
 from dotenv import load_dotenv
 
-import app_logger as log
-import use_s3
-from knowledge_base.kb_config import KnowledgeBase
+# import app_logger as log
+# import use_s3
+import db.knowledge_base.routes as kb
 
 nest_asyncio.apply()
 
@@ -39,52 +35,38 @@ app.add_middleware(
 
 @app.get('/api')
 async def root():
-    log.info("server running")
+    # log.info("server running")
     return {"message": "Server running"}
 
 
 # knowledge base routes
 @app.get("/api/knowledge-bases")
 async def get_knowledge_bases():
-    knowledge_bases = KnowledgeBase.get_knowledge_bases()
-    return knowledge_bases
+    return kb.get_all()
 
 # consider adding id to the body of the request sent from the client
 # to create a new knowledge base
 # otherwise, we will use the kb_name prop to see if knowledge base exists
 @app.post('/api/knowledge-bases')
-async def create_kb(request: Request):
-    body = await request.json()
-    # ensure that the kb_name is unique
-    if KnowledgeBase.exists(body["kb_name"]):
-        message = f"{body['kb_name']} already exists"
-    else:
-        message = KnowledgeBase.create(body)
-
-    return {"message": message}
+async def create_knowledge_base(request: Request):
+    client_config = await request.json()
+    return kb.create(client_config)
 
 @app.get("/api/knowledge-base/{id}")
 async def get_knowledge_base(id: str):
-    kb_config = KnowledgeBase.exists(id)
-    if kb_config:
-        return kb_config
-    else:
-        return { "message": f"{id} does not exist" }
+    return kb.get_one(id)
 
 # this route adds a file to a knowledge base
 @app.post('/api/knowledge-bases/{id}/upload')
 async def upload_file(id: str, file: UploadFile=File(...)):
-    log.info("in route", file.filename)
-    if KnowledgeBase.exists(id):
-        kb = KnowledgeBase(id)
-        log.info("in logic", file.filename)
-        try:
-            await kb.ingest_file(file)
-            return {"message": f"{file.filename} uploaded"}
-        except Exception as e:
-            return {"message": f"Error: {e}"}
-    else:
-        return {"message": f"Knowledge base {id} doesn't exist"}
+    try:
+        return await kb.upload_file(id, file)
+        
+    except Exception as e:
+        return {"message": f"Error: {e}"}
+
+        
+
     
 if __name__ == "__main__":
     import uvicorn
