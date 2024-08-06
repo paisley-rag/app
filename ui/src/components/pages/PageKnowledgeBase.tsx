@@ -93,7 +93,9 @@ export function PageKnowledgeBase({ id }: PageKnowledgeBaseProps) {
             ))}
           </TableBody>
         </Table>
-        {modalVisible && <ModalFileUpload setModalVisible={setModalVisible} />}
+        {modalVisible && (
+          <ModalFileUpload setModalVisible={setModalVisible} id={id} />
+        )}
       </>
     );
 }

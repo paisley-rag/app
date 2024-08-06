@@ -1,5 +1,5 @@
-from hybridSearch import keyword
-from hybridSearch import vector
+from db.pipeline.hybrid_search import keyword
+from db.pipeline.hybrid_search import vector
 
 # defaults
 default_top_k = 5

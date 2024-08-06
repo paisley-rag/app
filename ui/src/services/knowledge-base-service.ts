@@ -1,6 +1,8 @@
 import axios from "axios";
 import { z } from "zod";
 
+const baseUrl = import.meta.env.VITE_BASE_URL;
+
 // Common Schemas
 const markdownSplitterConfig = z.object({
   splitter: z.literal("Markdown"),
@@ -73,7 +75,7 @@ const llmConfigSchema = z.discriminatedUnion("llm_provider", [
 ]);
 
 export const clientKnowledgeBaseConfigSchema = z.intersection(
-  z.union([
+  z.discriminatedUnion("ingest_method", [
     z.object({
       kb_name: z.string(),
       ingest_method: z.literal("LlamaParse"),
@@ -117,30 +119,52 @@ export type ServerKnowledgeBaseConfig = z.infer<
 >;
 
 async function fetchKnowledgeBases() {
-  const response = await axios.get("/api/knowledge-bases");
-  console.log(response);
-  try {
-    return knowledgeBasesSchema.parse(response.data);
-  } catch (error) {
-    if (error instanceof z.ZodError) {
-      console.error("Zod validation error:", error.errors);
-    }
-    throw error;
-  }
+  const response = await axios.get(`${baseUrl}/api/knowledge-bases`);
+  return knowledgeBasesSchema.parse(response.data);
 }
 
 async function fetchKnowledgeBaseById(id: string) {
-  const response = await axios.get(`/api/knowledge-bases?id=${id}`);
-  return serverKnowledgeBaseConfigSchema.parse(response.data[0]);
+  const response = await axios.get(`${baseUrl}/api/knowledge-base/${id}`);
+  return serverKnowledgeBaseConfigSchema.parse(response.data);
 }
 
 async function createKnowledgeBase(config: ClientKnowledgeBaseConfig) {
-  const response = await axios.post("/api/knowledge-bases", config);
+  const response = await axios.post(`${baseUrl}/api/knowledge-bases`, config);
   return serverKnowledgeBaseConfigSchema.parse(response.data);
+}
+
+async function uploadFile(id: string, file: File) {
+  const formData = new FormData();
+  formData.append("file", file);
+
+  try {
+    const response = await axios.post(
+      `${baseUrl}/api/knowledge-bases/${id}/upload`,
+      formData,
+      {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      }
+    );
+    return response.data;
+  } catch (error) {
+    if (axios.isAxiosError(error)) {
+      console.error("Axios error:", error.message);
+      if (error.response) {
+        console.error("Response data:", error.response.data);
+        console.error("Response status:", error.response.status);
+      }
+    } else {
+      console.error("Unexpected error:", error);
+    }
+    throw error;
+  }
 }
 
 export const knowledgeBaseService = {
   fetchKnowledgeBases,
   fetchKnowledgeBaseById,
   createKnowledgeBase,
+  uploadFile,
 };

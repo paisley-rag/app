@@ -3,9 +3,11 @@ import os
 from llama_index.llms.openai import OpenAI
 from llama_index.llms.anthropic import Anthropic
 from llama_index.llms.cohere import Cohere
+# from llama_index.llms.bedrock import Bedrock
 
 from llama_index.embeddings.openai import OpenAIEmbedding
 from llama_index.embeddings.cohere import CohereEmbedding
+# from llama_index.embeddings.bedrock import BedrockEmbedding
 # from llama_index.embeddings.huggingface import HuggingFaceEmbedding
 
 # imports for reading files
@@ -22,7 +24,8 @@ from llama_index.core.node_parser import (
 LLMS = {
     "OpenAI": OpenAI,
     "Anthropic": Anthropic,
-    "Cohere": Cohere
+    "Cohere": Cohere,
+    # "Bedrock": Bedrock
 }
 
 EMBEDDINGS = {

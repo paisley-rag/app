@@ -1,3 +1,5 @@
+"""Module to provide consistent logging functions for application"""
+
 import logging
 
 console = logging.StreamHandler()
@@ -7,27 +9,41 @@ console.setFormatter(
 )
 
 handlers = [logging.FileHandler(filename='app.log', mode='a'), console]
-logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(levelname)s - %(message)s', handlers=handlers)
+logging.basicConfig(
+    level=logging.DEBUG,
+    format='%(asctime)s - %(levelname)s - %(message)s',
+    handlers=handlers
+)
+
 logger = logging.getLogger(__name__)
 
 def info(*args):
-    logger.info('>>>') if len(args) > 1 else None
+    if len(args) > 1:
+        logger.info('>>>')
+
     for arg in args:
         logger.info(arg)
 
-    logger.info('<<<') if len(args) > 1 else None
+    if len(args) > 1:
+        logger.info('<<<')
 
 def debug(*args):
-    logger.debug('>>>') if len(args) > 1 else None
+    if len(args) > 1:
+        logger.info('>>>')
+
     for arg in args:
         logger.debug(arg)
 
-    logger.debug('<<<') if len(args) > 1 else None
+    if len(args) > 1:
+        logger.info('<<<')
+
 
 def error(*args):
-    logger.error('>>>>>>>>') if len(args) > 1 else None
+    if len(args) > 1:
+        logger.error('>>>>>>>>')
+
     for arg in args:
         logger.error(arg)
 
-    logger.error('<<<<<<<<') if len(args) > 1 else None
-
+    if len(args) > 1:
+        logger.error('<<<<<<<<')
