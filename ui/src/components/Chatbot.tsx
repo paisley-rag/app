@@ -28,7 +28,7 @@ export function Chatbot({ id }: ChatbotProps) {
     onSuccess: (data) => {
       const assistantMessage: Message = {
         role: "assistant",
-        content: data.message,
+        content: data.body,
       };
       setMessages((prev) => [...prev, assistantMessage]);
     },

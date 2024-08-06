@@ -1,29 +1,30 @@
-import shutil
-import os
-import json
+"""
+
+Main back-end server file 
+- run with `python server.py`
+  (fastapi syntax does not seem to work with asyncio)
+
+"""
+# import shutil
+# import os
 
 from fastapi import FastAPI, File, UploadFile, Request
-from pydantic import BaseModel
 from fastapi.middleware.cors import CORSMiddleware
 import nest_asyncio
-import pymongo
 from dotenv import load_dotenv
 
 import app_logger as log
-import use_s3
-import evals
-import pipeline
+# import util.use_s3
+# import evals
+import pipeline.query
 from kb_config import KnowledgeBase
-import mongo_util as mutil
-import config_util as cutil
+
+from routers import chatbots
 
 # test if we need this w/n the server
 nest_asyncio.apply()
 
 load_dotenv(override=True)
-MONGO_URI = os.environ["MONGO_URI"]
-CONFIG_DB = os.environ["CONFIG_DB"]
-CONFIG_PIPELINE_COL = os.environ["CONFIG_PIPELINE_COL"]
 
 app = FastAPI()
 
@@ -34,6 +35,9 @@ app.add_middleware(
     allow_methods=['*'],
     allow_headers=['*']
 )
+
+app.include_router(chatbots.router)
+
 
 @app.get('/api')
 async def root():
@@ -79,90 +83,41 @@ async def upload_file(id: str, file: UploadFile=File(...)):
     else:
         return {"message": f"Knowledge base {id} doesn't exist"}
 
-# pipeline routes
-class UserQuery(BaseModel):
-    query: str
 
-class QueryBody(UserQuery):
-    chatbot_id: str
-
+# query route
 @app.post('/api/query')
-async def post_query(body: QueryBody):
-    log.info('/api/query body received: ', body.query, body.chatbot_id)
-    pipe = pipeline.Pipeline(body.chatbot_id)
-    log.info('/api/query pipeline retrieved')
-    response = pipe.query(body.query)
-    evals.store_running_eval_data(body.chatbot_id, body.query, response)
-    log.info('/api/query response:', response)
-    return { "type": "response", "body": response }
+async def post_query(body: pipeline.query.QueryBody):
+    return pipeline.query.post_query(body)
 
 
-@app.get('/api/chatbots')
-async def get_chatbots():
-    log.info('/api/chatbots loaded')
-    results = mutil.get_all(CONFIG_DB, CONFIG_PIPELINE_COL, {}, { '_id': 0 })
-    log.info('/api/chatbots results:', results)
-    return json.dumps(results)
+# evals routes
+
+# @app.get('/api/evals')
+# async def get_evals():
+#     eval_table = evals.get_running_evals()
+#     return {"message": eval_table}
+#
+# @app.post('/api/csv')
+# async def upload_csv(file: UploadFile=File(...)):
+#     FILE_DIR = 'tmpfiles/csv'
+#
+#     # write file to disk
+#     if not os.path.exists(f"./{FILE_DIR}"):
+#         os.makedirs(f"./{FILE_DIR}")
+#
+#     file_location = f"./{FILE_DIR}/{file.filename}"
+#     with open(file_location, "wb+") as file_object:
+#         shutil.copyfileobj(file.file, file_object)
+#
+#     util.use_s3.ul_file(file.filename, dir=FILE_DIR)
+#
+#     return {"message": f"{file.filename} received"}
 
 
-@app.get('/api/chatbots/{id}')
-async def get_chatbot_id(id: str):
-    results = mutil.get(CONFIG_DB, CONFIG_PIPELINE_COL, {"id": id}, {'_id': 0})
-    log.info(f"/api/chatbots/{id}: ", results)
-    if not results:
-        return json.dumps({"message": "no chatbot configuration found"})
-
-    return json.dumps(results)
-
-
-    # JSON Shape from UI
-    # {
-    #       "id": "test1",
-    #       "name": "test1",
-    #       "knowledge_bases": ["giraffes"],
-    #       "generative_model": "gpt-4-o",
-    #       "similarity": {
-    #             "on": "True",
-    #             "cutoff": 0.5
-    #           },
-    #       "colbert_rerank": {
-    #             "on": "True",
-    #             "top_n": 0.4
-    #           },
-    #       "long_contet_reorder": "True",
-    #       "prompt": "hello"
-    # }
-
-
-@app.post('/api/chatbots')
-async def post_chatbots(request: Request):
-    body = await request.json()
-    log.info(f"/api/chatbots POST body: ", body)
-    pipeline_obj = cutil.ui_to_pipeline(json.dumps(body))
-
-    mutil.insert_one(CONFIG_DB, CONFIG_PIPELINE_COL, pipeline_obj)
-    # insert_one seems to include the '_id' property which cannot be serialized by json.dumps
-    del pipeline_obj['_id']
-
-    pipeline_json = json.dumps(pipeline_obj)
-    log.debug(f"/api/chatbots POST: pipeline_obj, pipeline_json", pipeline_obj, pipeline_json)
-    return pipeline_json
-
-
-@app.get('/api/history/{chatbot_id}')
-async def get_evals(chatbot_id):
-    data = evals.get_chat_history(chatbot_id)
+@app.get('/api/history')
+async def get_evals():
+    data = evals.get_chat_history()
     return {"table_data": data}
-
-
-
-
-
-
-@app.post('/api/test')
-async def test_query(query: UserQuery):
-    log.debug("/api/test accessed", query, query.query)
-    return { "type": "response", "body": query }
 
 
 

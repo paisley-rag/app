@@ -62,8 +62,8 @@ export function ChatbotConfiguration({ id }: ChatbotConfigurationProps) {
   useEffect(() => {
     if (chatbot && !isChatbotLoading) {
       form.reset(chatbot);
-      setDisplayCutoff(chatbot.similarity.on);
-      setDisplayTopN(chatbot.colbert_rerank.on);
+      setDisplayCutoff(!!chatbot.similarity?.on);
+      setDisplayTopN(!!chatbot.colbert_rerank?.on);
     }
   }, [chatbot, isChatbotLoading, form]);
 
@@ -80,7 +80,7 @@ export function ChatbotConfiguration({ id }: ChatbotConfigurationProps) {
   if (knowledgeBasesError) return <div>Error loading knowledge bases</div>;
   if (chatbotError) return <div>Error loading chatbot</div>;
 
-  if (knowledgeBases && chatbot)
+  if (knowledgeBases && chatbot) {
     return (
       <Card className="h-full flex flex-col px-6">
         <header className="flex justify-between items-baseline">
@@ -118,4 +118,5 @@ export function ChatbotConfiguration({ id }: ChatbotConfigurationProps) {
         </Form>
       </Card>
     );
+  }
 }

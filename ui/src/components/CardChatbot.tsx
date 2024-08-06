@@ -1,7 +1,8 @@
 import { Link } from "wouter";
+import { ClientPipelineConfig } from "../services/chatbot-service";
 
 interface CardChatbotProps {
-  chatbot: any;
+  chatbot: ClientPipelineConfig;
 }
 
 export function CardChatbot({ chatbot }: CardChatbotProps) {

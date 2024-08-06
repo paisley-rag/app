@@ -1,11 +1,13 @@
-# this mini program is to list the vectors within the documentDB instance that were written by llamaIndex
-# Note:  the db and collection as named below - these can be changed when the vector_store is instantiated
+"""
+Mini program to list data in mongo/docDB
+"""
 
-import sys
-import pymongo
-import pprint
-from dotenv import load_dotenv
 import os
+import sys
+import pprint
+
+import pymongo
+from dotenv import load_dotenv
 
 load_dotenv(override=True)
 
@@ -22,7 +24,7 @@ db = client[db_name]
 collection = db[db_collection]
 
 for post in collection.find():
-  pprint.pprint(post)
+    pprint.pprint(post)
 
 
 print('==========')

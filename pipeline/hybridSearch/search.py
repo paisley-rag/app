@@ -1,5 +1,5 @@
-from hybridSearch import keyword
-from hybridSearch import vector
+from pipeline.hybridSearch import keyword
+from pipeline.hybridSearch import vector
 
 # defaults
 default_top_k = 5

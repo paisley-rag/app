@@ -83,10 +83,50 @@ def evaluate_and_store_benchmark_data_entry(entry):
 
     pg.insert_scored_benchmark_data(scored_entry)
 
-def get_chat_history(chatbot_id):
+def get_chat_history():
     data = pg.get_data_from('chat_history')
-    data = pg.filter_by_chatbot(data, chatbot_id)
-    return data
+    
+    json_data_list = []
+
+    for tuple in data:
+        json_data = {
+            'pg_id': tuple[0],
+            'chatbot_id': tuple[2]['chatbot_id'],
+            'time': tuple[1],
+            'input': tuple[2]['input'],
+            'output': tuple[2]['output'],
+            'context': tuple[2]['context'],
+            'faithfulness': tuple[2]['scores']['faithfulness'],
+            'answer_relevancy': tuple[2]['scores']['answer_relevancy'],
+        }
+        json_data_list.append(json_data)
+
+    return json_data_list
+
+# [
+#     7,
+#     "2024-08-02T19:55:41.279549",
+#     {
+#         "input": "how did giraffes necks get so long",
+#         "output": "Empty Response",
+#         "scores": {
+#             "faithfulness": 0,
+#             "answer_relevancy": 0
+#         },
+#         "context": "",
+#         "chatbot_id": "test1"
+#     }
+# ]
+# const data = [
+#     {
+#         "chatbot_id": "chatbot1",
+#         "input": "how tall are banana trees",
+#         "output": "Banana trees can reach up to 25 feet tall.",
+#         "faithfulness": 0.0,
+#         "answer_relevancy": 0.9541919130393199,
+#         "context": "This is a bunch of sample context"
+#     }
+# ]
 
 def get_benchmark_data():
     data = pg.get_data_from('benchmark_data')
