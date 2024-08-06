@@ -1,6 +1,6 @@
-"use client"
+"use client";
 
-import * as React from "react"
+import * as React from "react";
 import {
   ColumnDef,
   ColumnFiltersState,
@@ -12,11 +12,11 @@ import {
   getPaginationRowModel,
   getSortedRowModel,
   useReactTable,
-} from "@tanstack/react-table"
-import { ArrowUpDown, ChevronDown, MoreHorizontal } from "lucide-react"
+} from "@tanstack/react-table";
+import { ArrowUpDown, ChevronDown, MoreHorizontal } from "lucide-react";
 
-import { Button } from "@/components/ui/button"
-import { Checkbox } from "@/components/ui/checkbox"
+import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
 import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
@@ -25,8 +25,8 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
-import { Input } from "@/components/ui/input"
+} from "@/components/ui/dropdown-menu";
+import { Input } from "@/components/ui/input";
 import {
   Table,
   TableBody,
@@ -34,13 +34,11 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table"
+} from "@/components/ui/table";
 
 import { useQuery } from "@tanstack/react-query";
 
-import {
-  evaluationsService,
-} from "../../services/evaluations-service";
+import { evaluationsService } from "../../services/evaluations-service";
 
 export const columns: ColumnDef<any>[] = [
   {
@@ -83,9 +81,13 @@ export const columns: ColumnDef<any>[] = [
           Time
           <ArrowUpDown className="ml-2 h-4 w-4" />
         </Button>
-      )
+      );
     },
-    cell: ({ row }) => <div className="lowercase">{new Date(row.getValue("time")).toLocaleString()}</div>,
+    cell: ({ row }) => (
+      <div className="lowercase">
+        {new Date(row.getValue("time")).toLocaleString()}
+      </div>
+    ),
   },
   {
     accessorKey: "input",
@@ -98,47 +100,57 @@ export const columns: ColumnDef<any>[] = [
           Input
           <ArrowUpDown className="ml-2 h-4 w-4" />
         </Button>
-      )
+      );
     },
     cell: ({ row }) => <div className="lowercase">{row.getValue("input")}</div>,
   },
   {
     accessorKey: "output",
     header: "Output",
-    cell: ({ row }) => (
-      <div className="lowercase">{row.getValue("output").slice(0, 150) + (row.getValue("output").length > 150 ? "..." : "")}</div>
-    ),
+    cell: ({ row }) => {
+      const output = row.getValue("output") as string;
+      return (
+        <div className="text-right font-medium">
+          {output.slice(0, 150) + (output.length > 150 ? "..." : "")}
+        </div>
+      );
+    },
   },
   {
     accessorKey: "context",
     header: () => <div className="text-right">Context</div>,
     cell: ({ row }) => {
-      return <div className="text-right font-medium">{row.getValue("context").slice(0, 150) + (row.getValue("context").length > 150 ? "..." : "")}</div>
+      const context = row.getValue("context") as string;
+      return (
+        <div className="text-right font-medium">
+          {context.slice(0, 150) + (context.length > 150 ? "..." : "")}
+        </div>
+      );
     },
   },
   {
     accessorKey: "faithfulness",
     header: () => <div className="text-right">Faithfulness</div>,
     cell: ({ row }) => {
-      const score = parseFloat(row.getValue("faithfulness"))
+      const score = parseFloat(row.getValue("faithfulness"));
 
-      return <div className="text-right font-medium">{score.toFixed(2)}</div>
+      return <div className="text-right font-medium">{score.toFixed(2)}</div>;
     },
   },
   {
     accessorKey: "answer_relevancy",
     header: () => <div className="text-right">Answer Relevancy</div>,
     cell: ({ row }) => {
-      const score = parseFloat(row.getValue("answer_relevancy"))
-      return <div className="text-right font-medium">{score.toFixed(2)}</div>
+      const score = parseFloat(row.getValue("answer_relevancy"));
+      return <div className="text-right font-medium">{score.toFixed(2)}</div>;
     },
   },
   {
     id: "actions",
     enableHiding: false,
     cell: ({ row }) => {
-      const data = row.original
-      console.log('ColumnDef rerendering...?')
+      const data = row.original;
+      console.log("ColumnDef rerendering...?");
       return (
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
@@ -158,10 +170,10 @@ export const columns: ColumnDef<any>[] = [
             <DropdownMenuItem>View Details</DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
-      )
+      );
     },
   },
-]
+];
 
 export function PageEvaluations() {
   const { data: chatHistory, isLoading } = useQuery({
@@ -171,16 +183,16 @@ export function PageEvaluations() {
     // refetchOnWindowFocus: false, // Disable refetch on window focus
   });
 
-  const [sorting, setSorting] = React.useState<SortingState>([])
+  const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     []
-  )
+  );
   const [columnVisibility, setColumnVisibility] =
-    React.useState<VisibilityState>({})
-  const [rowSelection, setRowSelection] = React.useState({})
-    
+    React.useState<VisibilityState>({});
+  const [rowSelection, setRowSelection] = React.useState({});
+
   // console.log('DATA IS', data)
-  console.log('CHATHISTORY IS', chatHistory)
+  console.log("CHATHISTORY IS", chatHistory);
 
   const table = useReactTable({
     data: chatHistory || [],
@@ -199,7 +211,7 @@ export function PageEvaluations() {
       columnVisibility,
       rowSelection,
     },
-  })
+  });
 
   if (isLoading) {
     return <div>Loading...</div>;
@@ -209,7 +221,9 @@ export function PageEvaluations() {
       <div className="flex items-center py-4">
         <Input
           placeholder="Filter chatbot id..."
-          value={(table.getColumn("chatbot_id")?.getFilterValue() as string) ?? ""}
+          value={
+            (table.getColumn("chatbot_id")?.getFilterValue() as string) ?? ""
+          }
           onChange={(event) =>
             table.getColumn("chatbot_id")?.setFilterValue(event.target.value)
           }
@@ -237,7 +251,7 @@ export function PageEvaluations() {
                   >
                     {column.id}
                   </DropdownMenuCheckboxItem>
-                )
+                );
               })}
           </DropdownMenuContent>
         </DropdownMenu>
@@ -257,7 +271,7 @@ export function PageEvaluations() {
                             header.getContext()
                           )}
                     </TableHead>
-                  )
+                  );
                 })}
               </TableRow>
             ))}
@@ -317,5 +331,5 @@ export function PageEvaluations() {
         </div>
       </div>
     </div>
-  )
+  );
 }
