@@ -1,14 +1,17 @@
 import os
 import json
 
-from fastapi import Request
+from fastapi import Request, APIRouter
 from pydantic import BaseModel
 from dotenv import load_dotenv
 
 import app_logger as log
-import pipeline.pipeline_class
 import pipeline.mongo_util as mutil
 import pipeline.config_util as cutil
+
+router = APIRouter(
+    prefix='/api/chatbots'
+)
 
 load_dotenv(override=True)
 MONGO_URI = os.environ["MONGO_URI"]
@@ -21,22 +24,15 @@ class UserQuery(BaseModel):
 class QueryBody(UserQuery):
     chatbot_id: str
 
-def post_query(body: QueryBody):
-    log.info('/api/query body received: ', body.query, body.chatbot_id)
-    pipe = pipeline.pipeline_class.Pipeline(body.chatbot_id)
-    log.info('/api/query pipeline retrieved')
-    response = pipe.query(body.query)
-    log.info('/api/query response:', response)
-    return { "type": "response", "body": response }
-
-def get_chatbots():
+@router.get('/')
+async def get_chatbots():
     log.info('/api/chatbots loaded')
     results = mutil.get_all(CONFIG_DB, CONFIG_PIPELINE_COL, {}, { '_id': 0 })
     log.info('/api/chatbots results:', results)
     return json.dumps(results)
 
-
-def get_chatbots_id(id):
+@router.get('/{id}')
+async def get_chatbots_id(id: str):
     results = mutil.get(CONFIG_DB, CONFIG_PIPELINE_COL, {"id": id}, {'_id': 0})
     log.info(f"/api/chatbots/{id}: ", results)
     if not results:
@@ -44,6 +40,7 @@ def get_chatbots_id(id):
 
     return json.dumps(results)
 
+@router.post('/')
 async def post_chatbots(request: Request):
     body = await request.json()
     log.info(f"/api/chatbots POST body: ", body)
