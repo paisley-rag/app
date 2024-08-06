@@ -8,9 +8,9 @@ from llama_index.core.postprocessor import LongContextReorder
 from llama_index.postprocessor.colbert_rerank import ColbertRerank
 from llama_index.core.response_synthesizers import  ResponseMode
 
-import app_logger as log
-from pipeline.hybridSearch import search
-import pipeline.mongo_util as mg
+import db.app_logger as log
+from db.pipeline.hybrid_search import search
+import db.pipeline.mongo_util as mg
 
 class Pipeline:
     """

@@ -5,9 +5,9 @@ from fastapi import Request, APIRouter
 from pydantic import BaseModel
 from dotenv import load_dotenv
 
-import app_logger as log
-import pipeline.mongo_util as mutil
-import pipeline.config_util as cutil
+import db.app_logger as log
+import db.pipeline.mongo_util as mutil
+import db.pipeline.config_util as cutil
 
 router = APIRouter(
     prefix='/api/chatbots'

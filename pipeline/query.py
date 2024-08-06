@@ -5,8 +5,8 @@ import os
 from pydantic import BaseModel
 # from dotenv import load_dotenv
 
-import app_logger as log
-from pipeline.pipeline_class import Pipeline
+import db.app_logger as log
+from db.pipeline.pipeline_class import Pipeline
 # import pipeline.mongo_util as mutil
 # import pipeline.config_util as cutil
 

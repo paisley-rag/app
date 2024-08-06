@@ -8,7 +8,7 @@ from llama_index.vector_stores.awsdocdb import AWSDocDbVectorStore
 from llama_index.vector_stores.mongodb import MongoDBAtlasVectorSearch
 import pymongo
 
-import app_logger as log
+import db.app_logger as log
 
 load_dotenv(override=True)
 

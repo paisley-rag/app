@@ -1,7 +1,7 @@
 """ utility functions supporting server.py routes for pipeline.py (Pipeline class) """
 import json
 
-import app_logger as log
+import db.app_logger as log
 
 DEFAULT_TOP_N = 5
 
