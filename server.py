@@ -57,7 +57,7 @@ async def create_knowledge_base(request: Request):
     client_config = await request.json()
     return kb.create(client_config)
 
-@app.get("/api/knowledge-base/{id}")
+@app.get("/api/knowledge-bases/{id}")
 async def get_knowledge_base(id: str):
     return kb.get_one(id)
 

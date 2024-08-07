@@ -30,7 +30,7 @@ def ui_to_pipeline(ui_json):
         },
         'generative_model': ui_obj['generative_model'],
         'prompt': {
-            'on': 'True' if ui_obj.get('prompt') else 'False',
+            'on': ui_obj.get('prompt', False),
             'template_str': ui_obj.get('prompt', '')
         }
     }
