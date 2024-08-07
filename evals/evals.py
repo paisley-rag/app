@@ -3,8 +3,9 @@ from datasets import Dataset
 from ragas import evaluate
 from ragas.metrics import answer_relevancy, faithfulness, context_precision, context_recall, context_entity_recall, answer_similarity, answer_correctness
 
-import db.eval_pg_utils as pg
-import db.eval_utils as utils
+# rename this later
+import db.evals.eval_pg_utils as pg
+import db.evals.eval_utils as utils
 
 # from server import UserQuery, post_query
 
