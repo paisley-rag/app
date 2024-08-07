@@ -38,7 +38,7 @@ async def get_chatbots_id(id: str):
     if not results:
         return {"message": "no chatbot configuration found"}
 
-    return [cutil.pipeline_to_ui(result) for result in results]
+    return cutil.pipeline_to_ui(results)
 
 @router.post('/')
 async def post_chatbots(request: Request):
