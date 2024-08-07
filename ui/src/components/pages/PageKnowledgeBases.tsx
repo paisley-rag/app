@@ -38,7 +38,7 @@ export function PageKnowledgeBases() {
           <div>Loading...</div>
         ) : (
           <div className="grid grid-cols-3 gap-8">
-            {data.map((knowledgeBase) => (
+            {data.map((knowledgeBase: any) => (
               <Link
                 href={`/knowledge-bases/${knowledgeBase.id}`}
                 key={knowledgeBase.id}

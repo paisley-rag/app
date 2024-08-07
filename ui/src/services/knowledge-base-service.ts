@@ -108,7 +108,7 @@ const serverKnowledgeBaseConfigSchema = z.intersection(
   serverKnowledgeBaseFields
 );
 
-const knowledgeBasesSchema = z.array(serverKnowledgeBaseConfigSchema);
+// const knowledgeBasesSchema = z.array(serverKnowledgeBaseConfigSchema);
 
 export type ClientKnowledgeBaseConfig = z.infer<
   typeof clientKnowledgeBaseConfigSchema
