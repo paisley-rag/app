@@ -75,18 +75,13 @@ async def upload_file(id: str, file: UploadFile=File(...)):
 async def post_query(body: pq.QueryBody):
     response = pq.post_query(body)
     # add evals stuff here
-    evals.store_running_eval_data(
-        body.chatbot_id,
-        body.query,
-        response
-    )
-    
+    #     evals.store_running_eval_data(
+    #         body.chatbot_id,
+    #         body.query,
+    #         response
+    #     )
     return response
 
-# @app.get('/api/history')
-# async def get_evals():
-#     data = evals.get_chat_history()
-#     return {"table_data": data}
 
 if __name__ == "__main__":
     import uvicorn

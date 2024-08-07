@@ -24,16 +24,20 @@ class Pipeline:
         self._config = self._get_config(config_id)
 
     def query(self, user_query):
-        synthesizer, nodes = self._pipeline(user_query).values()
-        return synthesizer.synthesize(user_query, nodes=nodes)
+        try:
+            synthesizer, nodes = self._pipeline(user_query).values()
+            return synthesizer.synthesize(user_query, nodes=nodes)
+        except Exception as err:
+            log.error('pipeline.py query: ******** ERROR *********', type(err), err)
 
 
     def _pipeline(self, user_query):
         # get a retriever from each knowledge base
         retrievers = self._process_kbs(self._config['knowledgebases'])
 
+        log.info('pipeline.py _pipeline: retrievers returned')
+
         # query each knowledge base and get returned_nodes
-        # all_nodes = asyncio.run(self._query_retriever(retrievers, user_query))
         all_nodes = self._query_retriever(retrievers, user_query)
 
         log.info("pipeline.py _pipeline: all_nodes")
@@ -74,11 +78,18 @@ class Pipeline:
 
 
     def _get_retriever(self, kb_id):
-        log.info(f"pipeline.py _get_retriever: {kb_id} received")
 
+        result = self._check_kb(kb_id)
+        if not result:
+            raise Exception(f'Knowledge base id "{kb_id}" not found!')
+
+        log.info(f"pipeline.py _get_retriever: {kb_id} received")
+ 
         # just return existing knowledge bases for testing
         vector_retriever = search.vector_retriever(kb_id)
         keyword_retriever = search.keyword_retriever(kb_id)
+
+        log.info("pipeline.py _get_retriever: vector ", vector_retriever, "keyword ", keyword_retriever)
         return { 'vector': vector_retriever, 'keyword': keyword_retriever }
 
 
@@ -86,7 +97,9 @@ class Pipeline:
     def _query_retriever(self, retrievers, user_query):
         nodes = []
         for obj in retrievers:
+            log.info('pipeline.py _query_retriever: vector', obj['vector'])
             nodes += obj['vector'].retrieve(user_query)
+            log.info('pipeline.py _query_retriever: keyword', obj['keyword'])
             nodes += obj['keyword'].retrieve(user_query)
 
         return nodes
@@ -176,7 +189,14 @@ class Pipeline:
         log.info('pipeline.py _get_config', result)
         return result
 
-
+    def _check_kb(self, kb_id):
+        result = mg.get(
+            os.environ['CONFIG_DB'],
+            os.environ['CONFIG_KB_COL'],
+            {'id': kb_id}
+        )
+        log.info('pipeline.py _check_kb', result)
+        return result
 
     # Misc helpers
 
