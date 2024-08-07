@@ -23,4 +23,4 @@ def post_query(body: QueryBody):
     log.info('/api/query pipeline retrieved')
     response = pipe.query(body.query)
     log.info('/api/query response:', response)
-    return { "type": "response", "body": response }
+    return response

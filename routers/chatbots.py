@@ -36,7 +36,7 @@ async def get_chatbots_id(id: str):
     results = mutil.get(CONFIG_DB, CONFIG_PIPELINE_COL, {"id": id}, {'_id': 0})
     log.info(f"/api/chatbots/{id}: ", results)
     if not results:
-        return json.dumps({"message": "no chatbot configuration found"})
+        return {"message": "no chatbot configuration found"}
 
     return results
 
