@@ -1,6 +1,6 @@
 import math
 
-import app_logger as log
+import db.app_logger as log
 
 def values_only(table_data):
     return [data[1] for data in table_data]

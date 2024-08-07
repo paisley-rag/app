@@ -28,6 +28,8 @@ motor = "*"
 rank-bm25 = "*"
 llama-index-postprocessor-colbert-rerank = "*"
 llama-index-retrievers-bm25 = "*"
+python-multipart = "*"
+uvicorn = "*"
 
 [dev-packages]
 pytest = "*"
