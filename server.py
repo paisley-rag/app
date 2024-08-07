@@ -15,7 +15,7 @@ from dotenv import load_dotenv
 
 import db.app_logger as log
 import db.util.use_s3
-import db.evals as evals
+import db.evals.evals as evals
 import db.pipeline.query as pq
 import db.knowledge_base.routes as kb
 
