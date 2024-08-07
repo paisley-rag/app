@@ -5,9 +5,11 @@ from dotenv import load_dotenv
 
 load_dotenv(override=True, dotenv_path=".env.testing")
 
+
 MONGO_URI = os.environ["MONGO_URI"]
 CONFIG_DB = os.environ["CONFIG_DB"]
 CONFIG_KB_COL = os.environ["CONFIG_KB_COL"]
+print(f"CONFIG_DB: {CONFIG_DB}")
 
 kb_names = ["Sentence", "Semantic", "Markdown"]
 def drop_all_knowledge_bases():

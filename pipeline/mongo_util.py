@@ -20,11 +20,12 @@ def get(db_name, db_collection, query=None, projection=None):
 def get_all(db_name, db_collection, query=None, projection=None):
     mongo = pymongo.MongoClient(mongo_uri)
     results = mongo[db_name][db_collection].find(query, projection)
+    results = list(results)
     mongo.close()
-    ar = []
-    for result in results:
-        ar.append(result)
-    return ar
+    # ar = []
+    # for result in results:
+    #     ar.append(result)
+    return results
 
 
 def insert_one(db_name, db_collection, doc):

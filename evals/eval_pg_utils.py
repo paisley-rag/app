@@ -4,7 +4,7 @@ import csv
 import os
 import json
 
-import app_logger as log
+import db.app_logger as log
 
 from dotenv import load_dotenv
 load_dotenv()
