@@ -43,7 +43,7 @@ export const serverPipelineConfigSchema = z.object({
   }),
 });
 
-const serverPipelinesConfigSchema = z.array(serverPipelineConfigSchema);
+// const serverPipelinesConfigSchema = z.array(serverPipelineConfigSchema);
 
 export type ClientPipelineConfig = z.infer<typeof clientPipelineConfigSchema>;
 export type ServerPipelineConfig = z.infer<typeof serverPipelineConfigSchema>;
