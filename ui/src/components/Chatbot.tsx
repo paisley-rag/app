@@ -15,6 +15,7 @@ interface ChatbotProps {
 interface Message {
   role: "user" | "assistant";
   content: string;
+  source_nodes?: string[];
 }
 
 export function Chatbot({ id }: ChatbotProps) {
@@ -28,7 +29,8 @@ export function Chatbot({ id }: ChatbotProps) {
     onSuccess: (data) => {
       const assistantMessage: Message = {
         role: "assistant",
-        content: data.body,
+        content: data.response,
+        source_nodes: data.source_nodes,
       };
       setMessages((prev) => [...prev, assistantMessage]);
     },

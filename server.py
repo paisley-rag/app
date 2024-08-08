@@ -15,7 +15,7 @@ from dotenv import load_dotenv
 
 import db.app_logger as log
 import db.util.use_s3
-import db.evals as evals
+import db.evals.evals as evals
 import db.pipeline.query as pq
 import db.knowledge_base.routes as kb
 
@@ -57,7 +57,7 @@ async def create_knowledge_base(request: Request):
     client_config = await request.json()
     return kb.create(client_config)
 
-@app.get("/api/knowledge-base/{id}")
+@app.get("/api/knowledge-bases/{id}")
 async def get_knowledge_base(id: str):
     return kb.get_one(id)
 
@@ -73,7 +73,13 @@ async def upload_file(id: str, file: UploadFile=File(...)):
 # query route
 @app.post('/api/query')
 async def post_query(body: pq.QueryBody):
-    return pq.post_query(body)
+    response = pq.post_query(body)
+    evals.store_running_eval_data(
+        body.chatbot_id,
+        body.query,
+        response
+    )
+    return response
 
 @app.get('/api/history')
 async def get_evals():

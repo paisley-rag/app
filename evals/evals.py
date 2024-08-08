@@ -3,12 +3,13 @@ from datasets import Dataset
 from ragas import evaluate
 from ragas.metrics import answer_relevancy, faithfulness, context_precision, context_recall, context_entity_recall, answer_similarity, answer_correctness
 
-import eval_pg_utils as pg
-import eval_utils as utils
+# rename this later
+import db.evals.eval_pg_utils as pg
+import db.evals.eval_utils as utils
 
-from server import UserQuery, post_query
+# from server import UserQuery, post_query
 
-import app_logger as log
+import db.app_logger as log
 
 # called within the server /api/query route
 def store_running_eval_data(chatbot_id, query, response):

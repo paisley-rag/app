@@ -43,64 +43,26 @@ export const serverPipelineConfigSchema = z.object({
   }),
 });
 
-const serverPipelinesConfigSchema = z.array(serverPipelineConfigSchema);
+// const serverPipelinesConfigSchema = z.array(serverPipelineConfigSchema);
 
 export type ClientPipelineConfig = z.infer<typeof clientPipelineConfigSchema>;
 export type ServerPipelineConfig = z.infer<typeof serverPipelineConfigSchema>;
 
 async function updateChatbot(id: string, data: ClientPipelineConfig) {
   const response = await axios.put(`${baseUrl}/api/chatbots/${id}`, data);
-  return serverPipelineConfigSchema.parse(JSON.parse(response.data));
+  return response.data;
 }
 
 async function fetchChatbots() {
   const response = await axios.get(`${baseUrl}/api/chatbots`);
-  const chatbots = serverPipelinesConfigSchema.parse(JSON.parse(response.data));
-  const clientChatbots: ClientPipelineConfig[] = chatbots.map((chatbot) => ({
-    id: chatbot.id,
-    name: chatbot.name,
-    knowledge_bases: chatbot.knowledgebases,
-    generative_model: chatbot.generative_model,
-    similarity: {
-      on: chatbot.postprocessing.similarity.on === "True",
-      cutoff: chatbot.postprocessing.similarity.cutoff,
-    },
-    colbert_rerank: {
-      on: chatbot.postprocessing.colbertRerank.on === "True",
-      top_n: chatbot.postprocessing.colbertRerank.top_n,
-    },
-    long_context_reorder: {
-      on: chatbot.postprocessing.longContextReorder.on === "True",
-    },
-    prompt: "",
-  }));
-  return clientChatbots;
+  console.log(response.data);
+  return response.data;
 }
 
 async function fetchChatbotById(id: string) {
   const response = await axios.get(`${baseUrl}/api/chatbots/${id}`);
-  const chatbot = serverPipelineConfigSchema.parse(JSON.parse(response.data));
-  console.log(chatbot);
-  const clientChatbot: ClientPipelineConfig = {
-    id: chatbot.id,
-    name: chatbot.name,
-    knowledge_bases: chatbot.knowledgebases,
-    generative_model: chatbot.generative_model,
-    similarity: {
-      on: chatbot.postprocessing.similarity.on === "True",
-      cutoff: chatbot.postprocessing.similarity.cutoff,
-    },
-    colbert_rerank: {
-      on: chatbot.postprocessing.colbertRerank.on === "True",
-      top_n: chatbot.postprocessing.colbertRerank.top_n,
-    },
-    long_context_reorder: {
-      on: chatbot.postprocessing.longContextReorder.on === "True",
-    },
-    prompt: "",
-  };
-
-  return clientChatbot;
+  console.log(response.data);
+  return response.data;
 }
 
 export const chatbotService = {

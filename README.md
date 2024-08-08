@@ -30,3 +30,4 @@ bash setup_postgres.sh
 ```
 python3 evals.py
 ```
+

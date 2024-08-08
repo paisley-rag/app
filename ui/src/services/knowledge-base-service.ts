@@ -108,7 +108,7 @@ const serverKnowledgeBaseConfigSchema = z.intersection(
   serverKnowledgeBaseFields
 );
 
-const knowledgeBasesSchema = z.array(serverKnowledgeBaseConfigSchema);
+// const knowledgeBasesSchema = z.array(serverKnowledgeBaseConfigSchema);
 
 export type ClientKnowledgeBaseConfig = z.infer<
   typeof clientKnowledgeBaseConfigSchema
@@ -120,17 +120,20 @@ export type ServerKnowledgeBaseConfig = z.infer<
 
 async function fetchKnowledgeBases() {
   const response = await axios.get(`${baseUrl}/api/knowledge-bases`);
-  return knowledgeBasesSchema.parse(response.data);
+  console.log(response.data);
+  return response.data;
 }
 
 async function fetchKnowledgeBaseById(id: string) {
-  const response = await axios.get(`${baseUrl}/api/knowledge-base/${id}`);
-  return serverKnowledgeBaseConfigSchema.parse(response.data);
+  const response = await axios.get(`${baseUrl}/api/knowledge-bases/${id}`);
+  console.log(response.data);
+  return response.data;
 }
 
 async function createKnowledgeBase(config: ClientKnowledgeBaseConfig) {
   const response = await axios.post(`${baseUrl}/api/knowledge-bases`, config);
-  return serverKnowledgeBaseConfigSchema.parse(response.data);
+  console.log(response.data);
+  return response.data;
 }
 
 async function uploadFile(id: string, file: File) {
