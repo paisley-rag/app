@@ -29,7 +29,7 @@ async def get_chatbots():
     log.info('/api/chatbots loaded')
     results = mutil.get_all(CONFIG_DB, CONFIG_PIPELINE_COL, {}, { '_id': 0 })
     log.info('/api/chatbots results:', results)
-    return results
+    return [cutil.pipeline_to_ui(result) for result in results]
 
 @router.get('/{id}')
 async def get_chatbots_id(id: str):
@@ -38,7 +38,7 @@ async def get_chatbots_id(id: str):
     if not results:
         return {"message": "no chatbot configuration found"}
 
-    return results
+    return cutil.pipeline_to_ui(results)
 
 @router.post('/')
 async def post_chatbots(request: Request):

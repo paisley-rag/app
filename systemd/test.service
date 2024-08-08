@@ -1,14 +1,15 @@
-[Unit]
-Description=Skateboard backend
-After=network-online.target
+  [Unit]
+  Description=Skateboard backend
+  After=network-online.target
 
-[Service]
-Type=simple
-Restart=always
-User=ubuntu
-WorkingDirectory=/home/ubuntu/db/
-Environment="PYTHONPATH=/home/ubuntu/.pyenv/versions/3.10.12/bin"
-ExecStart=/home/ubuntu/.pyenv/shims/pipenv run python /home/ubuntu/db/server.py
+  [Service]
+  Type=simple
+  Restart=always
+  User=ubuntu
+  WorkingDirectory=/home/ubuntu/
+  Environment="PIPENV_PIPFILE=/home/ubuntu/db/Pipfile"
+  Environment="PYTHONPATH=/home/ubuntu/.local/share/virtualenvs/db-grdQ2Ybz/bin"
+  ExecStart=/home/ubuntu/.local/bin/pipenv run python -m db.server
 
-[Install]
-WantedBy=multi-user.target
+  [Install]
+  WantedBy=multi-user.target

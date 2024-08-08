@@ -125,7 +125,7 @@ async function fetchKnowledgeBases() {
 }
 
 async function fetchKnowledgeBaseById(id: string) {
-  const response = await axios.get(`${baseUrl}/api/knowledge-base/${id}`);
+  const response = await axios.get(`${baseUrl}/api/knowledge-bases/${id}`);
   console.log(response.data);
   return response.data;
 }
