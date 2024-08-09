@@ -106,7 +106,7 @@ export function ModalKnowledgeBase({
                   <FormItem>
                     <FormLabel>Ingestion Method</FormLabel>
                     <Select
-                      onValueChange={(value) => {
+                      onValueChange={(value: string) => {
                         field.onChange(value);
                         form.resetField("splitter");
                       }}
@@ -132,7 +132,7 @@ export function ModalKnowledgeBase({
                   <FormItem>
                     <FormLabel>Splitter</FormLabel>
                     <Select
-                      onValueChange={(value) => {
+                      onValueChange={(value: string) => {
                         field.onChange(value);
                         form.resetField("splitter_config");
                         if (value === "Markdown") {
@@ -290,7 +290,7 @@ export function ModalKnowledgeBase({
                     <FormLabel>Embed Model</FormLabel>
                     {/* temp, have to change this to use embed_model to somehow update embed_provider that's not dependent on the embed_model name */}
                     <Select
-                      onValueChange={(value) => {
+                      onValueChange={(value: string) => {
                         field.onChange(value);
                         const embedProvider = value.startsWith("text")
                           ? "OpenAI"
@@ -351,7 +351,7 @@ export function ModalKnowledgeBase({
                             <FormItem>
                               <FormLabel>LLM Model</FormLabel>
                               <Select
-                                onValueChange={(value) => {
+                                onValueChange={(value: string) => {
                                   field.onChange(value);
                                   form.setValue(
                                     "llm_config.llm_provider",

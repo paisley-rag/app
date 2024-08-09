@@ -8,21 +8,20 @@ import {
 } from "../ui/form";
 import { Switch } from "../ui/switch";
 import { Input } from "../ui/input";
-import { Control } from "react-hook-form";
+import { Control, useWatch } from "react-hook-form";
 
 import { ClientPipelineConfig } from "../../services/chatbot-service";
 
 type SimilaritySearchFieldProps = {
   control: Control<ClientPipelineConfig>;
-  displayCutoff: boolean;
-  setDisplayCutoff: (value: boolean) => void;
 };
 
-export function SimilaritySearchField({
-  control,
-  displayCutoff,
-  setDisplayCutoff,
-}: SimilaritySearchFieldProps) {
+export function SimilaritySearchField({ control }: SimilaritySearchFieldProps) {
+  const displayCutoff = useWatch({
+    control,
+    name: "similarity.on",
+  });
+
   return (
     <>
       <FormField
@@ -39,9 +38,8 @@ export function SimilaritySearchField({
             <FormControl>
               <Switch
                 checked={field.value}
-                onCheckedChange={(checked) => {
+                onCheckedChange={(checked: boolean) => {
                   field.onChange(checked);
-                  setDisplayCutoff(checked);
                 }}
               />
             </FormControl>
@@ -61,7 +59,7 @@ export function SimilaritySearchField({
                   min={0}
                   max={1}
                   step={0.01}
-                  value={field.value ?? 0}
+                  value={field.value ?? 0.5}
                   onChange={(e) => field.onChange(e.target.value)}
                 />
               </FormControl>

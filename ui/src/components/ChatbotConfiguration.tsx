@@ -17,7 +17,7 @@ import { Card } from "./ui/card";
 import { Form } from "./ui/form";
 import { Button } from "./ui/button";
 
-import { KnowledgeBasesField } from "./form_fields/KnowledgeBasesField";
+import { KnowledgeBasesDropdownField } from "./form_fields/KnowledgeBasesDropdownField";
 import { GenerativeModelField } from "./form_fields/GenerativeModelField";
 import { SimilaritySearchField } from "./form_fields/SimilaritySearchField";
 import { ColbertRerankField } from "./form_fields/ColbertRerankField";
@@ -97,7 +97,7 @@ export function ChatbotConfiguration({ id }: ChatbotConfigurationProps) {
         </header>
         <Form {...form}>
           <form className="space-y-8 mb-8">
-            <KnowledgeBasesField
+            <KnowledgeBasesDropdownField
               control={form.control}
               knowledgeBases={knowledgeBases}
             />

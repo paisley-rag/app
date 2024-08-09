@@ -45,32 +45,30 @@ export function PageKnowledgeBase({ id }: PageKnowledgeBaseProps) {
   if (data)
     return (
       <>
-        <div className="mb-8">
+        <header className="flex items-center justify-start">
           <Button variant="ghost" onClick={handleBackClick}>
-            Back
+            Back {/* TODO: Replace with icon */}
           </Button>
-          <Typography variant="h2">Knowledge Base Details</Typography>
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <Typography variant="h4">Ingest Method:</Typography>
-              <Typography variant="p">{data.ingest_method}</Typography>
-            </div>
-            <div>
-              <Typography variant="h4">Splitter:</Typography>
-              <Typography variant="p">{data.splitter}</Typography>
-            </div>
-            <div>
-              <Typography variant="h4">Embed Model:</Typography>
-              <Typography variant="p">
-                {data.embed_config.embed_model}
-              </Typography>
-            </div>
-            {/* TODO: Add more fields, conditional on ingestion method */}
+          <Typography variant="h3">Knowledge Base Details</Typography>
+        </header>
+        <div className="grid grid-cols-2 gap-4">
+          <div>
+            <Typography variant="h4">Ingest Method:</Typography>
+            <Typography variant="p">{data.ingest_method}</Typography>
           </div>
+          <div>
+            <Typography variant="h4">Splitter:</Typography>
+            <Typography variant="p">{data.splitter}</Typography>
+          </div>
+          <div>
+            <Typography variant="h4">Embed Model:</Typography>
+            <Typography variant="p">{data.embed_config.embed_model}</Typography>
+          </div>
+          {/* TODO: Add more fields, conditional on ingestion method */}
         </div>
 
-        <header className="flex items-center justify-between">
-          <Typography variant="h3">Files</Typography>
+        <header className="flex items-baseline justify-between">
+          <Typography variant="h4">Files</Typography>
           <Button onClick={() => setModalVisible(true)}>Upload File</Button>
         </header>
         <Table>
@@ -78,8 +76,8 @@ export function PageKnowledgeBase({ id }: PageKnowledgeBaseProps) {
             <TableRow>
               <TableHead>File Name</TableHead>
               <TableHead>File Type</TableHead>
-              <TableHead>Source</TableHead>
-              <TableHead>Date</TableHead>
+              <TableHead>Date uploaded</TableHead>
+              <TableHead>Time uploaded</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>

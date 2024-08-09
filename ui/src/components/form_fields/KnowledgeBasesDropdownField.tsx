@@ -18,16 +18,17 @@ import {
 import { Control } from "react-hook-form";
 import { ClientPipelineConfig } from "../../services/chatbot-service";
 import { ServerKnowledgeBaseConfig } from "../../services/knowledge-base-service";
+import React from "react";
 
-type KnowledgeBasesFieldProps = {
+type KnowledgeBasesDropdownFieldProps = {
   control: Control<ClientPipelineConfig>;
   knowledgeBases: ServerKnowledgeBaseConfig[];
 };
 
-export function KnowledgeBasesField({
+export function KnowledgeBasesDropdownField({
   control,
   knowledgeBases,
-}: KnowledgeBasesFieldProps) {
+}: KnowledgeBasesDropdownFieldProps) {
   return (
     <FormField
       control={control}
@@ -49,16 +50,14 @@ export function KnowledgeBasesField({
                   {knowledgeBases.map((kb) => (
                     <DropdownMenuCheckboxItem
                       key={kb.id}
-                      checked={field.value?.includes(kb.kb_name)}
-                      onCheckedChange={(checked) => {
+                      checked={field.value?.includes(kb.id)}
+                      onCheckedChange={(checked: boolean) => {
                         const updatedValue = checked
-                          ? [...(field.value ?? []), kb.kb_name]
-                          : (field.value ?? []).filter(
-                              (name) => name !== kb.kb_name
-                            );
+                          ? [...(field.value ?? []), kb.id]
+                          : (field.value ?? []).filter((id) => id !== kb.id);
                         field.onChange(updatedValue);
                       }}
-                      onSelect={(e) => e.preventDefault()}
+                      onSelect={(e: React.SyntheticEvent) => e.preventDefault()}
                     >
                       {kb.kb_name}
                     </DropdownMenuCheckboxItem>
