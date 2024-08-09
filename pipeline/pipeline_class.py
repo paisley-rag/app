@@ -23,9 +23,23 @@ class Pipeline:
     def __init__(self, config_id):
         self._config = self._get_config(config_id)
 
+    def _get_config(self, config_id):
+        result = mg.get_one_pipeline(config_id)
+        log.info('pipeline.py _get_config', result)
+        return result
+
     def query(self, user_query):
         try:
-            synthesizer, nodes = self._pipeline(user_query).values()
+            pipeline_data = self._pipeline(user_query)
+            synthesizer = pipeline_data['synthesizer']
+            nodes = pipeline_data['nodes']
+            
+            # synthesizer, nodes = self._pipeline(user_query).values()
+            log.info('nodes:', nodes)
+
+            # Note: if we pass in a `simple template` kwarg here,
+            # I believe we can incorporate the custom prompt from 
+            # the pipeline config
             return synthesizer.synthesize(user_query, nodes=nodes)
         except Exception as err:
             log.error('pipeline.py query: ******** ERROR *********', type(err), err)
@@ -33,7 +47,7 @@ class Pipeline:
 
     def _pipeline(self, user_query):
         # get a retriever from each knowledge base
-        retrievers = self._process_kbs(self._config['knowledgebases'])
+        retrievers = self._process_kbs(self._config['knowledge_bases'])
 
         log.info('pipeline.py _pipeline: retrievers returned')
 
@@ -65,7 +79,8 @@ class Pipeline:
         )
 
         # need to add custom prompts
-        return { 'synthesizer': synth, 'nodes': nodes_reorder }
+        return { 'synthesizer': synth, 'nodes': all_nodes }
+        # return { 'synthesizer': synth, 'nodes': nodes_reorder }
 
 
     # Knowledge base methods
@@ -79,11 +94,11 @@ class Pipeline:
 
     def _get_retriever(self, kb_id):
 
-        result = self._check_kb(kb_id)
-        if not result:
-            raise Exception(f'Knowledge base id "{kb_id}" not found!')
+        # result = self._check_kb(kb_id)
+        # if not result:
+        #     raise Exception(f'Knowledge base id "{kb_id}" not found!')
 
-        log.info(f"pipeline.py _get_retriever: {kb_id} received")
+        # log.info(f"pipeline.py _get_retriever: {kb_id} received")
  
         # just return existing knowledge bases for testing
         vector_retriever = search.vector_retriever(kb_id)
@@ -104,25 +119,6 @@ class Pipeline:
 
         return nodes
 
-    # async def _use_retriever(self, retriever, user_query):
-    #     return retriever.retrieve(user_query)
-
-    # async def _query_retriever(self, retrievers, user_query):
-    #     log.info(f"pipeline.py _query_retriever: ", retrievers)
-    #     nodes = []
-
-    #     for obj in retrievers:
-    #         rets = [ obj['vector'], obj['keyword']]
-    #         ops = [self._use_retriever(retriever, user_query) for retriever in rets]
-
-    #         result = await asyncio.gather(*ops)
-
-
-    #     log.info(f"pipeline.py _query_retriever: all nodes", self._log_nodes(result))
-    #     return nodes
-
-
-
     # Post-processing methods
     def _process_similarity(self, nodes):
         options = self._get_options('similarity')
@@ -141,7 +137,7 @@ class Pipeline:
 
 
     def _process_colbert(self, nodes, query):
-        options = self._get_options('colbertRerank')
+        options = self._get_options('colbert_rerank')
         log.debug("_process_colbert", options)
 
         if options['on'] != 'True':
@@ -156,8 +152,7 @@ class Pipeline:
 
 
     def _process_reorder(self, nodes):
-        options = self._get_options('longContextReorder')
-
+        options = self._get_options('long_context_reorder')
         if options['on'] != 'True':
             return nodes
 
@@ -176,33 +171,42 @@ class Pipeline:
         del copy['on']
         return copy
 
-
-
-    # db helpers
-
-    def _get_config(self, config_id):
-        result = mg.get(
-            os.environ['CONFIG_DB'],
-            os.environ['CONFIG_PIPELINE_COL'],
-            {'id': config_id}
-        )
-        log.info('pipeline.py _get_config', result)
-        return result
-
-    def _check_kb(self, kb_id):
-        result = mg.get(
-            os.environ['CONFIG_DB'],
-            os.environ['CONFIG_KB_COL'],
-            {'id': kb_id}
-        )
-        log.info('pipeline.py _check_kb', result)
-        return result
-
     # Misc helpers
 
     def _log_nodes(self, nodes):
         for node in nodes:
             log.info(node)
+
+
+
+    # def _check_kb(self, kb_id):
+        
+    #     ##############################
+    #     result = mg.get(
+    #         os.environ['CONFIG_DB'],
+    #         os.environ['CONFIG_KB_COL'],
+    #         {'id': kb_id}
+    #     )
+    #     log.info('pipeline.py _check_kb', result)
+    #     return result
+
+
+        # async def _use_retriever(self, retriever, user_query):
+    #     return retriever.retrieve(user_query)
+
+    # async def _query_retriever(self, retrievers, user_query):
+    #     log.info(f"pipeline.py _query_retriever: ", retrievers)
+    #     nodes = []
+
+    #     for obj in retrievers:
+    #         rets = [ obj['vector'], obj['keyword']]
+    #         ops = [self._use_retriever(retriever, user_query) for retriever in rets]
+
+    #         result = await asyncio.gather(*ops)
+
+
+    #     log.info(f"pipeline.py _query_retriever: all nodes", self._log_nodes(result))
+    #     return nodes
 
 
 # for direct testing

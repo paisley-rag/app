@@ -1,17 +1,6 @@
-"""
-
-Main back-end server file 
-- run with `python server.py`
-  (fastapi syntax does not seem to work with asyncio)
-
-"""
-# import shutil
-# import os
-
 from fastapi import FastAPI, File, UploadFile, Request
 from fastapi.middleware.cors import CORSMiddleware
 import nest_asyncio
-from dotenv import load_dotenv
 
 import db.app_logger as log
 import db.util.use_s3
@@ -23,8 +12,6 @@ from db.routers import chatbots
 
 # test if we need this w/n the server
 nest_asyncio.apply()
-
-# load_dotenv(override=True)
 
 app = FastAPI()
 
@@ -45,23 +32,24 @@ async def root():
     return {"message": "Server running"}
 
 # knowledge base routes
+
+# get all knowledge bases
 @app.get("/api/knowledge-bases")
 async def get_knowledge_bases():
     return kb.get_all()
 
-# consider adding id to the body of the request sent from the client
-# to create a new knowledge base
-# otherwise, we will use the kb_name prop to see if knowledge base exists
+# create a knowledge base
 @app.post('/api/knowledge-bases')
 async def create_knowledge_base(request: Request):
     client_config = await request.json()
     return kb.create(client_config)
 
+# get one knowledge base's configuration details
 @app.get("/api/knowledge-bases/{id}")
 async def get_knowledge_base(id: str):
     return kb.get_one(id)
 
-# this route adds a file to a knowledge base
+# add a file to a knowledge base
 @app.post('/api/knowledge-bases/{id}/upload')
 async def upload_file(id: str, file: UploadFile=File(...)):
     try:
@@ -74,11 +62,11 @@ async def upload_file(id: str, file: UploadFile=File(...)):
 @app.post('/api/query')
 async def post_query(body: pq.QueryBody):
     response = pq.post_query(body)
-    evals.store_running_eval_data(
-        body.chatbot_id,
-        body.query,
-        response
-    )
+    # evals.store_running_eval_data(
+    #     body.chatbot_id,
+    #     body.query,
+    #     response
+    # )
     return response
 
 @app.get('/api/history')
