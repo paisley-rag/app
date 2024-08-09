@@ -1,0 +1,10 @@
+.container {
+  padding: 2ch;
+  display: flex;
+  align-items: baseline;
+  width: 700px;
+}
+
+.uploadForm {
+  margin-left: 3ch;
+}
