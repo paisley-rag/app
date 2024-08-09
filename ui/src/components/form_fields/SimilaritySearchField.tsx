@@ -49,7 +49,7 @@ export function SimilaritySearchField({ control }: SimilaritySearchFieldProps) {
       {displayCutoff && (
         <FormField
           control={control}
-          name="similarity.cutoff"
+          name="similarity.similarity_cutoff"
           render={({ field }) => (
             <FormItem>
               <FormLabel>Similarity Cutoff</FormLabel>
