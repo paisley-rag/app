@@ -44,14 +44,14 @@ async def post_chatbots(request: Request):
 
         # ugly but effective
         # can refactor later
-        postprocessing = body.get("postprocessing")
-        result = {}
-        for key in postprocessing:
-            result[key] = convert.str_to_nums(postprocessing[key])
-        body["postprocessing"] = result
+        # postprocessing = body.get("postprocessing")
+        # result = {}
+        # for key in postprocessing:
+        #     result[key] = convert.str_to_nums(postprocessing[key])
+        # body["postprocessing"] = result
 
-        print("body: ", body)
-        input("press enter to continue")
+        # print("body: ", body)
+        # input("press enter to continue")
 
         result = mutil.insert_pipeline(body)
         inserted_id = str(result.inserted_id)

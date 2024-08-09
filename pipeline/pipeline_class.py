@@ -119,51 +119,86 @@ class Pipeline:
 
         return nodes
 
-    # Post-processing methods
     def _process_similarity(self, nodes):
-        options = self._get_options('similarity')
-        log.info("pipeline.py _process_similarity: options", options)
-        if options['on'] != 'True':
+        options = self._config['similarity']
+        
+        if options["on"]:
+            log.info("pipeline.py _process_similarity: similarity on")
+            similarity_pp = SimilarityPostprocessor(**self._remove_on(options))
+            return similarity_pp.postprocess_nodes(nodes)
+        else:
+            log.info("pipeline.py _process_similarity: similarity off")
             return nodes
-
-        log.debug("pipeline.py _process_similarity: ", self._remove_on(options))
-
-        similarity_pp = SimilarityPostprocessor(**self._remove_on(options))
-        log.info(
-            "pipeline.py _process_similarity: cutoff applied",
-            options['similarity_cutoff']
-        )
-        return similarity_pp.postprocess_nodes(nodes)
-
-
+        
     def _process_colbert(self, nodes, query):
-        options = self._get_options('colbert_rerank')
+        options = self._config['colbert_rerank']
         log.debug("_process_colbert", options)
 
-        if options['on'] != 'True':
+        if options['on']:
+            log.info("pipeline.py _process_colbert: colbert rerank on")
+            reranker = ColbertRerank(**self._remove_on(options))
+            query_bundle = QueryBundle(query)
+            log.info(f"pipeline.py _process_colbert: top_n of {options['top_n']} applied")
+            return reranker.postprocess_nodes(nodes, query_bundle)
+        else:
+            log.info("pipeline.py _process_colbert: colbert rerank off")
             return nodes
-
-        log.debug("_process_colbert", self._remove_on(options))
-        reranker = ColbertRerank(**self._remove_on(options))
-        query_bundle = QueryBundle(query)
-
-        log.info(f"pipeline.py _process_colbert: top_n of {options['top_n']} applied")
-        return reranker.postprocess_nodes(nodes, query_bundle)
-
-
+        
     def _process_reorder(self, nodes):
-        options = self._get_options('long_context_reorder')
-        if options['on'] != 'True':
+        options = self._config['long_context_reorder']
+        if options['on']:
+            reorder = LongContextReorder()
+            log.info("pipeline.py _process_reorder: long context reorder on")
+            return reorder.postprocess_nodes(nodes)
+        else:
+            log.info("pipeline.py _process_reorder: long context reorder off")
             return nodes
+        
+    
+    # Post-processing methods
+    # def _process_similarity(self, nodes):
+    #     options = self._get_options('similarity')
+    #     log.info("pipeline.py _process_similarity: options", options)
+    #     if options['on'] != 'True':
+    #         return nodes
 
-        reorder = LongContextReorder()
+    #     log.debug("pipeline.py _process_similarity: ", self._remove_on(options))
 
-        log.info("pipeline.py _process_reorder: executed (no options)")
-        return reorder.postprocess_nodes(nodes)
+    #     similarity_pp = SimilarityPostprocessor(**self._remove_on(options))
+    #     log.info(
+    #         "pipeline.py _process_similarity: cutoff applied",
+    #         options['similarity_cutoff']
+    #     )
+    #     return similarity_pp.postprocess_nodes(nodes)
+
+    # def _process_colbert(self, nodes, query):
+    #     options = self._get_options('colbert_rerank')
+    #     log.debug("_process_colbert", options)
+
+    #     if options['on'] != 'True':
+    #         return nodes
+
+    #     log.debug("_process_colbert", self._remove_on(options))
+    #     reranker = ColbertRerank(**self._remove_on(options))
+    #     query_bundle = QueryBundle(query)
+
+    #     log.info(f"pipeline.py _process_colbert: top_n of {options['top_n']} applied")
+    #     return reranker.postprocess_nodes(nodes, query_bundle)
 
 
-    def _get_options(self, module):
-        return self._config['postprocessing'][module]
+    # def _process_reorder(self, nodes):
+    #     options = self._get_options('long_context_reorder')
+    #     if options['on'] != 'True':
+    #         return nodes
+
+    #     reorder = LongContextReorder()
+
+    #     log.info("pipeline.py _process_reorder: executed (no options)")
+    #     return reorder.postprocess_nodes(nodes)
+
+
+    # def _get_options(self, module):
+    #     return self._config['postprocessing'][module]
 
 
     def _remove_on(self, options_dict):
