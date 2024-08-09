@@ -1,9 +1,9 @@
 import { useQuery } from "@tanstack/react-query";
 import { useLocation } from "wouter";
-
 import { Typography } from "../Typography";
 import { Button } from "@/components/ui/button";
 import { CardChatbot } from "../CardChatbot";
+import { SkeletonPageChatbots } from "../skeletons/SkeletonPageChatbots";
 
 import {
   chatbotService,
@@ -22,7 +22,7 @@ export function PageChatbots() {
   };
 
   if (isLoading) {
-    return <div>Loading...</div>;
+    return <SkeletonPageChatbots />;
   }
 
   if (chatbots)

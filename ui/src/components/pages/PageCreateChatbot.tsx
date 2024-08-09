@@ -75,7 +75,7 @@ export function PageCreateChatbot() {
   if (isLoading) {
     return (
       <>
-        <header className="mb-8 flex items-center space-x-4">
+        <header className="mb-8 flex items-center gap-2">
           <Button variant="ghost" size="icon" onClick={handleBackClick}>
             <ArrowLeftIcon className="h-5 w-5" />
           </Button>
@@ -94,7 +94,7 @@ export function PageCreateChatbot() {
   if (error) {
     return (
       <>
-        <header className="mb-8 flex items-center space-x-4">
+        <header className="mb-8 flex items-center gap-2">
           <Button variant="ghost" size="icon" onClick={handleBackClick}>
             <ArrowLeftIcon className="h-5 w-5" />
           </Button>
@@ -108,7 +108,7 @@ export function PageCreateChatbot() {
   if (knowledgeBases)
     return (
       <>
-        <header className="mb-8 flex items-center space-x-4">
+        <header className="mb-8 flex items-center gap-2">
           <Button variant="ghost" size="icon" onClick={handleBackClick}>
             <ArrowLeftIcon className="h-5 w-5" />
           </Button>

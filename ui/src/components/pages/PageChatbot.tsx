@@ -3,11 +3,14 @@ import { Chatbot } from "../Chatbot";
 import { ChatbotConfiguration } from "../ChatbotConfiguration";
 import { chatbotService } from "@/services/chatbot-service";
 import { useQuery } from "@tanstack/react-query";
+import { useLocation } from "wouter";
 import {
   knowledgeBaseService,
   ServerKnowledgeBaseConfig,
 } from "@/services/knowledge-base-service";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Button } from "@/components/ui/button";
+import { ArrowLeftIcon } from "lucide-react";
 import { ErrorMessageWithReload } from "../ErrorMessageWithReload";
 
 interface PageChatbotProps {
@@ -32,6 +35,12 @@ export function PageChatbot({ id }: PageChatbotProps) {
     queryKey: ["knowledgeBases"],
     queryFn: knowledgeBaseService.fetchKnowledgeBases,
   });
+
+  const [, navigate] = useLocation();
+
+  function handleBackClick() {
+    navigate("/chatbots");
+  }
 
   if (isChatbotLoading || isKnowledgeBasesLoading) {
     return (
@@ -69,7 +78,10 @@ export function PageChatbot({ id }: PageChatbotProps) {
     return (
       <>
         <header>
-          <Typography variant="h3" className="mb-5">
+          <Typography variant="h3" className="mb-5 flex items-center gap-2">
+            <Button variant="ghost" size="icon" onClick={handleBackClick}>
+              <ArrowLeftIcon className="h-5 w-5" />
+            </Button>
             {chatbot.name}
           </Typography>
         </header>

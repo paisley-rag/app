@@ -2,12 +2,14 @@ import { Typography } from "../Typography";
 import { Button } from "../ui/button";
 import { Link } from "wouter";
 import { useState } from "react";
+import { SkeletonPageKnowledgeBase } from "../skeletons/SkeletonPageKnowledgeBases";
 import { ModalKnowledgeBase } from "../ModalKnowledgeBase";
 import { useQuery } from "@tanstack/react-query";
 import {
   knowledgeBaseService,
   ServerKnowledgeBaseConfig,
 } from "@/services/knowledge-base-service";
+import { ErrorMessageWithReload } from "../ErrorMessageWithReload";
 
 export function PageKnowledgeBases() {
   const [modalVisible, setModalVisible] = useState(false);
@@ -21,11 +23,10 @@ export function PageKnowledgeBases() {
     queryFn: knowledgeBaseService.fetchKnowledgeBases,
   });
 
-  if (isLoading) return <div>Loading...</div>;
+  if (isLoading) return <SkeletonPageKnowledgeBase />;
 
   if (isError) {
-    console.error("Error fetching knowledge bases:", isError);
-    return <div>Error loading knowledge bases</div>;
+    return <ErrorMessageWithReload />;
   }
 
   if (data)
