@@ -1,0 +1,69 @@
+.container {
+  width: 700px;
+  height: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background-color: lightsteelblue;
+}
+
+/*
+ *
+ * To keep new messages scrolled at the bottom of container:
+ * - messages_container and notReverse are both required
+ * - https://stackoverflow.com/questions/18614301/keep-overflow-div-scrolled-to-bottom-unless-user-scrolls-up
+ * - note flex-direction: column-reverse in messages_container
+ *
+ */
+.messages_container {
+  height: 60vh;
+  width: 100%;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column-reverse;
+}
+
+.notReverse {
+  width: 100%;
+}
+
+
+.message {
+  border-radius: 8px;
+  margin: 8px 16px;
+  display: inline-block;
+  padding: 8px 16px;
+}
+
+.chat_row {
+  display: flex;
+}
+
+.query {
+  background-color: darkblue;
+  color: white;
+}
+
+.response {
+  background-color: white;
+  color: black;
+}
+
+.query_row {
+  justify-content: flex-end;
+}
+
+.response_row {
+  justify-content: flex-start;
+}
+
+.chatForm {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  padding: 2ch;
+}
+
+.formInput {
+  width: 80%;
+}

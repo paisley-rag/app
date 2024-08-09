@@ -16,7 +16,6 @@ CONFIG_DB = os.environ["CONFIG_DB"]
 CONFIG_KB_COL = os.environ["CONFIG_KB_COL"]
 
 def get(db_name, db_collection, query=None, projection=None):
-    print("mongo uri:", MONGO_URI)
     mongo = pymongo.MongoClient(MONGO_URI)
     result = mongo[db_name][db_collection].find_one(query, projection)
     mongo.close()
@@ -24,21 +23,22 @@ def get(db_name, db_collection, query=None, projection=None):
 
 def get_all(db_name, db_collection, query=None, projection=None):
     mongo = pymongo.MongoClient(MONGO_URI)
+    print("config db:", CONFIG_DB)
     results = mongo[db_name][db_collection].find(query, projection)
     results = list(results)
     mongo.close()
     return results
 
-def insert_one(db_name, db_collection, doc):
-    mongo = pymongo.MongoClient(MONGO_URI)
-    result = mongo[db_name][db_collection].insert_one(doc)
-    mongo.close()
-    return result
+# def insert_one(doc):
+#     mongo = pymongo.MongoClient(MONGO_URI)
+#     result = mongo[CONFIG_DB][CONFIG_KB_COL].insert_one(doc)
+#     mongo.close()
+#     return result
 
 def get_knowledge_bases():
     return get_all(CONFIG_DB, CONFIG_KB_COL,{}, {"_id": 0})
 
-def get_knowledge_base(kb_name):
+def knowledge_base_name_taken(kb_name):
     return get(
         CONFIG_DB,
         CONFIG_KB_COL,
@@ -46,8 +46,19 @@ def get_knowledge_base(kb_name):
         {"_id": 0}
     )
 
+def get_knowledge_base(id):
+    return get(
+        CONFIG_DB,
+        CONFIG_KB_COL,
+        {"id": id},
+        {"_id": 0}
+    )
+
 def insert_knowledge_base(kb_config):
-    return insert_one(CONFIG_DB, CONFIG_KB_COL, kb_config)
+    mongo = pymongo.MongoClient(MONGO_URI)
+    result = mongo[CONFIG_DB][CONFIG_KB_COL].insert_one(kb_config)
+    mongo.close()
+    return result
 
 def add_file_metadata_to_kb(kb_name, file_metadata):
     mongo = pymongo.MongoClient(MONGO_URI)
@@ -58,8 +69,8 @@ def add_file_metadata_to_kb(kb_name, file_metadata):
     mongo.close()
     log.info(f"add_file_metadata_to_kb: {result}")
 
-def file_exists(kb_name, file):
-    kb = get_knowledge_base(kb_name)
+def file_exists(id, file):
+    kb = get_knowledge_base(id)
     if kb:
         for f in kb["files"]:
             if (
@@ -69,3 +80,28 @@ def file_exists(kb_name, file):
                 ):
                 return True
     return False
+
+def add_id_to_kb_config(kb_name, kb_id):
+    mongo = pymongo.MongoClient(MONGO_URI)
+    result = mongo[CONFIG_DB][CONFIG_KB_COL].update_one(
+        { "kb_name": kb_name },
+        { "$set": { "id": kb_id } }
+    )
+    mongo.close()
+    log.info(f"add_id_to_kb_config: {result}")
+
+def get_kb_id(kb_name):
+    mongo = pymongo.MongoClient(MONGO_URI)
+    result = mongo[CONFIG_DB][CONFIG_KB_COL].find_one(
+        {"kb_name": kb_name}
+    )
+    # print("result:", result)
+    # print("result id:", result["_id"])
+    print("result id string:", str(result["_id"]))
+    # print("type of result id string:", type(str(result["_id"])))
+    if result:
+        return str(result["_id"])
+    else:
+        return None
+
+# get_kb_id("Sentence Split")

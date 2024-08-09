@@ -154,10 +154,9 @@ class KnowledgeBase:
         
         log.info('kb_config.py _store_indexes: ********* ', self._config)
 
-        kb_id = self._config['kb_name']
+        kb_id = mongo.get_kb_id(self._config['kb_name'])
         log.info('kb_config.py _store_indexes: ', kb_id)
         vector_index = "vector_index"
-
 
         environment = os.environ["ENVIRONMENT"]
 

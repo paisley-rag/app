@@ -11,32 +11,52 @@ nest_asyncio.apply()
 def get_all():
    return mongo.get_knowledge_bases()
 
-def get_one(kb_name):
-    kb_config = mongo.get_knowledge_base(kb_name)
+def get_one(id):
+    kb_config = mongo.get_knowledge_base(id)
     if kb_config:
         return kb_config
     else:
-        return { "message": f"{kb_name} does not exist" }
+        return { "message": f"{id} does not exist" }
 
 def create(client_config):
-    if mongo.get_knowledge_base(client_config['kb_name']):
+    if mongo.knowledge_base_name_taken(client_config['kb_name']):
         message = f"{client_config['kb_name']} already exists"
+        return {"message": message}
     else:
         kb_config = create_kb_config(client_config)
         result = mongo.insert_knowledge_base(kb_config)
-        log.info("knowledge base created: ", result)
-        message = f"{kb_config['kb_name']} created"
+        kb_id = str(result.inserted_id)
+        mongo.add_id_to_kb_config(kb_config["kb_name"], kb_id)
 
-    return {"message": message}
+        log.info("knowledge base created: ", result)
+        new_kb = mongo.get_knowledge_base(kb_id)
+        return new_kb
 
 def create_kb_config(client_config):
     kb_config = copy.copy(client_config)
-    kb_config["id"] = kb_config["kb_name"]
     kb_config["splitter_config"] = str_to_nums(kb_config["splitter_config"])
     kb_config["files"] = []
     log.info("kb_config.py _create_kb_config: ", client_config, kb_config)
     return kb_config
-
+    
+async def upload_file(id, file):
+    log.info("in route", file.filename)
+    if not mongo.get_knowledge_base(id):
+        return {"message": f"Knowledge base {id} doesn't exist"}
+    elif mongo.file_exists(id, file):
+        return {"message": f"{file.filename} already in knowledge base"}
+    
+    else:
+        kb = KnowledgeBase(id)
+        log.info("in logic", file.filename)
+        try:
+            await kb.ingest_file(file)
+            return {"message": f"{file.filename} uploaded"}
+        except Exception as e:
+            return {"message": f"Error: {e}"}
+        
+# config helpers to convert strings to numbers
+# probaly should be moved to help james too!
 def str_to_nums(config_dict):
     result = {}
     for key in config_dict:
@@ -62,23 +82,8 @@ def is_float(value):
         return True
     except ValueError:
         return False
-    
 
-async def upload_file(id, file):
-    log.info("in route", file.filename)
-    if not mongo.get_knowledge_base(id):
-        return {"message": f"Knowledge base {id} doesn't exist"}
-    elif mongo.file_exists(id, file):
-        return {"message": f"{file.filename} already exists in {id}"}
-    
-    else:
-        kb = KnowledgeBase(id)
-        log.info("in logic", file.filename)
-        try:
-            await kb.ingest_file(file)
-            return {"message": f"{file.filename} uploaded"}
-        except Exception as e:
-            return {"message": f"Error: {e}"}
+
 
 
 # def create_kb(client_config):
