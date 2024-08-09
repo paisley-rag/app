@@ -1,14 +1,13 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useForm } from "react-hook-form";
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation } from "@tanstack/react-query";
 
 import { zodResolver } from "@hookform/resolvers/zod";
 
-import { clientPipelineConfigSchema } from "../services/chatbot-service";
 import {
-  knowledgeBaseService,
-  ServerKnowledgeBaseConfig,
-} from "../services/knowledge-base-service";
+  clientPipelineConfigSchema,
+  ServerPipelineConfig,
+} from "../services/chatbot-service";
 import { chatbotService } from "../services/chatbot-service";
 import { ClientPipelineConfig } from "../services/chatbot-service";
 
@@ -24,48 +23,31 @@ import { ColbertRerankField } from "./form_fields/ColbertRerankField";
 import { LongContextReorderField } from "./form_fields/LongContextReorderField";
 import { PromptField } from "./form_fields/PromptField";
 
+import { ServerKnowledgeBaseConfig } from "../services/knowledge-base-service";
+
 interface ChatbotConfigurationProps {
-  id: string;
+  chatbot: ServerPipelineConfig;
+  knowledgeBases: ServerKnowledgeBaseConfig[];
 }
 
-export function ChatbotConfiguration({ id }: ChatbotConfigurationProps) {
+export function ChatbotConfiguration({
+  chatbot,
+  knowledgeBases,
+}: ChatbotConfigurationProps) {
   const mutation = useMutation({
     mutationFn: (data: ClientPipelineConfig) =>
-      chatbotService.updateChatbot(id, data),
+      chatbotService.updateChatbot(chatbot.id, data),
   });
-
-  const {
-    data: knowledgeBases,
-    isLoading: isKnowledgeBasesLoading,
-    error: knowledgeBasesError,
-  } = useQuery<ServerKnowledgeBaseConfig[]>({
-    queryKey: ["knowledgeBases"],
-    queryFn: knowledgeBaseService.fetchKnowledgeBases,
-  });
-
-  const {
-    data: chatbot,
-    isLoading: isChatbotLoading,
-    error: chatbotError,
-  } = useQuery({
-    queryKey: ["chatbot", id],
-    queryFn: () => chatbotService.fetchChatbotById(id),
-  });
-
-  const [displayCutoff, setDisplayCutoff] = useState(false);
-  const [displayTopN, setDisplayTopN] = useState(false);
 
   const form = useForm<ClientPipelineConfig>({
     resolver: zodResolver(clientPipelineConfigSchema),
   });
 
   useEffect(() => {
-    if (chatbot && !isChatbotLoading) {
+    if (chatbot) {
       form.reset(chatbot);
-      setDisplayCutoff(!!chatbot.similarity?.on);
-      setDisplayTopN(!!chatbot.colbert_rerank?.on);
     }
-  }, [chatbot, isChatbotLoading, form]);
+  }, [chatbot, form]);
 
   const handleSubmit = form.handleSubmit(
     (data) => {
@@ -76,47 +58,33 @@ export function ChatbotConfiguration({ id }: ChatbotConfigurationProps) {
     }
   );
 
-  if (isKnowledgeBasesLoading || isChatbotLoading) return <div>Loading...</div>;
-  if (knowledgeBasesError) return <div>Error loading knowledge bases</div>;
-  if (chatbotError) return <div>Error loading chatbot</div>;
-
-  if (knowledgeBases && chatbot) {
-    return (
-      <Card className="h-full flex flex-col px-6">
-        <header className="flex justify-between items-baseline">
-          <Typography variant="h4">Configuration</Typography>
-          <Button
-            type="submit"
-            onClick={(e) => {
-              e.preventDefault();
-              handleSubmit();
-            }}
-          >
-            Save
-          </Button>
-        </header>
-        <Form {...form}>
-          <form className="space-y-8 mb-8">
-            <KnowledgeBasesDropdownField
-              control={form.control}
-              knowledgeBases={knowledgeBases}
-            />
-            <GenerativeModelField control={form.control} />
-            <SimilaritySearchField
-              control={form.control}
-              displayCutoff={displayCutoff}
-              setDisplayCutoff={setDisplayCutoff}
-            />
-            <ColbertRerankField
-              control={form.control}
-              displayTopN={displayTopN}
-              setDisplayTopN={setDisplayTopN}
-            />
-            <LongContextReorderField control={form.control} />
-            <PromptField control={form.control} />
-          </form>
-        </Form>
-      </Card>
-    );
-  }
+  return (
+    <Card className="h-full flex flex-col px-6">
+      <header className="flex justify-between items-baseline">
+        <Typography variant="h4">Configuration</Typography>
+        <Button
+          type="submit"
+          onClick={(e) => {
+            e.preventDefault();
+            handleSubmit();
+          }}
+        >
+          Save
+        </Button>
+      </header>
+      <Form {...form}>
+        <form className="space-y-8 mb-8">
+          <KnowledgeBasesDropdownField
+            control={form.control}
+            knowledgeBases={knowledgeBases}
+          />
+          <GenerativeModelField control={form.control} />
+          <SimilaritySearchField control={form.control} />
+          <ColbertRerankField control={form.control} />
+          <LongContextReorderField control={form.control} />
+          <PromptField control={form.control} />
+        </form>
+      </Form>
+    </Card>
+  );
 }

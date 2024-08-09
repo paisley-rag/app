@@ -13,7 +13,7 @@ import {
 export function Navigation() {
   return (
     <div className="flex flex-col justify-start gap-8 fixed h-full w-60 bg-white z-10 p-6 border-r">
-      <div className="flex items-center gap-3 pb-4 border-b">
+      <div className="flex items-center gap-3 pb-5 border-b">
         <img src={Logo} alt="Paisley Logo" className="size-8" />
         <Typography className="text-xl font-semibold font-inter">
           Paisley
@@ -21,7 +21,7 @@ export function Navigation() {
       </div>
       <nav className="flex flex-col gap-2">
         <Typography variant="muted" className="px-2">
-          Main Menu
+          Menu
         </Typography>
         <NavigationLink href="/dashboard">
           <LayoutDashboard />

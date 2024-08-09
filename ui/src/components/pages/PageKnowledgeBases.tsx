@@ -4,7 +4,10 @@ import { Link } from "wouter";
 import { useState } from "react";
 import { ModalKnowledgeBase } from "../ModalKnowledgeBase";
 import { useQuery } from "@tanstack/react-query";
-import { knowledgeBaseService } from "@/services/knowledge-base-service";
+import {
+  knowledgeBaseService,
+  ServerKnowledgeBaseConfig,
+} from "@/services/knowledge-base-service";
 
 export function PageKnowledgeBases() {
   const [modalVisible, setModalVisible] = useState(false);
@@ -38,7 +41,7 @@ export function PageKnowledgeBases() {
           <div>Loading...</div>
         ) : (
           <div className="grid grid-cols-3 gap-8">
-            {data.map((knowledgeBase: any) => (
+            {data.map((knowledgeBase: ServerKnowledgeBaseConfig) => (
               <Link
                 href={`/knowledge-bases/${knowledgeBase.id}`}
                 key={knowledgeBase.id}
