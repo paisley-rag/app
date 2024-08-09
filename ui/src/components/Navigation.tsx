@@ -25,19 +25,22 @@ export function Navigation() {
         </Typography>
         <NavigationLink href="/dashboard">
           <LayoutDashboard />
-          <Typography className="text-base">Dashboard</Typography>
+          <p className="text-base">Dashboard</p>
         </NavigationLink>
-        <NavigationLink href="/knowledge-bases">
+        <NavigationLink
+          href="/knowledge-bases"
+          activePattern={/\/knowledge-bases/}
+        >
           <BookOpenText />
-          <Typography className="text-base">Knowledge Bases</Typography>
+          <p className="text-base">Knowledge Bases</p>
         </NavigationLink>
-        <NavigationLink href="/chatbots">
+        <NavigationLink href="/chatbots" activePattern={/\/chatbots/}>
           <BotMessageSquare />
-          <Typography className="text-base">Chatbots</Typography>
+          <p className="text-base">Chatbots</p>
         </NavigationLink>
         <NavigationLink href="/evaluations">
           <ChartCandlestick />
-          <Typography className="text-base">Evaluations</Typography>
+          <p className="text-base">Evaluations</p>
         </NavigationLink>
       </nav>
       <nav className="flex flex-col gap-2">
@@ -46,11 +49,11 @@ export function Navigation() {
         </Typography>
         <NavigationLink href="/api-keys">
           <KeyRound />
-          <Typography className="text-base">API Keys</Typography>
+          <p className="text-base">API Keys</p>
         </NavigationLink>
         <NavigationLink href="/settings">
           <Settings />
-          <Typography className="text-base">Settings</Typography>
+          <p className="text-base">Settings</p>
         </NavigationLink>
       </nav>
     </div>
