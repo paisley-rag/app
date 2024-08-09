@@ -27,15 +27,17 @@ export function PageChatbots() {
 
   if (chatbots)
     return (
-      <>
-        <header className="flex justify-between items-baseline mb-8">
-          <Typography variant="h3">Chatbots</Typography>
+      <div className="mx-auto">
+        <header className="flex flex-col md:flex-row justify-between items-baseline mb-8">
+          <Typography variant="h3" className="mb-4 md:mb-0">
+            Chatbots
+          </Typography>
           <Button variant="default" onClick={handleClick}>
             Create new chatbot
           </Button>
         </header>
         {chatbots ? (
-          <ul className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          <ul className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             {chatbots.map((chatbot: ClientPipelineConfig) => (
               <CardChatbot key={chatbot.id} chatbot={chatbot} />
             ))}
@@ -43,6 +45,6 @@ export function PageChatbots() {
         ) : (
           <p>No chatbots found</p>
         )}
-      </>
+      </div>
     );
 }

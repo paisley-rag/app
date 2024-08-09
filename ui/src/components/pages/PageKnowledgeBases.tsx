@@ -35,13 +35,13 @@ export function PageKnowledgeBases() {
         <div className="flex justify-between items-baseline mb-8">
           <Typography variant="h3">Knowledge Bases</Typography>
           <Button variant="default" onClick={handleNewKnowledgeBaseClick}>
-            Create new knowledge base
+            Create
           </Button>
         </div>
         {isLoading ? (
           <div>Loading...</div>
         ) : (
-          <div className="grid grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {data.map((knowledgeBase: ServerKnowledgeBaseConfig) => (
               <Link
                 href={`/knowledge-bases/${knowledgeBase.id}`}

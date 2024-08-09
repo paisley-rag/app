@@ -56,7 +56,7 @@ export function PageKnowledgeBase({ id }: PageKnowledgeBaseProps) {
           <Typography variant="h3">{data.kb_name}</Typography>
         </header>
 
-        <header className="flex items-baseline justify-between">
+        <header className="flex items-baseline justify-between mb-4">
           <Typography variant="h4">Files</Typography>
           <Button onClick={() => setModalVisible(true)}>Upload File</Button>
         </header>
