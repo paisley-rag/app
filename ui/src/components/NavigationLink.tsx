@@ -1,7 +1,17 @@
-export function NavigationLink({ children }: { children: React.ReactNode }) {
+import { Link } from "wouter";
+
+interface NavigationLinkProps {
+  href: string;
+  children: React.ReactNode;
+}
+
+export function NavigationLink({ href, children }: NavigationLinkProps) {
   return (
-    <div className="my-4">
-      <p className="px-4 py-2 border rounded-lg">{children}</p>
-    </div>
+    <Link
+      className="flex items-center gap-2 px-2 py-2 rounded-md hover:bg-gray-100"
+      href={href}
+    >
+      {children}
+    </Link>
   );
 }

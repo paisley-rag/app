@@ -57,12 +57,8 @@ export function PageCreateChatbot() {
   const mutation = useMutation({
     mutationFn: (data: z.infer<typeof clientPipelineConfigSchema>) =>
       chatbotService.createChatbot(data),
-    onMutate: () => {},
     onSuccess: (data) => {
       navigate(`/chatbots/${data.id}`);
-    },
-    onError: (error) => {
-      console.error("Error creating chatbot:", error);
     },
   });
 

@@ -1,36 +1,57 @@
 import Logo from "../assets/paisley-logo-icon.svg";
-import { Link } from "wouter";
 import { NavigationLink } from "./NavigationLink";
-
-const PRIMARY_NAV_LINKS = [
-  { href: "/dashboard", text: "Dashboard" },
-  { href: "/knowledge-bases", text: "Knowledge Bases" },
-  { href: "/chatbots", text: "Chatbots" },
-  { href: "/evaluations", text: "Evaluations" },
-];
-
-const SECONDARY_NAV_LINKS = [
-  { href: "/api-keys", text: "API Keys" },
-  { href: "/settings", text: "Settings" },
-];
+import { Typography } from "./Typography";
+import {
+  LayoutDashboard,
+  BookOpenText,
+  BotMessageSquare,
+  ChartCandlestick,
+  KeyRound,
+  Settings,
+} from "lucide-react";
 
 export function Navigation() {
   return (
-    <div className="flex flex-col justify-between fixed h-full w-72 bg-white z-10 px-12 py-8 border-r-2">
-      <nav>
-        <img src={Logo} alt="Paisley Logo" className="size-12" />
-        {PRIMARY_NAV_LINKS.map((link) => (
-          <Link key={link.href} href={link.href}>
-            <NavigationLink>{link.text}</NavigationLink>
-          </Link>
-        ))}
+    <div className="flex flex-col justify-start gap-8 fixed h-full w-60 bg-white z-10 p-6 border-r">
+      <div className="flex items-center gap-3 pb-4 border-b">
+        <img src={Logo} alt="Paisley Logo" className="size-8" />
+        <Typography className="text-xl font-semibold font-inter">
+          Paisley
+        </Typography>
+      </div>
+      <nav className="flex flex-col gap-2">
+        <Typography variant="muted" className="px-2">
+          Main Menu
+        </Typography>
+        <NavigationLink href="/dashboard">
+          <LayoutDashboard />
+          <Typography className="text-base">Dashboard</Typography>
+        </NavigationLink>
+        <NavigationLink href="/knowledge-bases">
+          <BookOpenText />
+          <Typography className="text-base">Knowledge Bases</Typography>
+        </NavigationLink>
+        <NavigationLink href="/chatbots">
+          <BotMessageSquare />
+          <Typography className="text-base">Chatbots</Typography>
+        </NavigationLink>
+        <NavigationLink href="/evaluations">
+          <ChartCandlestick />
+          <Typography className="text-base">Evaluations</Typography>
+        </NavigationLink>
       </nav>
-      <nav>
-        {SECONDARY_NAV_LINKS.map((link) => (
-          <Link key={link.href} href={link.href}>
-            <NavigationLink>{link.text}</NavigationLink>
-          </Link>
-        ))}
+      <nav className="flex flex-col gap-2">
+        <Typography variant="muted" className="px-2">
+          Account
+        </Typography>
+        <NavigationLink href="/api-keys">
+          <KeyRound />
+          <Typography className="text-base">API Keys</Typography>
+        </NavigationLink>
+        <NavigationLink href="/settings">
+          <Settings />
+          <Typography className="text-base">Settings</Typography>
+        </NavigationLink>
       </nav>
     </div>
   );
