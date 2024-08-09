@@ -24,6 +24,7 @@ import { LongContextReorderField } from "./form_fields/LongContextReorderField";
 import { PromptField } from "./form_fields/PromptField";
 
 import { ServerKnowledgeBaseConfig } from "../services/knowledge-base-service";
+import { RotateCw } from "lucide-react";
 
 interface ChatbotConfigurationProps {
   chatbot: ServerPipelineConfig;
@@ -34,7 +35,7 @@ export function ChatbotConfiguration({
   chatbot,
   knowledgeBases,
 }: ChatbotConfigurationProps) {
-  const mutation = useMutation({
+  const { mutate, isPending } = useMutation({
     mutationFn: (data: ClientPipelineConfig) =>
       chatbotService.updateChatbot(chatbot.id, data),
   });
@@ -49,28 +50,30 @@ export function ChatbotConfiguration({
     }
   }, [chatbot, form]);
 
-  const handleSubmit = form.handleSubmit(
-    (data) => {
-      mutation.mutate(data);
-    },
-    (errors) => {
-      console.error("Form submission failed. Errors:", errors);
-    }
-  );
+  const handleSubmit = form.handleSubmit((data) => {
+    mutate(data);
+  });
 
   return (
     <Card className="h-full flex flex-col px-6">
       <header className="flex justify-between items-baseline">
         <Typography variant="h4">Configuration</Typography>
-        <Button
-          type="submit"
-          onClick={(e) => {
-            e.preventDefault();
-            handleSubmit();
-          }}
-        >
-          Save
-        </Button>
+        {isPending ? (
+          <Button disabled>
+            <RotateCw className="w-4 h-4 mr-2 animate-spin" />
+            Saving...
+          </Button>
+        ) : (
+          <Button
+            type="submit"
+            onClick={(e) => {
+              e.preventDefault();
+              handleSubmit();
+            }}
+          >
+            Save
+          </Button>
+        )}
       </header>
       <Form {...form}>
         <form className="space-y-8 mb-8">

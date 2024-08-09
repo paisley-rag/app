@@ -11,7 +11,7 @@ import { ErrorMessageWithReload } from "../ErrorMessageWithReload";
 import { chatbotService } from "../../services/chatbot-service";
 import { useMutation } from "@tanstack/react-query";
 
-import { ArrowLeftIcon } from "lucide-react";
+import { ArrowLeftIcon, RotateCw } from "lucide-react";
 import { useLocation } from "wouter";
 
 import { useQuery } from "@tanstack/react-query";
@@ -54,7 +54,7 @@ export function PageCreateChatbot() {
     queryFn: knowledgeBaseService.fetchKnowledgeBases,
   });
 
-  const mutation = useMutation({
+  const { mutate, isPending } = useMutation({
     mutationFn: (data: z.infer<typeof clientPipelineConfigSchema>) =>
       chatbotService.createChatbot(data),
     onSuccess: (data) => {
@@ -65,7 +65,7 @@ export function PageCreateChatbot() {
   function handleFormSubmit(
     values: z.infer<typeof clientPipelineConfigSchema>
   ) {
-    mutation.mutate(values);
+    mutate(values);
   }
 
   function handleBackClick() {
@@ -127,15 +127,22 @@ export function PageCreateChatbot() {
             <LongContextReorderField control={form.control} />
             <PromptField control={form.control} />
             <div className="flex justify-end">
-              <Button
-                type="submit"
-                onClick={(e) => {
-                  e.preventDefault();
-                  form.handleSubmit(handleFormSubmit)();
-                }}
-              >
-                Create
-              </Button>
+              {isPending ? (
+                <Button disabled className="gap-2">
+                  <RotateCw className="h-5 w-5 animate-spin" />
+                  Creating...
+                </Button>
+              ) : (
+                <Button
+                  type="submit"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    form.handleSubmit(handleFormSubmit)();
+                  }}
+                >
+                  Create
+                </Button>
+              )}
             </div>
           </form>
         </Form>
