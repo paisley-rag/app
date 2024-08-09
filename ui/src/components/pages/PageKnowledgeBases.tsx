@@ -35,7 +35,7 @@ export function PageKnowledgeBases() {
         <div className="flex justify-between items-baseline mb-8">
           <Typography variant="h3">Knowledge Bases</Typography>
           <Button variant="default" onClick={handleNewKnowledgeBaseClick}>
-            Create
+            Create new knowledge base
           </Button>
         </div>
         {isLoading ? (

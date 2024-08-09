@@ -21,7 +21,7 @@ export function NavigationLink({
     <Link
       href={href}
       className={`flex items-center gap-2 px-2 py-2 rounded-md hover:bg-gray-100 ${
-        isActive ? "bg-gray-100 text-blue-500" : "text-gray-700"
+        isActive ? "bg-gray-100 text-blue-600" : "text-gray-700"
       }`}
     >
       {children}
