@@ -15,7 +15,7 @@ function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <Navigation />
-      <main className="ml-72 p-12">
+      <main className="ml-60 p-6">
         <Router>
           <Switch>
             <Route path="/knowledge-bases" component={PageKnowledgeBases} />

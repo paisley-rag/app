@@ -3,7 +3,6 @@ import { z } from "zod";
 
 const baseUrl = import.meta.env.VITE_BASE_URL;
 
-// Common Schemas
 const markdownSplitterConfig = z.object({
   splitter: z.literal("Markdown"),
   splitter_config: z.object({
@@ -42,7 +41,6 @@ const cohereEmbedConfig = z.object({
   ]),
 });
 
-// Main Schemas
 const splitterConfigSchema = z.discriminatedUnion("splitter", [
   markdownSplitterConfig,
   semanticSplitterConfig,
@@ -77,12 +75,14 @@ const llmConfigSchema = z.discriminatedUnion("llm_provider", [
 export const clientKnowledgeBaseConfigSchema = z.intersection(
   z.discriminatedUnion("ingest_method", [
     z.object({
+      id: z.string().optional(),
       kb_name: z.string(),
       ingest_method: z.literal("LlamaParse"),
       llm_config: llmConfigSchema,
       embed_config: embeddingConfigSchema,
     }),
     z.object({
+      id: z.string().optional(),
       kb_name: z.string(),
       ingest_method: z.literal("Simple"),
       embed_config: embeddingConfigSchema,
@@ -108,8 +108,6 @@ const serverKnowledgeBaseConfigSchema = z.intersection(
   serverKnowledgeBaseFields
 );
 
-// const knowledgeBasesSchema = z.array(serverKnowledgeBaseConfigSchema);
-
 export type ClientKnowledgeBaseConfig = z.infer<
   typeof clientKnowledgeBaseConfigSchema
 >;
@@ -120,19 +118,16 @@ export type ServerKnowledgeBaseConfig = z.infer<
 
 async function fetchKnowledgeBases() {
   const response = await axios.get(`${baseUrl}/api/knowledge-bases`);
-  console.log(response.data);
   return response.data;
 }
 
 async function fetchKnowledgeBaseById(id: string) {
   const response = await axios.get(`${baseUrl}/api/knowledge-bases/${id}`);
-  console.log(response.data);
   return response.data;
 }
 
 async function createKnowledgeBase(config: ClientKnowledgeBaseConfig) {
   const response = await axios.post(`${baseUrl}/api/knowledge-bases`, config);
-  console.log(response.data);
   return response.data;
 }
 
@@ -140,29 +135,16 @@ async function uploadFile(id: string, file: File) {
   const formData = new FormData();
   formData.append("file", file);
 
-  try {
-    const response = await axios.post(
-      `${baseUrl}/api/knowledge-bases/${id}/upload`,
-      formData,
-      {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      }
-    );
-    return response.data;
-  } catch (error) {
-    if (axios.isAxiosError(error)) {
-      console.error("Axios error:", error.message);
-      if (error.response) {
-        console.error("Response data:", error.response.data);
-        console.error("Response status:", error.response.status);
-      }
-    } else {
-      console.error("Unexpected error:", error);
+  const response = await axios.post(
+    `${baseUrl}/api/knowledge-bases/${id}/upload`,
+    formData,
+    {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
     }
-    throw error;
-  }
+  );
+  return response.data;
 }
 
 export const knowledgeBaseService = {

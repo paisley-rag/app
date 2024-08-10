@@ -34,8 +34,11 @@ import {
   ClientKnowledgeBaseConfig,
   clientKnowledgeBaseConfigSchema,
   knowledgeBaseService,
+  ServerKnowledgeBaseConfig,
 } from "@/services/knowledge-base-service";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { RefreshCw } from "lucide-react";
+import { useLocation } from "wouter";
 
 interface ModalKnowledgeBaseProps {
   setModalVisible: Dispatch<SetStateAction<boolean>>;
@@ -51,9 +54,16 @@ export function ModalKnowledgeBase({
     },
   });
 
-  const mutation = useMutation({
+  const [, setLocation] = useLocation();
+
+  const { mutate, isPending } = useMutation({
     mutationFn: (data: ClientKnowledgeBaseConfig) =>
       knowledgeBaseService.createKnowledgeBase(data),
+
+    onSuccess: (data: ServerKnowledgeBaseConfig) => {
+      setModalVisible(false);
+      setLocation(`/knowledge-bases/${data.id}`);
+    },
   });
 
   function handleCancelClick() {
@@ -64,7 +74,7 @@ export function ModalKnowledgeBase({
     (data) => {
       console.log(form.getValues());
       console.log(data);
-      mutation.mutate(data);
+      mutate(data);
     },
     (error) => {
       console.log(error);
@@ -411,7 +421,14 @@ export function ModalKnowledgeBase({
                 <Button variant="outline" onClick={handleCancelClick}>
                   Cancel
                 </Button>
-                <Button type="submit">Create</Button>
+                {isPending ? (
+                  <Button disabled>
+                    <RefreshCw className="mr-2 h-4 w-4 animate-spin" />
+                    Creating...
+                  </Button>
+                ) : (
+                  <Button type="submit">Create</Button>
+                )}
               </div>
             </form>
           </Form>

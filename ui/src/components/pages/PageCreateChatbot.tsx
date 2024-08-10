@@ -11,7 +11,7 @@ import { ErrorMessageWithReload } from "../ErrorMessageWithReload";
 import { chatbotService } from "../../services/chatbot-service";
 import { useMutation } from "@tanstack/react-query";
 
-import { ArrowLeftIcon } from "lucide-react";
+import { ArrowLeftIcon, RotateCw } from "lucide-react";
 import { useLocation } from "wouter";
 
 import { useQuery } from "@tanstack/react-query";
@@ -54,22 +54,18 @@ export function PageCreateChatbot() {
     queryFn: knowledgeBaseService.fetchKnowledgeBases,
   });
 
-  const mutation = useMutation({
+  const { mutate, isPending } = useMutation({
     mutationFn: (data: z.infer<typeof clientPipelineConfigSchema>) =>
       chatbotService.createChatbot(data),
-    onMutate: () => {},
     onSuccess: (data) => {
       navigate(`/chatbots/${data.id}`);
-    },
-    onError: (error) => {
-      console.error("Error creating chatbot:", error);
     },
   });
 
   function handleFormSubmit(
     values: z.infer<typeof clientPipelineConfigSchema>
   ) {
-    mutation.mutate(values);
+    mutate(values);
   }
 
   function handleBackClick() {
@@ -79,7 +75,7 @@ export function PageCreateChatbot() {
   if (isLoading) {
     return (
       <>
-        <header className="mb-8 flex items-center space-x-4">
+        <header className="mb-8 flex items-center gap-2">
           <Button variant="ghost" size="icon" onClick={handleBackClick}>
             <ArrowLeftIcon className="h-5 w-5" />
           </Button>
@@ -98,7 +94,7 @@ export function PageCreateChatbot() {
   if (error) {
     return (
       <>
-        <header className="mb-8 flex items-center space-x-4">
+        <header className="mb-8 flex items-center gap-2">
           <Button variant="ghost" size="icon" onClick={handleBackClick}>
             <ArrowLeftIcon className="h-5 w-5" />
           </Button>
@@ -112,7 +108,7 @@ export function PageCreateChatbot() {
   if (knowledgeBases)
     return (
       <>
-        <header className="mb-8 flex items-center space-x-4">
+        <header className="mb-8 flex items-center gap-2">
           <Button variant="ghost" size="icon" onClick={handleBackClick}>
             <ArrowLeftIcon className="h-5 w-5" />
           </Button>
@@ -131,15 +127,22 @@ export function PageCreateChatbot() {
             <LongContextReorderField control={form.control} />
             <PromptField control={form.control} />
             <div className="flex justify-end">
-              <Button
-                type="submit"
-                onClick={(e) => {
-                  e.preventDefault();
-                  form.handleSubmit(handleFormSubmit)();
-                }}
-              >
-                Create
-              </Button>
+              {isPending ? (
+                <Button disabled className="gap-2">
+                  <RotateCw className="h-5 w-5 animate-spin" />
+                  Creating...
+                </Button>
+              ) : (
+                <Button
+                  type="submit"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    form.handleSubmit(handleFormSubmit)();
+                  }}
+                >
+                  Create
+                </Button>
+              )}
             </div>
           </form>
         </Form>

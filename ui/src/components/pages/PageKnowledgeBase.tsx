@@ -2,10 +2,13 @@ import {
   knowledgeBaseService,
   ServerKnowledgeBaseConfig,
 } from "@/services/knowledge-base-service";
+import { ArrowLeftIcon } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { useLocation } from "wouter";
 import { Typography } from "../Typography";
 import { useState } from "react";
+import { SkeletonPageKnowledgeBase } from "../skeletons/SkeletonPageKnowledgeBase";
+
 import {
   Table,
   TableBody,
@@ -16,6 +19,7 @@ import {
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { ModalFileUpload } from "../ModalFileUpload";
+import { ErrorMessageWithReload } from "../ErrorMessageWithReload";
 
 interface PageKnowledgeBaseProps {
   id: string;
@@ -35,42 +39,28 @@ export function PageKnowledgeBase({ id }: PageKnowledgeBaseProps) {
   }
 
   if (isLoading) {
-    return <div>Loading...</div>;
+    return <SkeletonPageKnowledgeBase />;
   }
 
   if (error) {
-    return <div>Error loading knowledge base</div>;
+    return <ErrorMessageWithReload />;
   }
 
   if (data)
     return (
       <>
-        <header className="flex items-center justify-start">
-          <Button variant="ghost" onClick={handleBackClick}>
-            Back {/* TODO: Replace with icon */}
+        <header className="flex items-center gap-2">
+          <Button variant="ghost" size="icon" onClick={handleBackClick}>
+            <ArrowLeftIcon />
           </Button>
-          <Typography variant="h3">Knowledge Base Details</Typography>
+          <Typography variant="h3">{data.kb_name}</Typography>
         </header>
-        <div className="grid grid-cols-2 gap-4">
-          <div>
-            <Typography variant="h4">Ingest Method:</Typography>
-            <Typography variant="p">{data.ingest_method}</Typography>
-          </div>
-          <div>
-            <Typography variant="h4">Splitter:</Typography>
-            <Typography variant="p">{data.splitter}</Typography>
-          </div>
-          <div>
-            <Typography variant="h4">Embed Model:</Typography>
-            <Typography variant="p">{data.embed_config.embed_model}</Typography>
-          </div>
-          {/* TODO: Add more fields, conditional on ingestion method */}
-        </div>
 
-        <header className="flex items-baseline justify-between">
+        <header className="flex items-baseline justify-between mb-4">
           <Typography variant="h4">Files</Typography>
           <Button onClick={() => setModalVisible(true)}>Upload File</Button>
         </header>
+        {/* TODO: Make into DataTable instead, maybe add pagination? */}
         <Table>
           <TableHeader>
             <TableRow>
@@ -81,14 +71,24 @@ export function PageKnowledgeBase({ id }: PageKnowledgeBaseProps) {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {data.files.map((file) => (
-              <TableRow key={file.file_name}>
-                <TableCell>{file.file_name}</TableCell>
-                <TableCell>{file.content_type}</TableCell>
-                <TableCell>{file.date_uploaded}</TableCell>
-                <TableCell>{file.time_uploaded}</TableCell>
+            {data.files.length === 0 ? (
+              <TableRow>
+                <TableCell colSpan={4}>
+                  <Typography variant="p" className="text-center my-12">
+                    No files uploaded
+                  </Typography>
+                </TableCell>
               </TableRow>
-            ))}
+            ) : (
+              data.files.map((file) => (
+                <TableRow key={file.file_name}>
+                  <TableCell>{file.file_name}</TableCell>
+                  <TableCell>{file.content_type}</TableCell>
+                  <TableCell>{file.date_uploaded}</TableCell>
+                  <TableCell>{file.time_uploaded}</TableCell>
+                </TableRow>
+              ))
+            )}
           </TableBody>
         </Table>
         {modalVisible && (

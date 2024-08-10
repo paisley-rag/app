@@ -2,7 +2,7 @@ import React from "react";
 import { cn } from "@/lib/utils";
 
 interface TypographyProps {
-  variant:
+  variant?:
     | "h1"
     | "h2"
     | "h3"
@@ -37,15 +37,21 @@ export function Typography({ variant, children, className }: TypographyProps) {
 
   if (variant === "p") {
     Component = "p";
-  } else if (variant.startsWith("h")) {
+  } else if (variant?.startsWith("h")) {
     Component = variant as keyof React.JSX.IntrinsicElements;
   } else {
     Component = "div";
   }
 
+  if (variant) {
+    return (
+      <Component className={cn(baseStyles, variantStyles[variant], className)}>
+        {children}
+      </Component>
+    );
+  }
+
   return (
-    <Component className={cn(baseStyles, variantStyles[variant], className)}>
-      {children}
-    </Component>
+    <Component className={cn(baseStyles, className)}>{children}</Component>
   );
 }
