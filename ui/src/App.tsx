@@ -5,8 +5,9 @@ import { PageKnowledgeBases } from "./components/pages/PageKnowledgeBases.tsx";
 import { PageKnowledgeBase } from "./components/pages/PageKnowledgeBase.tsx";
 import { PageChatbots } from "./components/pages/PageChatbots.tsx";
 import { PageChatbot } from "./components/pages/PageChatbot.tsx";
-import { PageEvaluations } from "./components/pages/PageEvaluations.tsx";
 import { PageCreateChatbot } from "./components/pages/PageCreateChatbot.tsx";
+import { PageHistory } from "./components/pages/PageHistory.tsx";
+import { PageLineChart } from "./components/pages/PageLineChart.tsx";
 // import { DataTableDemo } from "./components/pages/DataTableDemo.tsx"; // testing only
 
 const queryClient = new QueryClient();
@@ -27,7 +28,8 @@ function App() {
             <Route path="/chatbots/:id">
               {(params) => <PageChatbot id={params.id} />}
             </Route>
-            <Route path="/evaluations" component={PageEvaluations} />
+            <Route path="/history" component={PageHistory} />
+            <Route path="/metrics" component={PageLineChart} />
           </Switch>
         </Router>
       </main>

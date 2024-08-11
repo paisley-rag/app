@@ -10,6 +10,7 @@ import {
   Settings,
 } from "lucide-react";
 
+
 export function Navigation() {
   return (
     <div className="flex flex-col justify-start gap-8 fixed h-full w-60 bg-white z-10 p-6 border-r">
@@ -38,9 +39,13 @@ export function Navigation() {
           <BotMessageSquare />
           <p className="text-base">Chatbots</p>
         </NavigationLink>
-        <NavigationLink href="/evaluations">
+        <NavigationLink href="/history">
           <ChartCandlestick />
-          <p className="text-base">Evaluations</p>
+          <p className="text-base">History</p>
+        </NavigationLink>
+        <NavigationLink href="/metrics">
+          <ChartCandlestick />
+          <p className="text-base">Metrics</p>
         </NavigationLink>
       </nav>
       <nav className="flex flex-col gap-2">

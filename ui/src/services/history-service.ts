@@ -11,6 +11,6 @@ async function fetchChatbotHistory() {
   return response.data;
 }
 
-export const evaluationsService = {
+export const historyService = {
   fetchChatbotHistory,
 };
