@@ -2,9 +2,14 @@ import { Typography } from "../Typography";
 import { Button } from "../ui/button";
 import { Link } from "wouter";
 import { useState } from "react";
+import { SkeletonPageKnowledgeBase } from "../skeletons/SkeletonPageKnowledgeBases";
 import { ModalKnowledgeBase } from "../ModalKnowledgeBase";
 import { useQuery } from "@tanstack/react-query";
-import { knowledgeBaseService } from "@/services/knowledge-base-service";
+import {
+  knowledgeBaseService,
+  ServerKnowledgeBaseConfig,
+} from "@/services/knowledge-base-service";
+import { ErrorMessageWithReload } from "../ErrorMessageWithReload";
 
 export function PageKnowledgeBases() {
   const [modalVisible, setModalVisible] = useState(false);
@@ -18,11 +23,10 @@ export function PageKnowledgeBases() {
     queryFn: knowledgeBaseService.fetchKnowledgeBases,
   });
 
-  if (isLoading) return <div>Loading...</div>;
+  if (isLoading) return <SkeletonPageKnowledgeBase />;
 
   if (isError) {
-    console.error("Error fetching knowledge bases:", isError);
-    return <div>Error loading knowledge bases</div>;
+    return <ErrorMessageWithReload />;
   }
 
   if (data)
@@ -37,8 +41,8 @@ export function PageKnowledgeBases() {
         {isLoading ? (
           <div>Loading...</div>
         ) : (
-          <div className="grid grid-cols-3 gap-8">
-            {data.map((knowledgeBase: any) => (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {data.map((knowledgeBase: ServerKnowledgeBaseConfig) => (
               <Link
                 href={`/knowledge-bases/${knowledgeBase.id}`}
                 key={knowledgeBase.id}

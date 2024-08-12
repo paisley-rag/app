@@ -8,20 +8,19 @@ import {
 } from "../ui/form";
 import { Switch } from "../ui/switch";
 import { Input } from "../ui/input";
-import { Control } from "react-hook-form";
+import { Control, useWatch } from "react-hook-form";
 import { ClientPipelineConfig } from "../../services/chatbot-service";
 
 type ColbertRerankFieldProps = {
   control: Control<ClientPipelineConfig>;
-  displayTopN: boolean;
-  setDisplayTopN: (value: boolean) => void;
 };
 
-export function ColbertRerankField({
-  control,
-  displayTopN,
-  setDisplayTopN,
-}: ColbertRerankFieldProps) {
+export function ColbertRerankField({ control }: ColbertRerankFieldProps) {
+  const colbertRerankOn = useWatch({
+    control,
+    name: "colbert_rerank.on",
+  });
+
   return (
     <>
       <FormField
@@ -38,16 +37,15 @@ export function ColbertRerankField({
             <FormControl>
               <Switch
                 checked={field.value}
-                onCheckedChange={(checked) => {
+                onCheckedChange={(checked: boolean) => {
                   field.onChange(checked);
-                  setDisplayTopN(checked);
                 }}
               />
             </FormControl>
           </FormItem>
         )}
       />
-      {displayTopN && (
+      {colbertRerankOn && (
         <FormField
           control={control}
           name="colbert_rerank.top_n"

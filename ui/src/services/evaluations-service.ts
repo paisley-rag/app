@@ -7,9 +7,8 @@ async function fetchChatbotHistory() {
   const response = await axios.get(`${baseUrl}/api/history`);
   console.log('RESPONSE IS:', response)
   console.log('RESPONSE.DATA IS:', response.data)
-  console.log('RESPONSE.DATA[TABLE_DATA] IS:', response.data['table_data'])
-  
-  return response.data['table_data'];
+
+  return response.data;
 }
 
 export const evaluationsService = {

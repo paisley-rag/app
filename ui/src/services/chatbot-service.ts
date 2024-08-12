@@ -4,13 +4,13 @@ import { z } from "zod";
 const baseUrl = import.meta.env.VITE_BASE_URL;
 
 export const clientPipelineConfigSchema = z.object({
-  id: z.string(),
+  id: z.string().optional(),
   name: z.string(),
   knowledge_bases: z.array(z.string()),
   generative_model: z.string(),
   similarity: z.object({
     on: z.boolean(),
-    cutoff: z.number().optional(),
+    similarity_cutoff: z.number().optional(),
   }),
   colbert_rerank: z.object({
     on: z.boolean(),
@@ -31,7 +31,7 @@ export const serverPipelineConfigSchema = z.object({
   postprocessing: z.object({
     similarity: z.object({
       on: z.string(),
-      cutoff: z.number().optional(),
+      similarity_cutoff: z.number().optional(),
     }),
     colbertRerank: z.object({
       on: z.string(),
@@ -53,15 +53,18 @@ async function updateChatbot(id: string, data: ClientPipelineConfig) {
   return response.data;
 }
 
+async function createChatbot(data: ClientPipelineConfig) {
+  const response = await axios.post(`${baseUrl}/api/chatbots`, data);
+  return response.data;
+}
+
 async function fetchChatbots() {
   const response = await axios.get(`${baseUrl}/api/chatbots`);
-  console.log(response.data);
   return response.data;
 }
 
 async function fetchChatbotById(id: string) {
   const response = await axios.get(`${baseUrl}/api/chatbots/${id}`);
-  console.log(response.data);
   return response.data;
 }
 
@@ -69,4 +72,5 @@ export const chatbotService = {
   updateChatbot,
   fetchChatbots,
   fetchChatbotById,
+  createChatbot,
 };

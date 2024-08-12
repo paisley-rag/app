@@ -7,7 +7,7 @@ interface OverlayProps {
 export function Overlay({ setModalVisible }: OverlayProps) {
   return (
     <div
-      className="z-20 absolute top-0 left-0 h-screen w-screen bg-black/[0.3]"
+      className="z-10 absolute top-0 left-0 h-screen w-screen bg-black/[0.3]"
       onClick={() => setModalVisible(false)}
     ></div>
   );
