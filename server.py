@@ -49,6 +49,10 @@ async def create_knowledge_base(request: Request):
 async def get_knowledge_base(id: str):
     return kb.get_one(id)
 
+@app.delete("/api/knowledge-bases/{id}/delete")
+async def delete_knowledge_base(id: str):
+    return kb.delete(id)
+
 # add a file to a knowledge base
 @app.post('/api/knowledge-bases/{id}/upload')
 async def upload_file(id: str, file: UploadFile=File(...)):
