@@ -36,10 +36,15 @@ class Pipeline:
             
             # synthesizer, nodes = self._pipeline(user_query).values()
             log.info('nodes:', nodes)
-            new_template = PromptTemplate(self._config['prompt'])
-            synthesizer.update_prompts(
-                {"text_qa_template": new_template}
-            )
+            custom_prompt = self._config['prompt']
+            if custom_prompt:
+                log.info("using custom prompts")
+                new_template = PromptTemplate(self._config['prompt'])
+                synthesizer.update_prompts(
+                    {"text_qa_template": new_template}
+                )
+            else:
+                log.info("no custom prompts")
 
             return synthesizer.synthesize(user_query, nodes=nodes)
         except Exception as err:
