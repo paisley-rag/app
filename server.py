@@ -76,7 +76,7 @@ async def post_query(body: pq.QueryBody):
 @app.get('/api/history')
 async def get_evals():
     data = evals.get_chat_history()
-    return {"table_data": data}
+    return data
 
 if __name__ == "__main__":
     import uvicorn

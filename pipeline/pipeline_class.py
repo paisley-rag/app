@@ -2,7 +2,7 @@
 
 import os
 
-from llama_index.core import get_response_synthesizer, QueryBundle
+from llama_index.core import get_response_synthesizer, QueryBundle, PromptTemplate
 from llama_index.core.postprocessor import SimilarityPostprocessor
 from llama_index.core.postprocessor import LongContextReorder
 from llama_index.postprocessor.colbert_rerank import ColbertRerank
@@ -36,10 +36,11 @@ class Pipeline:
             
             # synthesizer, nodes = self._pipeline(user_query).values()
             log.info('nodes:', nodes)
+            new_template = PromptTemplate(self._config['prompt'])
+            synthesizer.update_prompts(
+                {"text_qa_template": new_template}
+            )
 
-            # Note: if we pass in a `simple template` kwarg here,
-            # I believe we can incorporate the custom prompt from 
-            # the pipeline config
             return synthesizer.synthesize(user_query, nodes=nodes)
         except Exception as err:
             log.error('pipeline.py query: ******** ERROR *********', type(err), err)
