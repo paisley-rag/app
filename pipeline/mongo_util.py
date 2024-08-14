@@ -40,6 +40,13 @@ def pipeline_name_taken(name):
     )
     return result
 
+def delete_pipeline(id):
+    mongo = pymongo.MongoClient(MONGO_URI)
+    result = mongo[CONFIG_DB][CONFIG_PIPELINE_COL].delete_one(
+        { "id": id }
+    )
+    mongo.close()
+    return result
 
 def insert_pipeline(doc):
     mongo = pymongo.MongoClient(MONGO_URI)

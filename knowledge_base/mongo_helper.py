@@ -13,6 +13,7 @@ else:
 
 MONGO_URI = os.environ["MONGO_URI"]
 CONFIG_DB = os.environ["CONFIG_DB"]
+CONFIG_PIPELINE_COL = os.environ["CONFIG_PIPELINE_COL"]
 CONFIG_KB_COL = os.environ["CONFIG_KB_COL"]
 
 def get(db_name, db_collection, query=None, projection=None):
@@ -103,5 +104,24 @@ def get_kb_id(kb_name):
         return str(result["_id"])
     else:
         return None
+    
+def delete_knowledge_base(id):
+    mongo = pymongo.MongoClient(MONGO_URI)
+    kb_result = mongo[CONFIG_DB][CONFIG_KB_COL].delete_one({"id": id})
+    pipeline_result = remove_kb_from_pipeline(id)
+    mongo.close()
+
+    return kb_result
+
+def remove_kb_from_pipeline(kb_id):
+    mongo = pymongo.MongoClient(MONGO_URI)
+    result = mongo[CONFIG_DB][CONFIG_PIPELINE_COL].update_many(
+        {},
+        { "$pull": { "knowledge_bases": kb_id } }
+    )
+    log.info(f"remove_kb_from_pipeline: {result}")
+    mongo.close()
+    return result
+    
 
 # get_kb_id("Sentence Split")

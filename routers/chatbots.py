@@ -61,3 +61,11 @@ async def post_chatbots(request: Request):
         print("new_pipeline: ", new_pipeline)
 
         return new_pipeline
+
+@router.delete('/{id}/delete')
+async def delete_chatbot(id: str):
+    result = mutil.delete_pipeline(id)
+    if result.deleted_count == 1:
+        return {"message": f"{id} deleted"}
+    else:
+        return {"message": f"{id} does not exist"}
