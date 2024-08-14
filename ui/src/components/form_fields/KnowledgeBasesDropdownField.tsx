@@ -18,7 +18,7 @@ import {
 import { Control } from "react-hook-form";
 import { ClientPipelineConfig } from "../../services/chatbot-service";
 import { ServerKnowledgeBaseConfig } from "../../services/knowledge-base-service";
-import React from "react";
+// import React from "react";
 
 type KnowledgeBasesDropdownFieldProps = {
   control: Control<ClientPipelineConfig>;
@@ -57,7 +57,7 @@ export function KnowledgeBasesDropdownField({
                           : (field.value ?? []).filter((id) => id !== kb.id);
                         field.onChange(updatedValue);
                       }}
-                      onSelect={(e: React.SyntheticEvent) => e.preventDefault()}
+                      onSelect={(e) => (e as Event).preventDefault()}
                     >
                       {kb.kb_name}
                     </DropdownMenuCheckboxItem>
