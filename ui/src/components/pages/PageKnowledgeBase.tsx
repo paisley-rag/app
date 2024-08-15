@@ -1,3 +1,7 @@
+import { useMutation } from "@tanstack/react-query";
+import axios from "axios";
+
+const baseUrl = import.meta.env.VITE_BASE_URL;
 import {
   knowledgeBaseService,
   ServerKnowledgeBaseConfig,
@@ -38,6 +42,23 @@ export function PageKnowledgeBase({ id }: PageKnowledgeBaseProps) {
     setLocation("/knowledge-bases/");
   }
 
+
+  const deleteMutation = useMutation({
+    mutationFn: () => axios.delete(`${baseUrl}/api/knowledge-bases/${id}/delete`),
+    onSuccess: () => {
+      setLocation("/knowledge-bases/");
+    },
+    onError: (error) => {
+      console.error("Error deleting knowledge base:", error);
+    },
+  });
+
+  function handleDeleteClick() {
+    if (window.confirm("Are you sure you want to delete this knowledge base?")) {
+      deleteMutation.mutate();
+    }
+  }
+
   if (isLoading) {
     return <SkeletonPageKnowledgeBase />;
   }
@@ -59,6 +80,9 @@ export function PageKnowledgeBase({ id }: PageKnowledgeBaseProps) {
         <header className="flex items-baseline justify-between mb-4">
           <Typography variant="h4">Files</Typography>
           <Button onClick={() => setModalVisible(true)}>Upload File</Button>
+          <Button variant="destructive" onClick={handleDeleteClick}>
+            Delete Knowledge Base
+          </Button>
         </header>
         {/* TODO: Make into DataTable instead, maybe add pagination? */}
         <Table>
