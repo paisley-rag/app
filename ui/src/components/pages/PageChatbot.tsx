@@ -12,6 +12,10 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
 import { ArrowLeftIcon } from "lucide-react";
 import { ErrorMessageWithReload } from "../ErrorMessageWithReload";
+import axios from "axios";
+
+import { useMutation } from "@tanstack/react-query";
+const baseUrl = import.meta.env.VITE_BASE_URL;
 
 interface PageChatbotProps {
   id: string;
@@ -40,6 +44,22 @@ export function PageChatbot({ id }: PageChatbotProps) {
 
   function handleBackClick() {
     navigate("/chatbots");
+  }
+
+  const deleteMutation = useMutation({
+    mutationFn: (id: string) => axios.delete(`${baseUrl}/api/chatbots/${id}/delete`),
+    onSuccess: () => {
+      navigate('/chatbots'); // doesn't work for some reason
+    },
+    onError: (error) => {
+      console.error("Error deleting chatbot:", error);
+    },
+  });
+
+  function handleDeleteClick(id: string) {
+    if (window.confirm("Are you sure you want to delete this chatbot?")) {
+      deleteMutation.mutate(id);
+    }
   }
 
   if (isChatbotLoading || isKnowledgeBasesLoading) {
@@ -84,12 +104,14 @@ export function PageChatbot({ id }: PageChatbotProps) {
             </Button>
             {chatbot.name}
           </Typography>
+          
         </header>
         <div className="grid grid-cols-2 gap-4">
           <Chatbot id={id} />
           <ChatbotConfiguration
             chatbot={chatbot}
             knowledgeBases={knowledgeBases}
+            onDeleteClick={(id: string) => handleDeleteClick(id)}
           />
         </div>
       </>
