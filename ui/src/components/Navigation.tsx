@@ -2,12 +2,12 @@ import Logo from "../assets/paisley-logo-icon.svg";
 import { NavigationLink } from "./NavigationLink";
 import { Typography } from "./Typography";
 import {
-  LayoutDashboard,
+  // LayoutDashboard,
   BookOpenText,
   BotMessageSquare,
   ScrollText,
-  KeyRound,
-  Settings,
+  // KeyRound,
+  // Settings,
   ChartLine,
 } from "lucide-react";
 
