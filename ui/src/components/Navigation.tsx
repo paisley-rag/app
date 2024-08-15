@@ -5,10 +5,12 @@ import {
   LayoutDashboard,
   BookOpenText,
   BotMessageSquare,
-  ChartCandlestick,
+  ScrollText,
   KeyRound,
   Settings,
+  ChartLine,
 } from "lucide-react";
+
 
 export function Navigation() {
   return (
@@ -23,10 +25,10 @@ export function Navigation() {
         <Typography variant="muted" className="px-2">
           Menu
         </Typography>
-        <NavigationLink href="/dashboard">
+        {/* <NavigationLink href="/dashboard">
           <LayoutDashboard />
           <p className="text-base">Dashboard</p>
-        </NavigationLink>
+        </NavigationLink> */}
         <NavigationLink
           href="/knowledge-bases"
           activePattern={/\/knowledge-bases/}
@@ -38,12 +40,16 @@ export function Navigation() {
           <BotMessageSquare />
           <p className="text-base">Chatbots</p>
         </NavigationLink>
-        <NavigationLink href="/evaluations">
-          <ChartCandlestick />
-          <p className="text-base">Evaluations</p>
+        <NavigationLink href="/history">
+          <ScrollText />
+          <p className="text-base">History</p>
+        </NavigationLink>
+        <NavigationLink href="/metrics">
+          <ChartLine />
+          <p className="text-base">Metrics</p>
         </NavigationLink>
       </nav>
-      <nav className="flex flex-col gap-2">
+      {/* <nav className="flex flex-col gap-2">
         <Typography variant="muted" className="px-2">
           Account
         </Typography>
@@ -55,7 +61,7 @@ export function Navigation() {
           <Settings />
           <p className="text-base">Settings</p>
         </NavigationLink>
-      </nav>
+      </nav> */}
     </div>
   );
 }
