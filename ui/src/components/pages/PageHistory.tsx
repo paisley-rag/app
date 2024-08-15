@@ -1,6 +1,6 @@
 "use client";
 
-import * as React from "react";
+import { useEffect, useState } from "react";
 import {
   ColumnDef,
   ColumnFiltersState,
@@ -26,7 +26,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Input } from "@/components/ui/input";
+// import { Input } from "@/components/ui/input";
 import {
   Table,
   TableBody,
@@ -38,161 +38,207 @@ import {
 
 import { useQuery } from "@tanstack/react-query";
 
+import { chatbotService } from "../../services/chatbot-service";
 import { historyService } from "../../services/history-service";
 
-export const columns: ColumnDef<any>[] = [
-  {
-    id: "select",
-    header: ({ table }) => (
-      <Checkbox
-        checked={
-          table.getIsAllPageRowsSelected() ||
-          (table.getIsSomePageRowsSelected() && "indeterminate")
-        }
-        onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-        aria-label="Select all"
-      />
-    ),
-    cell: ({ row }) => (
-      <Checkbox
-        checked={row.getIsSelected()}
-        onCheckedChange={(value) => row.toggleSelected(!!value)}
-        aria-label="Select row"
-      />
-    ),
-    enableSorting: false,
-    enableHiding: false,
-  },
-  {
-    accessorKey: "chatbot_id",
-    header: "Chatbot ID",
-    cell: ({ row }) => (
-      <div className="capitalize">{row.getValue("chatbot_id")}</div>
-    ),
-  },
-  {
-    accessorKey: "time",
-    header: ({ column }) => {
-      return (
-        <Button
-          variant="ghost"
-          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-        >
-          Time
-          <ArrowUpDown className="ml-2 h-4 w-4" />
-        </Button>
-      );
-    },
-    cell: ({ row }) => (
-      <div className="lowercase">
-        {new Date(row.getValue("time")).toLocaleString()}
-      </div>
-    ),
-  },
-  {
-    accessorKey: "input",
-    header: ({ column }) => {
-      return (
-        <Button
-          variant="ghost"
-          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-        >
-          Input
-          <ArrowUpDown className="ml-2 h-4 w-4" />
-        </Button>
-      );
-    },
-    cell: ({ row }) => <div className="lowercase">{row.getValue("input")}</div>,
-  },
-  {
-    accessorKey: "output",
-    header: "Output",
-    cell: ({ row }) => {
-      const output = row.getValue("output") as string;
-      return (
-        <div className="text-right font-medium">
-          {output.slice(0, 150) + (output.length > 150 ? "..." : "")}
-        </div>
-      );
-    },
-  },
-  {
-    accessorKey: "context",
-    header: () => <div className="text-right">Context</div>,
-    cell: ({ row }) => {
-      const context = row.getValue("context") as string;
-      return (
-        <div className="text-right font-medium">
-          {context.slice(0, 150) + (context.length > 150 ? "..." : "")}
-        </div>
-      );
-    },
-  },
-  {
-    accessorKey: "faithfulness",
-    header: () => <div className="text-right">Faithfulness</div>,
-    cell: ({ row }) => {
-      const score = parseFloat(row.getValue("faithfulness"));
 
-      return <div className="text-right font-medium">{score.toFixed(2)}</div>;
-    },
-  },
-  {
-    accessorKey: "answer_relevancy",
-    header: () => <div className="text-right">Answer Relevancy</div>,
-    cell: ({ row }) => {
-      const score = parseFloat(row.getValue("answer_relevancy"));
-      return <div className="text-right font-medium">{score.toFixed(2)}</div>;
-    },
-  },
-  {
-    id: "actions",
-    enableHiding: false,
-    cell: ({ row }) => {
-      const data = row.original;
-      console.log("ColumnDef rerendering...?");
-      return (
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="ghost" className="h-8 w-8 p-0">
-              <span className="sr-only">Open menu</span>
-              <MoreHorizontal className="h-4 w-4" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <DropdownMenuLabel>Actions</DropdownMenuLabel>
-            <DropdownMenuItem
-              onClick={() => navigator.clipboard.writeText(data[0])}
-            >
-              Copy ID
-            </DropdownMenuItem>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem>View Details</DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-      );
-    },
-  },
-];
+
 
 export function PageHistory() {
+  const [selectedChatbot, setSelectedChatbot] = useState(() => {
+    return localStorage.getItem('selectedChatbot') || '';
+  });
+
   const { data: chatHistory, isLoading } = useQuery({
     queryKey: ["chatHistory"],
     queryFn: () => historyService.fetchChatbotHistory(),
-    // staleTime: 5 * 60 * 1000, // 5 minutes
-    // refetchOnWindowFocus: false, // Disable refetch on window focus
   });
 
-  const [sorting, setSorting] = React.useState<SortingState>([]);
-  const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
+  
+  
+  
+  
+  // Name/id cache for chatbots
+  const [chatbotNames, setChatbotNames] = useState<{ [key: string]: string }>({});
+  
+  useEffect(() => {
+    const fetchChatbotNames = async () => {
+      if (chatHistory) {
+        const chatbots = await chatbotService.fetchChatbots();
+        const namesMap = Object.fromEntries(
+          chatbots.map((chatbot: any) => [chatbot.id, chatbot.name])
+        );
+        setChatbotNames(namesMap);
+      }
+    };
+    fetchChatbotNames();
+  }, [chatHistory]);
+
+
+
+  useEffect(() => {
+    if (selectedChatbot) {
+      localStorage.setItem('selectedChatbot', selectedChatbot);
+      const chatbotId = Object.keys(chatbotNames).find(key => chatbotNames[key] === selectedChatbot);
+      table.getColumn("chatbot_id")?.setFilterValue(chatbotId);
+    }
+  }, [selectedChatbot, chatbotNames]);
+
+  const handleChatbotSelection = (name: string) => {
+    setSelectedChatbot(name);
+    
+  };
+ 
+
+  // Shadcn table stuff
+  const [sorting, setSorting] = useState<SortingState>([
+    { id: "time", desc: true }
+  ]);
+
+  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>(
     []
   );
-  const [columnVisibility, setColumnVisibility] =
-    React.useState<VisibilityState>({});
-  const [rowSelection, setRowSelection] = React.useState({});
 
-  // console.log('DATA IS', data)
-  console.log("CHATHISTORY IS", chatHistory);
+  const [columnVisibility, setColumnVisibility] =
+    useState<VisibilityState>({});
+
+  const [rowSelection, setRowSelection] = useState({});
+
+  const columns: ColumnDef<any>[] = [
+    // {
+    //   id: "select",
+    //   header: ({ table }) => (
+    //     <Checkbox
+    //       checked={
+    //         table.getIsAllPageRowsSelected() ||
+    //         (table.getIsSomePageRowsSelected() && "indeterminate")
+    //       }
+    //       onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
+    //       aria-label="Select all"
+    //     />
+    //   ),
+    //   cell: ({ row }) => (
+    //     <Checkbox
+    //       checked={row.getIsSelected()}
+    //       onCheckedChange={(value) => row.toggleSelected(!!value)}
+    //       aria-label="Select row"
+    //     />
+    //   ),
+    //   enableSorting: false,
+    //   enableHiding: false,
+    // },
+    {
+      accessorKey: "chatbot_id",
+      header: "Chatbot",
+      cell: ({ row }) => {
+        const id = row.getValue("chatbot_id") as string;
+        const name = chatbotNames[id] || "Loading...";
+        return <div>{name}</div>;
+      },
+    },
+    {
+      accessorKey: "time",
+      header: ({ column }) => {
+        return (
+          <Button
+            variant="ghost"
+            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+          >
+            Time
+            <ArrowUpDown className="ml-2 h-4 w-4" />
+          </Button>
+        );
+      },
+      cell: ({ row }) => (
+        <div className="lowercase">
+          {new Date(row.getValue("time")).toLocaleString()}
+        </div>
+      ),
+    },
+    {
+      accessorKey: "input",
+      header: ({ column }) => {
+        return (
+          <Button
+            variant="ghost"
+            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+          >
+            Input
+            <ArrowUpDown className="ml-2 h-4 w-4" />
+          </Button>
+        );
+      },
+      cell: ({ row }) => <div className="lowercase">{row.getValue("input")}</div>,
+    },
+    {
+      accessorKey: "output",
+      header: "Output",
+      cell: ({ row }) => {
+        const output = row.getValue("output") as string;
+        return (
+          <div className="text-right font-medium">
+            {output.slice(0, 150) + (output.length > 150 ? "..." : "")}
+          </div>
+        );
+      },
+    },
+    {
+      accessorKey: "context",
+      header: () => <div className="text-right">Context</div>,
+      cell: ({ row }) => {
+        const context = row.getValue("context") as string;
+        return (
+          <div className="text-right font-medium">
+            {context.slice(0, 150) + (context.length > 150 ? "..." : "")}
+          </div>
+        );
+      },
+    },
+    {
+      accessorKey: "faithfulness",
+      header: () => <div className="text-right">Faithfulness</div>,
+      cell: ({ row }) => {
+        const score = parseFloat(row.getValue("faithfulness"));
+  
+        return <div className="text-right font-medium">{score.toFixed(2)}</div>;
+      },
+    },
+    {
+      accessorKey: "answer_relevancy",
+      header: () => <div className="text-right">Answer Relevancy</div>,
+      cell: ({ row }) => {
+        const score = parseFloat(row.getValue("answer_relevancy"));
+        return <div className="text-right font-medium">{score.toFixed(2)}</div>;
+      },
+    },
+    // {
+    //   id: "actions",
+    //   enableHiding: false,
+    //   cell: ({ row }) => {
+    //     const data = row.original;
+    //     return (
+    //       <DropdownMenu>
+    //         <DropdownMenuTrigger asChild>
+    //           <Button variant="ghost" className="h-8 w-8 p-0">
+    //             <span className="sr-only">Open menu</span>
+    //             <MoreHorizontal className="h-4 w-4" />
+    //           </Button>
+    //         </DropdownMenuTrigger>
+    //         <DropdownMenuContent align="end">
+    //           <DropdownMenuLabel>Actions</DropdownMenuLabel>
+    //           <DropdownMenuItem
+    //             onClick={() => navigator.clipboard.writeText(data[0])}
+    //           >
+    //             Copy ID
+    //           </DropdownMenuItem>
+    //           <DropdownMenuSeparator />
+    //           <DropdownMenuItem>View Details</DropdownMenuItem>
+    //         </DropdownMenuContent>
+    //       </DropdownMenu>
+    //     );
+    //   },
+    // },
+  ];
 
   const table = useReactTable({
     data: chatHistory || [],
@@ -216,19 +262,27 @@ export function PageHistory() {
   if (isLoading) {
     return <div>Loading...</div>;
   }
+
   return (
     <div className="w-full">
       <div className="flex items-center py-4">
-        <Input
-          placeholder="Filter chatbot id..."
-          value={
-            (table.getColumn("chatbot_id")?.getFilterValue() as string) ?? ""
-          }
-          onChange={(event) =>
-            table.getColumn("chatbot_id")?.setFilterValue(event.target.value)
-          }
-          className="max-w-sm"
-        />
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="outline">
+              {selectedChatbot || "Select Chatbot"} <ChevronDown className="ml-2 h-4 w-4" />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="start">
+            {Object.entries(chatbotNames).map(([id, name]) => (
+              <DropdownMenuItem
+                key={id}
+                onClick={() => handleChatbotSelection(name)}
+              >
+                {name}
+              </DropdownMenuItem>
+            ))}
+          </DropdownMenuContent>
+        </DropdownMenu>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="outline" className="ml-auto">
