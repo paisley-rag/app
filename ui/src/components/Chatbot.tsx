@@ -23,18 +23,25 @@ export function Chatbot({ id }: ChatbotProps) {
     { role: "assistant", content: "Hello, how can I help you?" },
   ]);
   const [input, setInput] = useState("");
+  const [_, setIsLoading] = useState(false);
+  
 
   const mutation = useMutation({
     mutationFn: (message: string) => queryService.sendMessage(id, message),
     onSuccess: (data) => {
-      const assistantMessage: Message = {
-        role: "assistant",
-        content: data.response,
-        source_nodes: data.source_nodes,
-      };
-      setMessages((prev) => [...prev, assistantMessage]);
+      setIsLoading(false);
+      setMessages((prev) => {
+        const updatedMessages = [...prev];
+        updatedMessages[updatedMessages.length - 1] = {
+          role: "assistant",
+          content: data.response,
+          source_nodes: data.source_nodes,
+        };
+        return updatedMessages;
+      });
     },
     onError: (error) => {
+      setIsLoading(false);
       console.error("Error sending message:", error);
     },
   });
@@ -45,6 +52,12 @@ export function Chatbot({ id }: ChatbotProps) {
     const newMessage: Message = { role: "user", content: input };
     setMessages((prev) => [...prev, newMessage]);
     setInput("");
+
+    setIsLoading(true);
+    setMessages((prev) => [
+      ...prev,
+      { role: "assistant", content: "The assistant is typing..." },
+    ]);
 
     mutation.mutate(input);
   };
