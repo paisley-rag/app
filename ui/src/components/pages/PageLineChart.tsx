@@ -27,7 +27,10 @@ export function PageLineChart() {
 
   const { data: metrics, isLoading } = useQuery({
     queryKey: ["metrics", selectedChatbot],
-    queryFn: () => metricService.fetchChatbotMetrics(selectedChatbot),
+    queryFn: () => {
+      console.log('SELECTED CHATBOT IS:', selectedChatbot)
+      return metricService.fetchChatbotMetrics(selectedChatbot)
+    },
     enabled: !!selectedChatbot,
   });
 
@@ -46,13 +49,13 @@ export function PageLineChart() {
           },
           events: {
             render: function () {
-              const info = this.xAxis[0]?.tickPositions?.info;
+              // const info = this.xAxis[0]?.tickPositions?.info;
 
-              if (info) {
+              // if (info) {
                 this.setTitle({
                   text: selectedChatbot || 'No chatbot selected'
                 });
-              }
+              // }
             }
           }
         },
@@ -84,7 +87,7 @@ export function PageLineChart() {
           <button>Select Chatbot</button>
         </DropdownMenuTrigger>
         <DropdownMenuContent>
-          {chatbots?.map((chatbot) => (
+          {chatbots?.map((chatbot: any) => (
             <DropdownMenuItem key={chatbot.id} onSelect={() => setSelectedChatbot(chatbot.name)}>
               {chatbot.name}
             </DropdownMenuItem>

@@ -66,11 +66,11 @@ async def upload_file(id: str, file: UploadFile=File(...)):
 @app.post('/api/query')
 async def post_query(body: pq.QueryBody):
     response = pq.post_query(body)
-    # evals.store_running_eval_data(
-    #     body.chatbot_id,
-    #     body.query,
-    #     response
-    # )
+    evals.store_running_eval_data(
+        body.chatbot_id,
+        body.query,
+        response
+    )
     return response
 
 @app.get('/api/history')
