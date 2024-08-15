@@ -45,54 +45,64 @@ import { historyService } from "../../services/history-service";
 
 
 export function PageHistory() {
+  const [selectedChatbot, setSelectedChatbot] = useState(() => {
+    return localStorage.getItem('selectedChatbot') || '';
+  });
+
   const { data: chatHistory, isLoading } = useQuery({
     queryKey: ["chatHistory"],
     queryFn: () => historyService.fetchChatbotHistory(),
   });
 
+  
+  
+  
+  
+  // Name/id cache for chatbots
   const [chatbotNames, setChatbotNames] = useState<{ [key: string]: string }>({});
-
-  const [sorting, setSorting] = useState<SortingState>([
-    { id: "time", desc: true }
-  ]);
-
-  const [selectedChatbot, setSelectedChatbot] = useState(() => {
-    return localStorage.getItem('selectedChatbot') || '';
-  });
-
-  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>(
-    []
-  );
-  const [columnVisibility, setColumnVisibility] =
-    useState<VisibilityState>({});
-  const [rowSelection, setRowSelection] = useState({});
-
-  useEffect(() => {
-    if (selectedChatbot) {
-      localStorage.setItem('selectedChatbot', selectedChatbot);
-    }
-  }, [selectedChatbot]);
-
-  const handleChatbotSelection = (id: string) => {
-    setSelectedChatbot(id);
-    localStorage.setItem("selectedChatbot", id);
-    table.getColumn("chatbot_id")?.setFilterValue(id);
-  };
   
   useEffect(() => {
     const fetchChatbotNames = async () => {
       if (chatHistory) {
         const chatbots = await chatbotService.fetchChatbots();
-        const namesMap = chatbots.reduce((acc: any, chatbot: any) => {
-          acc[chatbot.id] = chatbot.name;
-          return acc;
-        }, {});
+        const namesMap = Object.fromEntries(
+          chatbots.map((chatbot: any) => [chatbot.id, chatbot.name])
+        );
         setChatbotNames(namesMap);
       }
     };
-
     fetchChatbotNames();
   }, [chatHistory]);
+
+
+
+  useEffect(() => {
+    if (selectedChatbot) {
+      localStorage.setItem('selectedChatbot', selectedChatbot);
+      const chatbotId = Object.keys(chatbotNames).find(key => chatbotNames[key] === selectedChatbot);
+      table.getColumn("chatbot_id")?.setFilterValue(chatbotId);
+    }
+  }, [selectedChatbot, chatbotNames]);
+
+  const handleChatbotSelection = (name: string) => {
+    setSelectedChatbot(name);
+    
+  };
+ 
+
+  // Shadcn table stuff
+  const [sorting, setSorting] = useState<SortingState>([
+    { id: "time", desc: true }
+  ]);
+
+  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>(
+    []
+  );
+
+  const [columnVisibility, setColumnVisibility] =
+    useState<VisibilityState>({});
+
+  const [rowSelection, setRowSelection] = useState({});
 
   const columns: ColumnDef<any>[] = [
     {
@@ -206,7 +216,6 @@ export function PageHistory() {
       enableHiding: false,
       cell: ({ row }) => {
         const data = row.original;
-        console.log("ColumnDef rerendering...?");
         return (
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
@@ -260,14 +269,14 @@ export function PageHistory() {
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="outline">
-              {selectedChatbot ? chatbotNames[selectedChatbot] : "Select Chatbot"} <ChevronDown className="ml-2 h-4 w-4" />
+              {selectedChatbot || "Select Chatbot"} <ChevronDown className="ml-2 h-4 w-4" />
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="start">
             {Object.entries(chatbotNames).map(([id, name]) => (
               <DropdownMenuItem
                 key={id}
-                onClick={() => handleChatbotSelection(id)}
+                onClick={() => handleChatbotSelection(name)}
               >
                 {name}
               </DropdownMenuItem>
