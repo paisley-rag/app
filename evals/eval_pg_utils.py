@@ -46,7 +46,7 @@ def insert_dict_in(dict, table=''):
     conn.commit()
     cursor.close()
     conn.close()
-    print(f"JSONB data stored in '{table}' successfully.")
+    log.info(f"JSONB data stored in '{table}' successfully.")
 
 def get_data_from(table=''):
     log.info(f"retrieving data from {table}")

@@ -38,7 +38,7 @@ import {
 
 import { useQuery } from "@tanstack/react-query";
 
-import { evaluationsService } from "../../services/evaluations-service";
+import { historyService } from "../../services/history-service";
 
 export const columns: ColumnDef<any>[] = [
   {
@@ -175,10 +175,10 @@ export const columns: ColumnDef<any>[] = [
   },
 ];
 
-export function PageEvaluations() {
+export function PageHistory() {
   const { data: chatHistory, isLoading } = useQuery({
     queryKey: ["chatHistory"],
-    queryFn: () => evaluationsService.fetchChatbotHistory(),
+    queryFn: () => historyService.fetchChatbotHistory(),
     // staleTime: 5 * 60 * 1000, // 5 minutes
     // refetchOnWindowFocus: false, // Disable refetch on window focus
   });

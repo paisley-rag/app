@@ -55,6 +55,15 @@ async def upload_file(id, file):
         except Exception as e:
             return {"message": f"Error: {e}"}
         
+def delete(id):
+    result = mongo.delete_knowledge_base(id)
+    if result.deleted_count == 1:
+        return {"message": f"{id} deleted"}
+    else:
+        return {"message": f"{id} does not exist"}
+    
+
+        
 # config helpers to convert strings to numbers
 # probaly should be moved to help james too!
 def str_to_nums(config_dict):

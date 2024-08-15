@@ -3,7 +3,7 @@ import os
 import pymongo
 from dotenv import load_dotenv
 
-load_dotenv(override=True, dotenv_path=".env.testing")
+load_dotenv(override=True)
 
 
 MONGO_URI = os.environ["MONGO_URI"]
