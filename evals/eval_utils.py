@@ -7,12 +7,15 @@ def values_only(table_data):
 
 def extract_from_response(response):
     # creates context using 'text' from each 'node' in response's 'source_nodes'. also deletes any instances of '\n'
-    if not response or not response.source_nodes:
-        raise ValueError("Response is empty or invalid")
+    if not response:
+        raise ValueError("Response is empty")
     
-    source_nodes = response.source_nodes
-    context_list = [source_node.node.text.replace('\n', '') for source_node in source_nodes] 
-    context = '\n\n'.join(context_list)
+    if hasattr(response, 'source_nodes'):
+        source_nodes = response.source_nodes
+        context_list = [source_node.node.text.replace('\n', '') for source_node in source_nodes] 
+        context = '\n\n'.join(context_list)
+    else:
+        context = ''
 
     output = response.response
 
