@@ -34,9 +34,9 @@ export function GenerativeModelField({ control }: GenerativeModelFieldProps) {
                 <SelectValue placeholder="Generative Model" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="gpt-3.5-turbo">gpt-3.5-turbo</SelectItem>
-                <SelectItem value="option-2">Option 2</SelectItem>
-                <SelectItem value="option-3">Option 3</SelectItem>
+                <SelectItem value="gpt-4-turbo">gpt-4-turbo</SelectItem>
+                <SelectItem value="gpt-4o-mini">gpt-4o-mini</SelectItem>
+                <SelectItem value="gpt-4o">gpt-4o</SelectItem>
               </SelectContent>
             </Select>
           </FormControl>

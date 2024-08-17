@@ -62,6 +62,30 @@ def add_id_to_pipeline_config(name, inserted_id):
     )
     return result
 
+def update_pipeline(id, new_config):
+    old_config = get_one_pipeline(id)
+    updates = compare_configs(old_config, new_config)
+
+    if updates:
+        mongo = pymongo.MongoClient(MONGO_URI)
+        result = mongo[CONFIG_DB][CONFIG_PIPELINE_COL].update_one(
+            { "id": id },
+            { "$set": updates }
+        )
+        mongo.close()
+    
+    return get_one_pipeline(id)
+
+def compare_configs(old_config, new_config):
+    updates = {}
+    for key in new_config:
+        if new_config[key] != old_config[key]:
+            updates[key] = new_config[key]
+    return updates
+
+
+
+
 # def get_knowledge_base(id):
     # mongo = pymongo.MongoClient(MONGO_URI)
     # result = mongo[CONFIG_DB][CONFIG_PIPELINE_COL].find_one(

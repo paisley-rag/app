@@ -4,7 +4,6 @@ import { useQuery } from "@tanstack/react-query";
 // import { Input } from "@/components/ui/input";
 import { metricService } from "../../services/metric-service";
 
-import { useEffect } from 'react';
 import Highcharts from 'highcharts';
 import Exporting from 'highcharts/modules/exporting';
 import ExportData from 'highcharts/modules/export-data';
@@ -14,12 +13,24 @@ Exporting(Highcharts);
 ExportData(Highcharts);
 Accessibility(Highcharts);
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem } from "@/components/ui/dropdown-menu";
 import { chatbotService } from '../../services/chatbot-service';
 
+import { Button } from "@/components/ui/button";
+import { ChevronDown } from "lucide-react";
+
 export function PageLineChart() {
-  const [selectedChatbot, setSelectedChatbot] = useState(null);
+  const [selectedChatbot, setSelectedChatbot] = useState(() => {
+    return localStorage.getItem('selectedChatbot') || '';
+  });
+
+  useEffect(() => {
+    if (selectedChatbot) {
+      localStorage.setItem('selectedChatbot', selectedChatbot);
+    }
+  }, [selectedChatbot]);
+
   const { data: chatbots } = useQuery({
     queryKey: ["chatbots"],
     queryFn: () => chatbotService.fetchChatbots(),
@@ -46,13 +57,9 @@ export function PageLineChart() {
           },
           events: {
             render: function () {
-              // const info = this.xAxis[0]?.tickPositions?.info;
-
-              // if (info) {
-                this.setTitle({
-                  text: selectedChatbot || 'No chatbot selected'
-                });
-              // }
+              this.setTitle({
+                text: selectedChatbot || 'No chatbot selected'
+              });
             }
           }
         },
@@ -81,7 +88,9 @@ export function PageLineChart() {
     <div>
       <DropdownMenu>
         <DropdownMenuTrigger>
-          <button>Select Chatbot</button>
+          <Button variant="outline">
+            {selectedChatbot ? selectedChatbot : "Select Chatbot"} <ChevronDown className="ml-2 h-4 w-4" />
+          </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent>
           {chatbots?.map((chatbot: any) => (

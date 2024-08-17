@@ -49,7 +49,7 @@ export type ClientPipelineConfig = z.infer<typeof clientPipelineConfigSchema>;
 export type ServerPipelineConfig = z.infer<typeof serverPipelineConfigSchema>;
 
 async function updateChatbot(id: string, data: ClientPipelineConfig) {
-  const response = await axios.put(`${baseUrl}/api/chatbots/${id}`, data);
+  const response = await axios.put(`${baseUrl}/api/chatbots/${id}/update`, data);
   return response.data;
 }
 

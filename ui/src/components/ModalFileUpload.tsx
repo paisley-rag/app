@@ -7,7 +7,7 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Dispatch, SetStateAction } from "react";
+import { Dispatch, SetStateAction, useState } from "react";
 import { Overlay } from "./Overlay";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -35,6 +35,7 @@ const formSchema = z.object({
 });
 
 export function ModalFileUpload({ setModalVisible, id }: ModalFileUploadProps) {
+  const [loadingStatus, setLoadingStatus] = useState<string | null>(null);
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
   });
@@ -44,20 +45,21 @@ export function ModalFileUpload({ setModalVisible, id }: ModalFileUploadProps) {
   }
 
   function onSubmit(values: z.infer<typeof formSchema>) {
+    setLoadingStatus("File loading, please wait...");
     uploadMutation.mutate(values.file);
   }
 
   const uploadMutation = useMutation({
     mutationFn: async (file: File) => {
-      knowledgeBaseService.uploadFile(id, file);
+      return await knowledgeBaseService.uploadFile(id, file);
     },
-    onSuccess: () => {
+    onSuccess: async () => {
+      await new Promise((resolve) => setTimeout(resolve, 0)); // Ensures synchronous execution
       setModalVisible(false);
-      // You might want to add a success notification here
     },
     onError: (error) => {
+      setLoadingStatus("Error uploading file");
       console.error("Error uploading file:", error);
-      // You might want to add an error notification here
     },
   });
 
@@ -100,6 +102,7 @@ export function ModalFileUpload({ setModalVisible, id }: ModalFileUploadProps) {
                 </Button>
                 <Button type="submit">Upload</Button>
               </div>
+              {loadingStatus && <p>{loadingStatus}</p>}
             </form>
           </Form>
         </CardContent>

@@ -76,19 +76,23 @@ export const clientKnowledgeBaseConfigSchema = z.intersection(
   z.discriminatedUnion("ingest_method", [
     z.object({
       id: z.string().optional(),
-      kb_name: z.string(),
+      kb_name: z
+      .string()
+      .regex(/^\S*$/, "Knowledge Base Name cannot contain spaces"),
       ingest_method: z.literal("LlamaParse"),
       llm_config: llmConfigSchema,
       embed_config: embeddingConfigSchema,
     }),
     z.object({
       id: z.string().optional(),
-      kb_name: z.string(),
+      kb_name: z
+      .string()
+      .regex(/^\S*$/, "Knowledge Base Name cannot contain spaces"),
       ingest_method: z.literal("Simple"),
       embed_config: embeddingConfigSchema,
     }),
   ]),
-  splitterConfigSchema
+  splitterConfigSchema,
 );
 
 const fileSchema = z.object({

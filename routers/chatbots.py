@@ -62,6 +62,14 @@ async def post_chatbots(request: Request):
 
         return new_pipeline
 
+@router.put('/{id}/update')
+async def update_chatbot(id: str, request: Request):
+    body = await request.json()
+    log.info(f"/api/chatbots/{id}/update body: ", body)
+
+    result = mutil.update_pipeline(id, body)
+    return result
+
 @router.delete('/{id}/delete')
 async def delete_chatbot(id: str):
     result = mutil.delete_pipeline(id)
