@@ -1,0 +1,3 @@
+#!/bin/bash
+
+docker run -d -it --name artillery --mount type=bind,source="$(pwd)",target=/scripts artilleryio/artillery:latest run /scripts/$1 --output /scripts/report-$1.json
