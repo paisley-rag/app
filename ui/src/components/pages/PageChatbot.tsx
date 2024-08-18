@@ -2,7 +2,7 @@ import { Typography } from "../Typography";
 import { Chatbot } from "../Chatbot";
 import { ChatbotConfiguration } from "../ChatbotConfiguration";
 import { chatbotService } from "@/services/chatbot-service";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useLocation } from "wouter";
 import {
   knowledgeBaseService,
@@ -40,6 +40,8 @@ export function PageChatbot({ id }: PageChatbotProps) {
     queryFn: knowledgeBaseService.fetchKnowledgeBases,
   });
 
+  const queryClient = useQueryClient();
+
   const [, navigate] = useLocation();
 
   function handleBackClick() {
@@ -47,18 +49,23 @@ export function PageChatbot({ id }: PageChatbotProps) {
   }
 
   const deleteMutation = useMutation({
-    mutationFn: (id: string) => axios.delete(`${baseUrl}/api/chatbots/${id}/delete`),
+    // mutationFn: () => axios.delete(`${baseUrl}/api/chatbots/${id}/delete`),
+    mutationFn: async () => {
+      axios.delete(`${baseUrl}/api/chatbots/${id}/delete`);
+      return true;
+    },
     onSuccess: () => {
-      navigate('/chatbots'); // doesn't work for some reason
+      queryClient.invalidateQueries({ queryKey: ["chatbot"] });
+      navigate('/chatbots'); 
     },
     onError: (error) => {
       console.error("Error deleting chatbot:", error);
     },
   });
 
-  function handleDeleteClick(id: string) {
+  function handleDeleteClick() {
     if (window.confirm("Are you sure you want to delete this chatbot?")) {
-      deleteMutation.mutate(id);
+      deleteMutation.mutate();
     }
   }
 
@@ -111,7 +118,7 @@ export function PageChatbot({ id }: PageChatbotProps) {
           <ChatbotConfiguration
             chatbot={chatbot}
             knowledgeBases={knowledgeBases}
-            onDeleteClick={(id: string) => handleDeleteClick(id)}
+            onDeleteClick={() => handleDeleteClick()}
           />
         </div>
       </>

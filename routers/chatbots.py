@@ -72,6 +72,7 @@ async def update_chatbot(id: str, request: Request):
 
 @router.delete('/{id}/delete')
 async def delete_chatbot(id: str):
+    log.info(f"/api/chatbots DELETE request received for {id}")
     result = mutil.delete_pipeline(id)
     if result.deleted_count == 1:
         return {"message": f"{id} deleted"}
