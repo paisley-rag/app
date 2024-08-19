@@ -2,7 +2,6 @@ import os
 
 import pymongo
 from dotenv import load_dotenv
-# import app_logger as log
 
 load_dotenv(override=True)
 
@@ -82,41 +81,3 @@ def compare_configs(old_config, new_config):
         if new_config[key] != old_config[key]:
             updates[key] = new_config[key]
     return updates
-
-
-
-
-# def get_knowledge_base(id):
-    # mongo = pymongo.MongoClient(MONGO_URI)
-    # result = mongo[CONFIG_DB][CONFIG_PIPELINE_COL].find_one(
-
-# unused
-# def update(db_name, db_collection, filter=None, newObj=None):
-#     mongo[db_name][db_collection].UpdateOne(filter, newObj)
-#     log.info(f"mongo_util.py update:  {db_name} {db_collection} {filter} {newObj}")
-
-
-# {
-#     "name": "test1",
-#     "knowledge_bases": [
-#         "66b57127c01ea14ceaeeda98"
-#     ],
-#     "generative_model": "gpt-4-o",
-#     "postprocessing": {
-#         "similarity": {
-#             "on": "True",
-#             "similarity_cutoff": 0.0
-#         },
-#         "colbert_rerank": {
-#             "on": "True",
-#             "top_n": 0.0
-#         },
-#         "long_context_reorder": {
-#             "on": "True"
-#         },
-#     },
-#     "prompt": {
-#         "on": "True",
-#         "template_str": "Hello"
-#     },
-# }

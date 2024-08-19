@@ -2,7 +2,7 @@ import { Typography } from "../Typography";
 import { Chatbot } from "../Chatbot";
 import { ChatbotConfiguration } from "../ChatbotConfiguration";
 import { chatbotService } from "@/services/chatbot-service";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useQuery, useQueryClient, useMutation } from "@tanstack/react-query";
 import { useLocation } from "wouter";
 import {
   knowledgeBaseService,
@@ -12,10 +12,6 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
 import { ArrowLeftIcon } from "lucide-react";
 import { ErrorMessageWithReload } from "../ErrorMessageWithReload";
-import axios from "axios";
-
-import { useMutation } from "@tanstack/react-query";
-const baseUrl = import.meta.env.VITE_BASE_URL;
 
 interface PageChatbotProps {
   id: string;
@@ -49,13 +45,15 @@ export function PageChatbot({ id }: PageChatbotProps) {
   }
 
   const deleteMutation = useMutation({
-    // mutationFn: () => axios.delete(`${baseUrl}/api/chatbots/${id}/delete`),
     mutationFn: async () => {
-      axios.delete(`${baseUrl}/api/chatbots/${id}/delete`);
-      return true;
+      // Note: Note sure WHY this works, but it seems critical:
+      // - mutationFn defined as 'async'
+      // - having the return statement on a separate line from service call
+      chatbotService.deleteChatbotById(id);
+      return
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["chatbot"] });
+      queryClient.invalidateQueries({ queryKey: ["chatbot", id] });
       navigate('/chatbots'); 
     },
     onError: (error) => {

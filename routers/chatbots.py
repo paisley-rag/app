@@ -19,7 +19,6 @@ class QueryBody(UserQuery):
 async def get_chatbots():
     log.info('/api/chatbots loaded')
     results = mutil.get_all_pipelines()
-    log.info('/api/chatbots results:', results)
     return results
 
 @router.get('/{id}')
