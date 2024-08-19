@@ -216,10 +216,10 @@ export function PageHistory() {
       },
     },
     {
-      accessorKey: "context_relevancy",
-      header: () => <div className="text-right">Context Relevancy</div>,
+      accessorKey: "contextual_relevancy",
+      header: () => <div className="text-right">Contextual Relevancy</div>,
       cell: ({ row }) => {
-        const score = parseFloat(row.getValue("context_relevancy"));
+        const score = parseFloat(row.getValue("contextual_relevancy"));
         return <div className="text-right font-medium">{score.toFixed(2)}</div>;
       },
     },
