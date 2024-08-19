@@ -11,20 +11,17 @@ def get_scores(query, context, output):
         retrieval_context=[context],
         actual_output=output
     )
+
+    metrics = [
+        ("answer_relevancy", AnswerRelevancyMetric()),
+        ("faithfulness", FaithfulnessMetric()),
+        ("context_relevancy", ContextualRelevancyMetric())
+    ]
     
-    relevancy_metric = AnswerRelevancyMetric()
-    faithfulness_metric = FaithfulnessMetric()
-    context_relevancy_metric = ContextualRelevancyMetric()
-
-    relevancy_metric.measure(test_case)
-    faithfulness_metric.measure(test_case)
-    context_relevancy_metric.measure(test_case)
-
-    scores = {
-        "answer_relevancy": relevancy_metric.score,
-        "faithfulness": faithfulness_metric.score,
-        "context_relevancy": context_relevancy_metric.score,
-    }
+    scores = {}
+    for name, metric in metrics:
+        metric.measure(test_case)
+        scores[name] = metric.score
     
     # print('SCORES:', scores)
     return scores
