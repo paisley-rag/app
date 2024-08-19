@@ -215,6 +215,14 @@ export function PageHistory() {
         return <div className="text-right font-medium">{score.toFixed(2)}</div>;
       },
     },
+    {
+      accessorKey: "context_relevancy",
+      header: () => <div className="text-right">Context Relevancy</div>,
+      cell: ({ row }) => {
+        const score = parseFloat(row.getValue("context_relevancy"));
+        return <div className="text-right font-medium">{score.toFixed(2)}</div>;
+      },
+    },
     // {
     //   id: "actions",
     //   enableHiding: false,

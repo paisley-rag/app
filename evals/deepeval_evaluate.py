@@ -11,6 +11,7 @@ def get_scores(query, context, output):
         retrieval_context=[context],
         actual_output=output
     )
+    
     relevancy_metric = AnswerRelevancyMetric()
     faithfulness_metric = FaithfulnessMetric()
     context_relevancy_metric = ContextualRelevancyMetric()
