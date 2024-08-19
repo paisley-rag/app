@@ -66,6 +66,7 @@ async def upload_file(id: str, file: UploadFile=File(...)):
 @app.post('/api/query')
 async def post_query(body: pq.QueryBody, background_tasks: BackgroundTasks):
     response = pq.post_query(body)
+    log.info(f"Adding background task for chatbot_id: {body.chatbot_id}, query: {body.query}")
     background_tasks.add_task(
         evals.store_running_eval_data,
         body.chatbot_id,
