@@ -18,7 +18,12 @@ def get_scores(query, context, output):
         ContextualRelevancyMetric(threshold=0),
     ]
     
-    scores = evaluate([test_case], metrics, print_results=False)
+    scores = evaluate(
+        [test_case],
+        metrics,
+        print_results=False,
+        verbose_mode=False,
+    )
     
     data = scores[0].metrics_data
     final_scores = {}
