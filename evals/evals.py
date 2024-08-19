@@ -44,7 +44,7 @@ def get_chat_history():
             'context': tuple[2]['context'],
             'faithfulness': tuple[2]['scores']['faithfulness'],
             'answer_relevancy': tuple[2]['scores']['answer_relevancy'],
-            'context_relevancy': tuple[2]['scores']['context_relevancy'] or "N/A",
+            'context_relevancy': tuple[2]['scores']['context_relevancy'],
         }
         json_data_list.append(json_data)
 
