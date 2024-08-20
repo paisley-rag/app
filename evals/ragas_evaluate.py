@@ -9,7 +9,7 @@ def get_scores(query, context, output):
     data_samples = {
         'question': [query],
         'answer': [output],
-        'contexts' : [[context]], # currently the context is globbed into one string, can change that later
+        'contexts' : [context], # currently the context is globbed into one string, can change that later
     }
 
     dataset = Dataset.from_dict(data_samples)
