@@ -5,7 +5,7 @@ from ragas.metrics import answer_relevancy, faithfulness
 
 import db.evals.eval_utils as utils
 
-async def get_scores(query, context, output):
+def get_scores(query, context, output):
     data_samples = {
         'question': [query],
         'answer': [output],
