@@ -1,6 +1,6 @@
 import axios from "axios";
 import { SeriesOptionsType } from 'highcharts';
-const baseUrl = import.meta.env.VITE_BASE_URL;
+import { AXIOS_CONFIG, baseUrl } from '../lib/utils.ts';
 
 import { chatbotService } from './chatbot-service';
 
@@ -53,7 +53,7 @@ async function fetchChatbotMetrics(chatbotName: string | null) {
     return seriesFromData();
   }
 
-  const response = await axios.get(`${baseUrl}/api/history`);
+  const response = await axios.get(`${baseUrl}/api/history`, AXIOS_CONFIG);
   let data = response.data
 
   data = data.filter((entry: any) => entry.chatbot_id === chatbot.id);

@@ -19,7 +19,6 @@ class QueryBody(UserQuery):
 async def get_chatbots():
     log.info('/api/chatbots loaded')
     results = mutil.get_all_pipelines()
-    log.info('/api/chatbots results:', results)
     return results
 
 @router.get('/{id}')
@@ -72,6 +71,7 @@ async def update_chatbot(id: str, request: Request):
 
 @router.delete('/{id}/delete')
 async def delete_chatbot(id: str):
+    log.info(f"/api/chatbots DELETE request received for {id}")
     result = mutil.delete_pipeline(id)
     if result.deleted_count == 1:
         return {"message": f"{id} deleted"}

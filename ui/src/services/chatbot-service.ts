@@ -1,7 +1,7 @@
 import axios from "axios";
 import { z } from "zod";
+import { AXIOS_CONFIG, baseUrl } from '../lib/utils.ts';
 
-const baseUrl = import.meta.env.VITE_BASE_URL;
 
 export const clientPipelineConfigSchema = z.object({
   id: z.string().optional(),
@@ -49,22 +49,27 @@ export type ClientPipelineConfig = z.infer<typeof clientPipelineConfigSchema>;
 export type ServerPipelineConfig = z.infer<typeof serverPipelineConfigSchema>;
 
 async function updateChatbot(id: string, data: ClientPipelineConfig) {
-  const response = await axios.put(`${baseUrl}/api/chatbots/${id}/update`, data);
+  const response = await axios.put(`${baseUrl}/api/chatbots/${id}/update`, data, AXIOS_CONFIG);
   return response.data;
 }
 
 async function createChatbot(data: ClientPipelineConfig) {
-  const response = await axios.post(`${baseUrl}/api/chatbots`, data);
+  const response = await axios.post(`${baseUrl}/api/chatbots`, data, AXIOS_CONFIG);
   return response.data;
 }
 
 async function fetchChatbots() {
-  const response = await axios.get(`${baseUrl}/api/chatbots`);
+  const response = await axios.get(`${baseUrl}/api/chatbots`, AXIOS_CONFIG);
   return response.data;
 }
 
 async function fetchChatbotById(id: string) {
-  const response = await axios.get(`${baseUrl}/api/chatbots/${id}`);
+  const response = await axios.get(`${baseUrl}/api/chatbots/${id}`, AXIOS_CONFIG);
+  return response.data;
+}
+
+async function deleteChatbotById(id: string) {
+  const response = await axios.delete(`${baseUrl}/api/chatbots/${id}/delete`, AXIOS_CONFIG);
   return response.data;
 }
 
@@ -73,4 +78,5 @@ export const chatbotService = {
   fetchChatbots,
   fetchChatbotById,
   createChatbot,
+  deleteChatbotById,
 };

@@ -1,13 +1,9 @@
-import { useMutation } from "@tanstack/react-query";
-import axios from "axios";
-
-const baseUrl = import.meta.env.VITE_BASE_URL;
 import {
   knowledgeBaseService,
   ServerKnowledgeBaseConfig,
 } from "@/services/knowledge-base-service";
 import { ArrowLeftIcon } from "lucide-react";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation } from "@tanstack/react-query";
 import { useLocation } from "wouter";
 import { Typography } from "../Typography";
 import { useState } from "react";
@@ -44,7 +40,7 @@ export function PageKnowledgeBase({ id }: PageKnowledgeBaseProps) {
 
 
   const deleteMutation = useMutation({
-    mutationFn: () => axios.delete(`${baseUrl}/api/knowledge-bases/${id}/delete`),
+    mutationFn: () => knowledgeBaseService.deleteKnowledgeBase(id),
     onSuccess: () => {
       setLocation("/knowledge-bases/");
     },
