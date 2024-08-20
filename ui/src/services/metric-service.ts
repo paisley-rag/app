@@ -23,6 +23,11 @@ function seriesFromData(test_data: any[] = []): SeriesData[] {
       type: 'line',
       name: 'answer_relevancy',
       data: []
+    },
+    {
+      type: 'line',
+      name: 'contextual_relevancy',
+      data: []
     }
   ];
   
@@ -34,6 +39,7 @@ function seriesFromData(test_data: any[] = []): SeriesData[] {
     let time_ms = new Date(entry.time).getTime();
     series[0].data.push([time_ms, entry.faithfulness]);
     series[1].data.push([time_ms, entry.answer_relevancy]);
+    series[2].data.push([time_ms, entry.contextual_relevancy]);
   });
   return series;
 }

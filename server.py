@@ -1,4 +1,4 @@
-from fastapi import FastAPI, Depends
+from fastapi import FastAPI, Depends, BackgroundTasks
 from fastapi.middleware.cors import CORSMiddleware
 import nest_asyncio
 
@@ -48,9 +48,11 @@ async def root():
 
 # query route
 @app.post('/api/query')
-async def post_query(body: pq.QueryBody, auth: bool = Depends(check_key)):
+async def post_query(body: pq.QueryBody, auth: bool = Depends(check_key), background_tasks: BackgroundTasks):
     response = pq.post_query(body)
-    evals.store_running_eval_data(
+    log.info(f"Adding background task for chatbot_id: {body.chatbot_id}, query: {body.query}")
+    background_tasks.add_task(
+        evals.store_running_eval_data,
         body.chatbot_id,
         body.query,
         response

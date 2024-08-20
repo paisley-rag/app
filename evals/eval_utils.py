@@ -12,10 +12,11 @@ def extract_from_response(response):
     
     if hasattr(response, 'source_nodes'):
         source_nodes = response.source_nodes
-        context_list = [source_node.node.text.replace('\n', '') for source_node in source_nodes] 
-        context = '\n\n'.join(context_list)
+        context_list = [source_node.node.text.replace('\n', ' ') for source_node in source_nodes] 
+        # context = '\n\n'.join(context_list)
+        context = context_list
     else:
-        context = ''
+        context = ['']
 
     output = response.response
 
