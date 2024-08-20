@@ -180,7 +180,7 @@ export function PageHistory() {
       cell: ({ row }) => {
         const output = row.getValue("output") as string;
         return (
-          <div className="text-right font-medium">
+          <div className="text-left font-medium">
             {output.slice(0, 150) + (output.length > 150 ? "..." : "")}
           </div>
         );
@@ -188,14 +188,36 @@ export function PageHistory() {
     },
     {
       accessorKey: "context",
-      header: () => <div className="text-right">Context</div>,
+      header: () => <div className="text-left">Context</div>,
+      // cell: ({ row }) => {
+      //   const context = row.getValue("context") as string;
+      //   return (
+      //     <div className="text-right font-medium">
+      //       {context.slice(0, 150) + (context.length > 150 ? "..." : "")}
+      //     </div>
+      //   );
+      // },
       cell: ({ row }) => {
-        const context = row.getValue("context") as string;
-        return (
-          <div className="text-right font-medium">
-            {context.slice(0, 150) + (context.length > 150 ? "..." : "")}
-          </div>
-        );
+        const context = row.getValue("context") as string | string[];
+        const cellStyle = { width: '250px' };
+
+        if (Array.isArray(context)) {
+          return (
+            <div className="text-left font-small" style={cellStyle}>
+              {context.map((entry, index) => (
+                <div key={index}>
+                  {`CONTEXT ${index + 1}: ${entry.slice(0, 150) + (entry.length > 150 ? "..." : "")}`}
+                </div>
+              ))}
+            </div>
+          );
+        } else {
+          return (
+            <div className="text-left font-small" style={cellStyle}>
+              {context.slice(0, 150) + (context.length > 150 ? "..." : "")}
+            </div>
+          );
+        }
       },
     },
     {
