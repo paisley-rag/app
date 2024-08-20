@@ -5,7 +5,7 @@ from deepeval.metrics import AnswerRelevancyMetric, FaithfulnessMetric, Contextu
 from dotenv import load_dotenv
 load_dotenv()
 
-def get_scores(query, context, output):
+async def get_scores(query, context, output):
     test_case = LLMTestCase(
         input=query, 
         retrieval_context=context,
