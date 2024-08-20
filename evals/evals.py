@@ -16,8 +16,10 @@ def store_running_eval_data(chatbot_id, query, response):
 # takes query/context/output, scores on 'answer_relevancy' and 'faithfulness'
 # using RAGAs, inserts data into 'chat_history' table
 def evaluate_and_store_running_entry(chatbot_id, query, context, output):
-    # scores = ragas.get_scores(query, context, output)
-    scores = deepeval.get_scores(query, context, output)
+    ragas_scores = ragas.get_scores(query, context, output)
+    deepeval_scores = deepeval.get_scores(query, context, output)
+
+    scores = {**ragas_scores, **deepeval_scores}
 
     entry = {
         'chatbot_id': chatbot_id,

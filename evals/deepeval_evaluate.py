@@ -13,8 +13,8 @@ def get_scores(query, context, output):
     )
 
     metrics = [
-        AnswerRelevancyMetric(threshold=0),
-        FaithfulnessMetric(threshold=0),
+        # AnswerRelevancyMetric(threshold=0),
+        # FaithfulnessMetric(threshold=0),
         ContextualRelevancyMetric(threshold=0),
     ]
     
