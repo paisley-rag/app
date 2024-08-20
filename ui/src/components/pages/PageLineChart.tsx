@@ -67,7 +67,7 @@ export function PageLineChart() {
           type: 'datetime',
           minRange: minRange || 1000 * 60 * 60 * 24 * 3, // maximum zoom allowed: 2 days
           units: [
-            ['minute', [1, 5, 15, 30]],
+            ['minute', [5, 15, 30]],
             ['hour', [1, 6, 12]],
             ['day', [1]]
           ],

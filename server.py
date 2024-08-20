@@ -48,7 +48,7 @@ async def root():
 
 # query route
 @app.post('/api/query')
-async def post_query(body: pq.QueryBody, auth: bool = Depends(check_key), background_tasks: BackgroundTasks):
+async def post_query(body: pq.QueryBody, background_tasks: BackgroundTasks, auth: bool = Depends(check_key)):
     response = pq.post_query(body)
     log.info(f"Adding background task for chatbot_id: {body.chatbot_id}, query: {body.query}")
     background_tasks.add_task(
