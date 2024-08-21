@@ -67,9 +67,13 @@ export function PageLineChart() {
           type: 'datetime',
           minRange: minRange || 1000 * 60 * 60 * 24 * 3, // maximum zoom allowed: 2 days
           units: [
-            ['day', [1, 4]],
-            ['month', [1]]
-          ]
+            ['minute', [5, 15, 30]],
+            ['hour', [1, 6, 12]],
+            ['day', [1]]
+          ],
+          title: {
+            text: 'Time'
+          }
         },
         yAxis: {
           min: 0, // Set your desired minimum value

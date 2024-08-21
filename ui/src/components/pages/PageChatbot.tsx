@@ -2,7 +2,7 @@ import { Typography } from "../Typography";
 import { Chatbot } from "../Chatbot";
 import { ChatbotConfiguration } from "../ChatbotConfiguration";
 import { chatbotService } from "@/services/chatbot-service";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient, useMutation } from "@tanstack/react-query";
 import { useLocation } from "wouter";
 import {
   knowledgeBaseService,
@@ -12,10 +12,6 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
 import { ArrowLeftIcon } from "lucide-react";
 import { ErrorMessageWithReload } from "../ErrorMessageWithReload";
-import axios from "axios";
-
-import { useMutation } from "@tanstack/react-query";
-const baseUrl = import.meta.env.VITE_BASE_URL;
 
 interface PageChatbotProps {
   id: string;
@@ -40,6 +36,8 @@ export function PageChatbot({ id }: PageChatbotProps) {
     queryFn: knowledgeBaseService.fetchKnowledgeBases,
   });
 
+  const queryClient = useQueryClient();
+
   const [, navigate] = useLocation();
 
   function handleBackClick() {
@@ -47,18 +45,25 @@ export function PageChatbot({ id }: PageChatbotProps) {
   }
 
   const deleteMutation = useMutation({
-    mutationFn: (id: string) => axios.delete(`${baseUrl}/api/chatbots/${id}/delete`),
+    mutationFn: async () => {
+      // Note: Note sure WHY this works, but it seems critical:
+      // - mutationFn defined as 'async'
+      // - having the return statement on a separate line from service call
+      chatbotService.deleteChatbotById(id);
+      return
+    },
     onSuccess: () => {
-      navigate('/chatbots'); // doesn't work for some reason
+      queryClient.invalidateQueries({ queryKey: ["chatbot", id] });
+      navigate('/chatbots'); 
     },
     onError: (error) => {
       console.error("Error deleting chatbot:", error);
     },
   });
 
-  function handleDeleteClick(id: string) {
+  function handleDeleteClick() {
     if (window.confirm("Are you sure you want to delete this chatbot?")) {
-      deleteMutation.mutate(id);
+      deleteMutation.mutate();
     }
   }
 
@@ -111,7 +116,7 @@ export function PageChatbot({ id }: PageChatbotProps) {
           <ChatbotConfiguration
             chatbot={chatbot}
             knowledgeBases={knowledgeBases}
-            onDeleteClick={(id: string) => handleDeleteClick(id)}
+            onDeleteClick={() => handleDeleteClick()}
           />
         </div>
       </>

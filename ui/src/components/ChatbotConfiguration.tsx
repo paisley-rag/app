@@ -29,7 +29,7 @@ import { RotateCw } from "lucide-react";
 interface ChatbotConfigurationProps {
   chatbot: ServerPipelineConfig;
   knowledgeBases: ServerKnowledgeBaseConfig[];
-  onDeleteClick: (id: string) => void;
+  onDeleteClick: () => void;
 }
 
 export function ChatbotConfiguration({
@@ -88,7 +88,7 @@ export function ChatbotConfiguration({
           <ColbertRerankField control={form.control} />
           <LongContextReorderField control={form.control} />
           <PromptField control={form.control} />
-          <Button variant="destructive" onClick={() => onDeleteClick(chatbot.id)}>
+          <Button variant="destructive" onClick={onDeleteClick}>
             Delete Chatbot
           </Button>
         </form>

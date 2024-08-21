@@ -1,7 +1,6 @@
 import axios from "axios";
 import { z } from "zod";
-
-const baseUrl = import.meta.env.VITE_BASE_URL;
+import { AXIOS_CONFIG, baseUrl } from '../lib/utils.ts';
 
 const markdownSplitterConfig = z.object({
   splitter: z.literal("Markdown"),
@@ -121,17 +120,17 @@ export type ServerKnowledgeBaseConfig = z.infer<
 >;
 
 async function fetchKnowledgeBases() {
-  const response = await axios.get(`${baseUrl}/api/knowledge-bases`);
+  const response = await axios.get(`${baseUrl}/api/knowledge-bases`, AXIOS_CONFIG);
   return response.data;
 }
 
 async function fetchKnowledgeBaseById(id: string) {
-  const response = await axios.get(`${baseUrl}/api/knowledge-bases/${id}`);
+  const response = await axios.get(`${baseUrl}/api/knowledge-bases/${id}`, AXIOS_CONFIG);
   return response.data;
 }
 
 async function createKnowledgeBase(config: ClientKnowledgeBaseConfig) {
-  const response = await axios.post(`${baseUrl}/api/knowledge-bases`, config);
+  const response = await axios.post(`${baseUrl}/api/knowledge-bases`, config, AXIOS_CONFIG);
   return response.data;
 }
 
@@ -145,9 +144,15 @@ async function uploadFile(id: string, file: File) {
     {
       headers: {
         "Content-Type": "multipart/form-data",
+        ...AXIOS_CONFIG['headers']
       },
     }
   );
+  return response.data;
+}
+
+async function deleteKnowledgeBase(id: string) {
+  const response = await axios.delete(`${baseUrl}/api/knowledge-bases/${id}/delete`, AXIOS_CONFIG);
   return response.data;
 }
 
@@ -156,4 +161,5 @@ export const knowledgeBaseService = {
   fetchKnowledgeBaseById,
   createKnowledgeBase,
   uploadFile,
+  deleteKnowledgeBase
 };

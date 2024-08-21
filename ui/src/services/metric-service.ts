@@ -1,6 +1,6 @@
 import axios from "axios";
 import { SeriesOptionsType } from 'highcharts';
-const baseUrl = import.meta.env.VITE_BASE_URL;
+import { AXIOS_CONFIG, baseUrl } from '../lib/utils.ts';
 
 import { chatbotService } from './chatbot-service';
 
@@ -23,6 +23,11 @@ function seriesFromData(test_data: any[] = []): SeriesData[] {
       type: 'line',
       name: 'answer_relevancy',
       data: []
+    },
+    {
+      type: 'line',
+      name: 'contextual_relevancy',
+      data: []
     }
   ];
   
@@ -34,6 +39,7 @@ function seriesFromData(test_data: any[] = []): SeriesData[] {
     let time_ms = new Date(entry.time).getTime();
     series[0].data.push([time_ms, entry.faithfulness]);
     series[1].data.push([time_ms, entry.answer_relevancy]);
+    series[2].data.push([time_ms, entry.contextual_relevancy]);
   });
   return series;
 }
@@ -47,7 +53,7 @@ async function fetchChatbotMetrics(chatbotName: string | null) {
     return seriesFromData();
   }
 
-  const response = await axios.get(`${baseUrl}/api/history`);
+  const response = await axios.get(`${baseUrl}/api/history`, AXIOS_CONFIG);
   let data = response.data
 
   data = data.filter((entry: any) => entry.chatbot_id === chatbot.id);
