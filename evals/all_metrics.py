@@ -1,7 +1,16 @@
 import os
 import importlib
+import json
 
 def all_scores(query, context, output):
+    eval_config_path = os.path.join(os.path.dirname(__file__), 'eval_config.json')
+    with open(eval_config_path, 'r') as f:
+        eval_config = json.load(f)
+    
+    if eval_config.get('evaluation_toggle', 'false').lower() == 'false':
+        return {}
+
+
     # Get all filenames within the 'metrics' directory
     script_dir = os.path.dirname(os.path.abspath(__file__))
     metrics_dir = os.path.join(script_dir, 'metrics')

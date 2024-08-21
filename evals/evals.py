@@ -31,6 +31,8 @@ def evaluate_and_store_running_entry(chatbot_id, query, context, output):
 def get_chat_history():
     data = pg.get_data_from('chat_history')
     
+    score_names = utils.get_score_names()
+    
     json_data_list = []
 
     for tuple in data:
@@ -41,10 +43,11 @@ def get_chat_history():
             'input': tuple[2]['input'],
             'output': tuple[2]['output'],
             'context': tuple[2]['context'],
-            'faithfulness': tuple[2]['scores']['faithfulness'],
-            'answer_relevancy': tuple[2]['scores']['answer_relevancy'],
-            'contextual_relevancy': tuple[2]['scores']['contextual_relevancy'],
         }
+
+        for score in score_names:
+            json_data[score] = tuple[2]['scores'].get(score, None)
+
         json_data_list.append(json_data)
 
     return json_data_list
