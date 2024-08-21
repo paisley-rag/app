@@ -20,12 +20,13 @@ else:
 
 
 @app.task
-def run_evals_background(chatbot_id, query, response):
-    print('celery.py run_evals_background: info received', chatbot_id, query, response)
-    evals.store_running_eval_data(
+def run_evals_background(chatbot_id, query, context, output):
+    print('celery.py run_evals_background: info received', chatbot_id, query, context, output)
+    evals.evaluate_and_store_running_entry(
         chatbot_id,
         query,
-        response
+        context,
+        output
     )
     print('celery.py run_evals_background:  task complete?')
     return f'run_evals_background: chatbot_id: {chatbot_id}, query: {query}'
