@@ -59,7 +59,6 @@ export function PageHistory() {
   });
 
   
-  const scoreNames = evalConfig.scores;
   
   
   // Name/id cache for chatbots
@@ -107,6 +106,8 @@ export function PageHistory() {
     useState<VisibilityState>({});
 
   const [rowSelection, setRowSelection] = useState({});
+
+  const scoreNames = evalConfig.scores;
 
   const columns: ColumnDef<any>[] = [
     {
