@@ -13,8 +13,9 @@ def extract_from_response(response):
     if hasattr(response, 'source_nodes'):
         source_nodes = response.source_nodes
         context_list = [source_node.node.text.replace('\n', ' ') for source_node in source_nodes] 
+        print('CONTEXT_LIST:', context_list)
         # context = '\n\n'.join(context_list)
-        context = context_list
+        context = context_list or ['']
     else:
         context = ['']
 

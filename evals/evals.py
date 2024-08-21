@@ -1,7 +1,8 @@
 import db.evals.eval_pg_utils as pg
 import db.evals.eval_utils as utils
-import db.evals.ragas_evaluate as ragas
-import db.evals.deepeval_evaluate as deepeval
+# import db.evals.ragas_evaluate as ragas
+# import db.evals.deepeval_evaluate as deepeval
+import db.evals.all_metrics as all_metrics
 
 # from server import UserQuery, post_query
 
@@ -12,14 +13,10 @@ def store_running_eval_data(chatbot_id, query, response):
     context, output = utils.extract_from_response(response)
     evaluate_and_store_running_entry(chatbot_id, query, context, output)
 
-
 # takes query/context/output, scores on 'answer_relevancy' and 'faithfulness'
 # using RAGAs, inserts data into 'chat_history' table
 def evaluate_and_store_running_entry(chatbot_id, query, context, output):
-    ragas_scores = ragas.get_scores(query, context, output)
-    deepeval_scores = deepeval.get_scores(query, context, output)
-
-    scores = {**ragas_scores, **deepeval_scores}
+    scores = all_metrics.all_scores(query, context, output)
 
     entry = {
         'chatbot_id': chatbot_id,
