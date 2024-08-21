@@ -1,4 +1,5 @@
-from fastapi import FastAPI, Depends, BackgroundTasks
+import json
+from fastapi import FastAPI, Depends
 from fastapi.middleware.cors import CORSMiddleware
 import nest_asyncio
 
@@ -6,6 +7,7 @@ import db.app_logger as log
 import db.evals.evals as evals
 import db.pipeline.query as pq
 
+from db.celery.tasks import run_evals_background
 from db.routers import chatbots
 from db.routers import api_auth
 from db.routers import knowledge_bases
@@ -48,15 +50,15 @@ async def root():
 
 # query route
 @app.post('/api/query')
-async def post_query(body: pq.QueryBody, background_tasks: BackgroundTasks, auth: bool = Depends(check_key)):
+async def post_query(body: pq.QueryBody, auth: bool = Depends(check_key)):
     response = pq.post_query(body)
     log.info(f"Adding background task for chatbot_id: {body.chatbot_id}, query: {body.query}")
-    background_tasks.add_task(
-        evals.store_running_eval_data,
-        body.chatbot_id,
-        body.query,
-        response
-    )
+    log.info(f"json dumps", json.dumps(response))
+    #     run_evals_background.delay(
+    #         body.chatbot_id,
+    #         body.query,
+    #         response
+    #     )
     return response
 
 @app.get('/api/history')
