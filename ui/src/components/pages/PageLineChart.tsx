@@ -2,7 +2,7 @@
 import { useQuery } from "@tanstack/react-query";
 
 // import { Input } from "@/components/ui/input";
-import { metricService } from "../../services/metric-service";
+import { metricService, SeriesData } from "../../services/metric-service";
 
 import Highcharts from 'highcharts';
 import Exporting from 'highcharts/modules/exporting';
@@ -36,6 +36,9 @@ export function PageLineChart() {
     queryFn: () => chatbotService.fetchChatbots(),
   });
 
+
+  
+
   const { data: metrics, isLoading } = useQuery({
     queryKey: ["metrics", selectedChatbot],
     queryFn: () => metricService.fetchChatbotMetrics(selectedChatbot),
@@ -44,9 +47,9 @@ export function PageLineChart() {
 
   useEffect(() => {
     if (!isLoading && metrics) {
-      const minRange = metrics.reduce((min, series) => {
-        const seriesMin = Math.min(...series.data.map(point => point[0]));
-        const seriesMax = Math.max(...series.data.map(point => point[0]));
+      const minRange = metrics.reduce((min: number, series: SeriesData) => {
+        const seriesMin = Math.min(...series.data.map((point: number[]) => point[0]));
+        const seriesMax = Math.max(...series.data.map((point: number[]) => point[0]));
         return Math.min(min, seriesMax - seriesMin);
       }, Infinity);
 
