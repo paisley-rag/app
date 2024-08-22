@@ -176,7 +176,7 @@ export function PageHistory() {
       header: () => <div className="text-left">Context</div>,
       cell: ({ row }) => {
         const context = row.getValue("context") as string | string[];
-        const cellStyle = { width: '250px' };
+        const cellStyle = { width: '250px', maxHeight: '100px', overflowY: 'auto' }; // Added styles
 
         if (Array.isArray(context)) {
           return (
