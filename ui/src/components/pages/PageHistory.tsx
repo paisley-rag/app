@@ -44,9 +44,7 @@ import { useQuery } from "@tanstack/react-query";
 
 import { chatbotService } from "../../services/chatbot-service";
 import { historyService } from "../../services/history-service";
-
-import evalConfig from "../../../../evals/eval_config.json";
-
+import { metricService } from "../../services/metric-service";
 
 export function PageHistory() {
   const [selectedChatbot, setSelectedChatbot] = useState(() => {
@@ -107,7 +105,15 @@ export function PageHistory() {
 
   const [rowSelection, setRowSelection] = useState({});
 
-  const scoreNames = evalConfig.scores;
+  const [scoreNames, setScoreNames] = useState<string[]>([]);
+
+  useEffect(() => {
+    const fetchScoreNames = async () => {
+      const scores = await metricService.fetchScoreNames();
+      setScoreNames(scores);
+    };
+    fetchScoreNames();
+  }, []);
 
   const columns: ColumnDef<any>[] = [
     {
