@@ -1,5 +1,5 @@
   [Unit]
-  Description=Skateboard backend
+  Description=Paisley backend
   After=network-online.target
 
   [Service]

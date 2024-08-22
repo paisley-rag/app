@@ -1,0 +1,16 @@
+[Unit]
+Description=Celery Worker Service
+After=network.target
+
+[Service]
+Type=simple
+User=ubuntu
+WorkingDirectory=/home/ubuntu/
+Restart=always
+TimeoutStartSec=30
+TimeoutStopSec=300
+ExecStart=/home/ubuntu/.local/share/virtualenvs/db-grdQ2Ybz/bin/celery -A db.celery.tasks worker -l info
+
+
+[Install]
+WantedBy=multi-user.target

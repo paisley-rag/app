@@ -9,9 +9,9 @@ import db.evals.all_metrics as all_metrics
 import db.app_logger as log
 
 # called within the server /api/query route
-def store_running_eval_data(chatbot_id, query, response):
-    context, output = utils.extract_from_response(response)
-    evaluate_and_store_running_entry(chatbot_id, query, context, output)
+# def store_running_eval_data(chatbot_id, query, response):
+#     context, output = utils.extract_from_response(response)
+#     evaluate_and_store_running_entry(chatbot_id, query, context, output)
 
 # takes query/context/output, scores on 'answer_relevancy' and 'faithfulness'
 # using RAGAs, inserts data into 'chat_history' table
