@@ -176,7 +176,7 @@ export function PageHistory() {
       header: () => <div className="text-left">Context</div>,
       cell: ({ row }) => {
         const context = row.getValue("context") as string | string[];
-        const cellStyle = { width: '250px', maxHeight: '100px', overflowY: 'auto' }; // Added styles
+        const cellStyle: React.CSSProperties = { width: '250px', maxHeight: '100px', overflowY: 'auto' }; // Added styles
 
         if (Array.isArray(context)) {
           return (
@@ -199,10 +199,10 @@ export function PageHistory() {
     },
     ...scoreNames.map((scoreName) => ({
       accessorKey: scoreName,
-      header: () => <div className="text-right capitalize">{scoreName.replace(/_/g, ' ')}</div>,
+      header: () => <div className="text-center capitalize">{scoreName.replace(/_/g, ' ')}</div>,
       cell: ({ row }: any) => {
         const score = parseFloat(row.getValue(scoreName));
-        return <div className="text-right font-medium">{score.toFixed(2)}</div>;
+        return <div className="text-center font-medium">{score.toFixed(2)}</div>;
       },
     })),
   ];
