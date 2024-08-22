@@ -25,4 +25,4 @@ Run backend server with logs in console:
 `cd ~ && python -m db.server`
 
 Run celery worker with logs in console:
-`sudo -u ubuntu /home/ubuntu/.local/share/virtualenvs/db-grdQ2Ybz/bin/celery -A db.celery.tasks worker -l info`
+`sudo -u ubuntu /home/ubuntu/.local/share/virtualenvs/db-grdQ2Ybz/bin/celery -A db.celery.tasks worker -l info -f ~/celery.log`
