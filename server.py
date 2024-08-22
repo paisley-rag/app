@@ -2,6 +2,7 @@ import json
 from fastapi import FastAPI, Depends
 from fastapi.middleware.cors import CORSMiddleware
 import nest_asyncio
+import os
 
 import db.app_logger as log
 import db.evals.evals as evals
@@ -67,6 +68,15 @@ async def post_query(body: pq.QueryBody, auth: bool = Depends(check_key)):
 async def get_evals(auth: bool = Depends(check_key)):
     data = evals.get_chat_history()
     return data
+
+@app.get('/api/scores')
+async def get_scores(auth: bool = Depends(check_key)):
+    config_path = os.path.join(os.path.dirname(__file__), 'evals', 'eval_config.json')
+    with open(config_path, 'r') as file:
+        config = json.load(file)
+    scores = config.get('scores', [])
+    return scores
+
 
 if __name__ == "__main__":
     import uvicorn
