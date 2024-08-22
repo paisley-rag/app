@@ -1,0 +1,35 @@
+config:
+  # Post Celery implementation testing
+  # - hopefully clearer concurrent users
+  target: http://3.84.61.211
+  http:
+    timeout: 120
+    defaults:
+      headers:
+        X-API-Key: '272de67e6ab46cd6c09cd5149e7e5889'
+  phases:
+    - duration: 60
+      arrivalCount: 1
+      name: Warm up phase
+    - duration: 30
+      arrivalRate: 2
+      maxVusers: 60
+      name: Ramp up load
+  # Load & configure a couple of useful plugins
+  # https://docs.art/reference/extensions
+  plugins:
+    # apdex: {}
+    metrics-by-endpoint: {}
+  # apdex:
+    # threshold: 100
+scenarios:
+  - flow:
+    - get:
+        url: '/'
+    - get:
+        url: '/chatbots'
+    - post:
+        url: '/api/query'
+        json:
+          chatbot_id: '66c63a1b8cdd2034f23d12f1'
+          query: 'tell me about how to make my startup successful'
