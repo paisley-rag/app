@@ -45,7 +45,7 @@ import { useQuery } from "@tanstack/react-query";
 import { chatbotService } from "../../services/chatbot-service";
 import { historyService } from "../../services/history-service";
 
-
+import evalConfig from "../../../../evals/eval_config.json";
 
 
 export function PageHistory() {
@@ -58,7 +58,6 @@ export function PageHistory() {
     queryFn: () => historyService.fetchChatbotHistory(),
   });
 
-  
   
   
   
@@ -108,29 +107,9 @@ export function PageHistory() {
 
   const [rowSelection, setRowSelection] = useState({});
 
+  const scoreNames = evalConfig.scores;
+
   const columns: ColumnDef<any>[] = [
-    // {
-    //   id: "select",
-    //   header: ({ table }) => (
-    //     <Checkbox
-    //       checked={
-    //         table.getIsAllPageRowsSelected() ||
-    //         (table.getIsSomePageRowsSelected() && "indeterminate")
-    //       }
-    //       onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-    //       aria-label="Select all"
-    //     />
-    //   ),
-    //   cell: ({ row }) => (
-    //     <Checkbox
-    //       checked={row.getIsSelected()}
-    //       onCheckedChange={(value) => row.toggleSelected(!!value)}
-    //       aria-label="Select row"
-    //     />
-    //   ),
-    //   enableSorting: false,
-    //   enableHiding: false,
-    // },
     {
       accessorKey: "chatbot_id",
       header: "Chatbot",
@@ -189,14 +168,6 @@ export function PageHistory() {
     {
       accessorKey: "context",
       header: () => <div className="text-left">Context</div>,
-      // cell: ({ row }) => {
-      //   const context = row.getValue("context") as string;
-      //   return (
-      //     <div className="text-right font-medium">
-      //       {context.slice(0, 150) + (context.length > 150 ? "..." : "")}
-      //     </div>
-      //   );
-      // },
       cell: ({ row }) => {
         const context = row.getValue("context") as string | string[];
         const cellStyle = { width: '250px' };
@@ -220,58 +191,14 @@ export function PageHistory() {
         }
       },
     },
-    {
-      accessorKey: "faithfulness",
-      header: () => <div className="text-right">Faithfulness</div>,
+    ...scoreNames.map((scoreName) => ({
+      accessorKey: scoreName,
+      header: () => <div className="text-right capitalize">{scoreName.replace(/_/g, ' ')}</div>,
       cell: ({ row }) => {
-        const score = parseFloat(row.getValue("faithfulness"));
-  
+        const score = parseFloat(row.getValue(scoreName));
         return <div className="text-right font-medium">{score.toFixed(2)}</div>;
       },
-    },
-    {
-      accessorKey: "answer_relevancy",
-      header: () => <div className="text-right">Answer Relevancy</div>,
-      cell: ({ row }) => {
-        const score = parseFloat(row.getValue("answer_relevancy"));
-        return <div className="text-right font-medium">{score.toFixed(2)}</div>;
-      },
-    },
-    {
-      accessorKey: "contextual_relevancy",
-      header: () => <div className="text-right">Contextual Relevancy</div>,
-      cell: ({ row }) => {
-        const score = parseFloat(row.getValue("contextual_relevancy"));
-        return <div className="text-right font-medium">{score.toFixed(2)}</div>;
-      },
-    },
-    // {
-    //   id: "actions",
-    //   enableHiding: false,
-    //   cell: ({ row }) => {
-    //     const data = row.original;
-    //     return (
-    //       <DropdownMenu>
-    //         <DropdownMenuTrigger asChild>
-    //           <Button variant="ghost" className="h-8 w-8 p-0">
-    //             <span className="sr-only">Open menu</span>
-    //             <MoreHorizontal className="h-4 w-4" />
-    //           </Button>
-    //         </DropdownMenuTrigger>
-    //         <DropdownMenuContent align="end">
-    //           <DropdownMenuLabel>Actions</DropdownMenuLabel>
-    //           <DropdownMenuItem
-    //             onClick={() => navigator.clipboard.writeText(data[0])}
-    //           >
-    //             Copy ID
-    //           </DropdownMenuItem>
-    //           <DropdownMenuSeparator />
-    //           <DropdownMenuItem>View Details</DropdownMenuItem>
-    //         </DropdownMenuContent>
-    //       </DropdownMenu>
-    //     );
-    //   },
-    // },
+    })),
   ];
 
   const table = useReactTable({

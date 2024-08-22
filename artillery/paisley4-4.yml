@@ -1,0 +1,32 @@
+config:
+  # 2nd baseline attempt
+  # - hopefully clearer concurrent users
+  target: http://3.84.61.211
+  http:
+    timeout: 120
+  phases:
+    - duration: 60
+      arrivalCount: 1
+      name: Warm up phase
+    - duration: 30
+      arrivalRate: 1
+      maxVusers: 20
+      name: Ramp up load
+  # Load & configure a couple of useful plugins
+  # https://docs.art/reference/extensions
+  plugins:
+    # apdex: {}
+    metrics-by-endpoint: {}
+  # apdex:
+    # threshold: 100
+scenarios:
+  - flow:
+    - get:
+        url: '/'
+    - get:
+        url: '/chatbots'
+    - post:
+        url: '/api/query'
+        json:
+          chatbot_id: '66bfdb451fc3e5a1372b19ad'
+          query: 'tell me about llms'

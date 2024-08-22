@@ -1,0 +1,4 @@
+#!/bin/bash
+
+docker logs artillery > $1
+docker container rm artillery
