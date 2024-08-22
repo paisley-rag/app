@@ -13,5 +13,8 @@
     "paths": {
       "@/*": ["./src/*"]
     }
-  }
+  },
+  "include": [
+    "../../evals/eval_config.d.ts"
+  ]
 }

@@ -4,6 +4,7 @@ import { AXIOS_CONFIG, baseUrl } from '../lib/utils.ts';
 
 import { chatbotService } from './chatbot-service';
 
+import evalConfig from '../../../evals/eval_config.json';
 
 type SeriesData = SeriesOptionsType & {
   type: string;
@@ -13,33 +14,23 @@ type SeriesData = SeriesOptionsType & {
 
 
 function seriesFromData(test_data: any[] = []): SeriesData[] {
-  let series: SeriesData[] = [
-    {
-      type: 'line',
-      name: 'faithfulness',
-      data: [],
-    },
-    {
-      type: 'line',
-      name: 'answer_relevancy',
-      data: []
-    },
-    {
-      type: 'line',
-      name: 'contextual_relevancy',
-      data: []
-    }
-  ];
+  const scoreNames = evalConfig.scores;
+    
+  let series: SeriesData[] = scoreNames.map(name => ({
+    type: 'line',
+    name: name,
+    data: []
+  }));
   
   if (!test_data) {
-    return series
+    return series;
   }
 
   test_data.forEach((entry: any) => {
     let time_ms = new Date(entry.time).getTime();
-    series[0].data.push([time_ms, entry.faithfulness]);
-    series[1].data.push([time_ms, entry.answer_relevancy]);
-    series[2].data.push([time_ms, entry.contextual_relevancy]);
+    scoreNames.forEach((name, index) => {
+      series[index].data.push([time_ms, entry[name]]);
+    });
   });
   return series;
 }

@@ -1,7 +1,8 @@
 import db.evals.eval_pg_utils as pg
 import db.evals.eval_utils as utils
-import db.evals.ragas_evaluate as ragas
-import db.evals.deepeval_evaluate as deepeval
+# import db.evals.ragas_evaluate as ragas
+# import db.evals.deepeval_evaluate as deepeval
+import db.evals.all_metrics as all_metrics
 
 # from server import UserQuery, post_query
 
@@ -12,14 +13,10 @@ import db.app_logger as log
 #     context, output = utils.extract_from_response(response)
 #     evaluate_and_store_running_entry(chatbot_id, query, context, output)
 
-
 # takes query/context/output, scores on 'answer_relevancy' and 'faithfulness'
 # using RAGAs, inserts data into 'chat_history' table
 def evaluate_and_store_running_entry(chatbot_id, query, context, output):
-    ragas_scores = ragas.get_scores(query, context, output)
-    deepeval_scores = deepeval.get_scores(query, context, output)
-
-    scores = {**ragas_scores, **deepeval_scores}
+    scores = all_metrics.all_scores(query, context, output)
 
     entry = {
         'chatbot_id': chatbot_id,
@@ -34,6 +31,8 @@ def evaluate_and_store_running_entry(chatbot_id, query, context, output):
 def get_chat_history():
     data = pg.get_data_from('chat_history')
     
+    score_names = utils.get_score_names()
+    
     json_data_list = []
 
     for tuple in data:
@@ -44,10 +43,11 @@ def get_chat_history():
             'input': tuple[2]['input'],
             'output': tuple[2]['output'],
             'context': tuple[2]['context'],
-            'faithfulness': tuple[2]['scores']['faithfulness'],
-            'answer_relevancy': tuple[2]['scores']['answer_relevancy'],
-            'contextual_relevancy': tuple[2]['scores']['contextual_relevancy'],
         }
+
+        for score in score_names:
+            json_data[score] = tuple[2]['scores'].get(score, None)
+
         json_data_list.append(json_data)
 
     return json_data_list

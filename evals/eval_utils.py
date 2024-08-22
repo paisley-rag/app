@@ -2,6 +2,17 @@ import math
 
 import db.app_logger as log
 
+import json
+import os
+
+
+def get_score_names():
+    eval_config_path = os.path.join(os.path.dirname(__file__), 'eval_config.json')
+    with open(eval_config_path, 'r') as f:
+        eval_config = json.load(f)
+
+    return eval_config.get('scores', [])
+
 def values_only(table_data):
     return [data[1] for data in table_data]
 
@@ -13,8 +24,9 @@ def extract_from_response(response):
     if hasattr(response, 'source_nodes'):
         source_nodes = response.source_nodes
         context_list = [source_node.node.text.replace('\n', ' ') for source_node in source_nodes] 
+        print('CONTEXT_LIST:', context_list)
         # context = '\n\n'.join(context_list)
-        context = context_list
+        context = context_list or ['']
     else:
         context = ['']
 
