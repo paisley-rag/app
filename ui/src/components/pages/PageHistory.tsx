@@ -194,7 +194,7 @@ export function PageHistory() {
     ...scoreNames.map((scoreName) => ({
       accessorKey: scoreName,
       header: () => <div className="text-right capitalize">{scoreName.replace(/_/g, ' ')}</div>,
-      cell: ({ row }) => {
+      cell: ({ row }: any) => {
         const score = parseFloat(row.getValue(scoreName));
         return <div className="text-right font-medium">{score.toFixed(2)}</div>;
       },
