@@ -4,19 +4,18 @@ import { AXIOS_CONFIG, baseUrl } from '../lib/utils.ts';
 
 import { chatbotService } from './chatbot-service';
 
-import evalConfig from '../../../evals/eval_config.json';
 
-type SeriesData = SeriesOptionsType & {
+export type SeriesData = SeriesOptionsType & {
   type: string;
   name: string;
   data: number[][];
 };
 
 
-function seriesFromData(test_data: any[] = []): SeriesData[] {
-  const scoreNames = evalConfig.scores;
+async function seriesFromData(test_data: any[] = []): Promise<any> {
+  const scoreNames = await fetchScoreNames()
     
-  let series: SeriesData[] = scoreNames.map(name => ({
+  let series: SeriesData[] = scoreNames.map((name: string) => ({
     type: 'line',
     name: name,
     data: []
@@ -28,7 +27,7 @@ function seriesFromData(test_data: any[] = []): SeriesData[] {
 
   test_data.forEach((entry: any) => {
     let time_ms = new Date(entry.time).getTime();
-    scoreNames.forEach((name, index) => {
+    scoreNames.forEach((name: string, index: number) => {
       series[index].data.push([time_ms, entry[name]]);
     });
   });
@@ -52,6 +51,13 @@ async function fetchChatbotMetrics(chatbotName: string | null) {
   return seriesFromData(data);
 }
 
+async function fetchScoreNames() {
+  const response = await axios.get(`${baseUrl}/api/scores`, AXIOS_CONFIG);
+  console.log('SCORE NAMES ARE:', response.data)
+  return response.data;
+}
+
 export const metricService = {
   fetchChatbotMetrics,
+  fetchScoreNames
 };

@@ -9,7 +9,7 @@ WorkingDirectory=/home/ubuntu/
 Restart=always
 TimeoutStartSec=30
 TimeoutStopSec=300
-ExecStart=/home/ubuntu/.local/share/virtualenvs/db-grdQ2Ybz/bin/celery -A db.celery.tasks worker -l info
+ExecStart=/home/ubuntu/.local/share/virtualenvs/db-grdQ2Ybz/bin/celery -A db.celery.tasks worker -l info -f ~/celery.log
 
 
 [Install]
