@@ -8,8 +8,7 @@
   User=ubuntu
   WorkingDirectory=/home/ubuntu/
   Environment="PIPENV_PIPFILE=/home/ubuntu/db/Pipfile"
-  Environment="PYTHONPATH=/home/ubuntu/.local/share/virtualenvs/db-grdQ2Ybz/bin"
-  ExecStart=/home/ubuntu/.local/bin/pipenv run python -m db.server
+  ExecStart=/home/ubuntu/db/util/start_server.sh
 
   [Install]
   WantedBy=multi-user.target
