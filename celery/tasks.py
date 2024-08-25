@@ -7,7 +7,7 @@ import db.evals.evals as evals
 
 load_dotenv(override=True)
 
-ENVIRONMENT = os.environ["ENVIRONMENT"]
+ENVIRONMENT = os.getenv('ENVIRONMENT', 'production')
 print('ENVIRONMENT', ENVIRONMENT)
 # log.info('ENVIRONMENT', ENVIRONMENT)
 
