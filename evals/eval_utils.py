@@ -27,10 +27,11 @@ def extract_from_response(response):
         print('CONTEXT_LIST:', context_list)
         # context = '\n\n'.join(context_list)
         context = context_list or ['']
+
+        output = response.response
     else:
         context = ['']
-
-    output = response.response
+        output = ''
 
     return [context, output]
 
