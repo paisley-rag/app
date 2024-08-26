@@ -7,10 +7,10 @@
 CREATE USER paisley WITH PASSWORD 'paisley_rules';
 
 -- Create a new database
-CREATE DATABASE paisley_evals2;
+CREATE DATABASE paisley_evals;
 
 -- Connect to the new database
-\c paisley_evals2
+\c paisley_evals
 
 -- Create new tables
 CREATE TABLE chat_history (
@@ -30,7 +30,7 @@ CREATE TABLE scored_benchmark_data (
 );
 
 -- Grant privileges to the new user on the database and table
-GRANT ALL PRIVILEGES ON DATABASE paisley_evals2 TO paisley;
+GRANT ALL PRIVILEGES ON DATABASE paisley_evals TO paisley;
 
 GRANT ALL PRIVILEGES ON TABLE chat_history TO paisley;
 GRANT ALL PRIVILEGES ON TABLE benchmark_data TO paisley;
