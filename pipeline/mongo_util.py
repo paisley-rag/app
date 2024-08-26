@@ -81,3 +81,16 @@ def compare_configs(old_config, new_config):
         if new_config[key] != old_config[key]:
             updates[key] = new_config[key]
     return updates
+
+# used in pipeline_class
+def nodes_in_keyword(kb_id):
+    mongo = pymongo.MongoClient(MONGO_URI)
+
+    results = mongo[kb_id]['docstore/ref_doc_info'].find( 
+        {},
+        { '_id': 0 }
+    )
+    results = list(results)
+    mongo.close()
+
+    return len(results)

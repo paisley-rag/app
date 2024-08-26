@@ -60,7 +60,7 @@ export function ColbertRerankField({ control }: ColbertRerankFieldProps) {
                 />
               </FormControl>
               <FormDescription>
-                Set the number of top results to rerank.
+                Set the number of top results returned after rerank.
               </FormDescription>
               <FormMessage />
             </FormItem>

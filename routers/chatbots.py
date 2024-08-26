@@ -3,6 +3,7 @@ from pydantic import BaseModel
 
 import db.app_logger as log
 import db.pipeline.mongo_util as mutil
+import db.pipeline.pipeline_class as p
 import db.knowledge_base.routes as convert
 
 router = APIRouter(
@@ -34,24 +35,15 @@ async def get_chatbots_id(id: str):
 async def post_chatbots(request: Request):
     body = await request.json()
     log.info(f"/api/chatbots POST body: ", body)
-    
+
+    # add the default prompt to all created chatbots
+    # - gives the user something to modify
+    body['prompt'] = p.Pipeline.get_default_prompt()
+
     if mutil.pipeline_name_taken(body["name"]):
         message = f"A pipeline named {body['name']} already exists"
         return {"message": message}
-    
     else:
-
-        # ugly but effective
-        # can refactor later
-        # postprocessing = body.get("postprocessing")
-        # result = {}
-        # for key in postprocessing:
-        #     result[key] = convert.str_to_nums(postprocessing[key])
-        # body["postprocessing"] = result
-
-        # print("body: ", body)
-        # input("press enter to continue")
-
         result = mutil.insert_pipeline(body)
         inserted_id = str(result.inserted_id)
         mutil.add_id_to_pipeline_config(body["name"], inserted_id)
