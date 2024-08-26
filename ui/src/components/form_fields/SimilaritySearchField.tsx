@@ -30,9 +30,9 @@ export function SimilaritySearchField({ control }: SimilaritySearchFieldProps) {
         render={({ field }) => (
           <FormItem className="flex flex-row items-center justify-between">
             <div className="space-y-0.5">
-              <FormLabel>Similarity Search</FormLabel>
+              <FormLabel>Similarity Cutoff</FormLabel>
               <FormDescription>
-                Enable similarity search for context retrieval.
+                Enable similarity cutoff filter for context retrieval.
               </FormDescription>
             </div>
             <FormControl>

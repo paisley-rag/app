@@ -17,7 +17,6 @@ async function sendMessage(id: string, message: string) {
     query: message,
     chatbot_id: id,
   }, AXIOS_CONFIG);
-  console.log(response.data);
   return response.data;
 }
 
