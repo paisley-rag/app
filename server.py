@@ -53,15 +53,15 @@ async def root():
 @app.post('/api/query')
 async def post_query(body: pq.QueryBody, auth: bool = Depends(check_key)):
     response = pq.post_query(body)
-    context, output = eval_utils.extract_from_response(response)
-    log.info(f"Adding background task for chatbot_id: {body.chatbot_id}, query: {body.query}, output: {output}")
-    # log.info(f"json dumps", json.dumps(response))
-    run_evals_background.delay(
-        body.chatbot_id,
-        body.query,
-        context,
-        output
-    )
+    if response:
+      context, output = eval_utils.extract_from_response(response)
+      # log.info(f"Adding background task for chatbot_id: {body.chatbot_id}, query: {body.query}, output: {output}")
+      # run_evals_background.delay(
+      #     body.chatbot_id,
+      #     body.query,
+      #     context,
+      #     output
+      # )
     return response
 
 @app.get('/api/history')
