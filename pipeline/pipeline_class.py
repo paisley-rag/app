@@ -118,13 +118,13 @@ class Pipeline:
             log.info('pipeline.py _query_retriever: vector', obj['vector'])
             new_nodes = obj['vector'].retrieve(user_query)
             vector_nodes += new_nodes
-            log.info('pipeline_class.py _query_retriever', 'vector nodes returned', new_nodes)
+            log.info('pipeline_class.py _query_retriever', f'returned {len(new_nodes)} vector nodes')
 
             # keyword retrieval
             log.info('pipeline.py _query_retriever: keyword', obj['keyword'])
             new_nodes = obj['keyword'].retrieve(user_query)
             keyword_nodes += new_nodes
-            log.info('pipeline_class.py _query_retriever', 'keyword nodes returned', new_nodes)
+            log.info('pipeline_class.py _query_retriever', f'returned {len(new_nodes)} keyword nodes')
 
             log.info('pipeline_class.py _query_retriever: both retrievers successfully queried')
 
