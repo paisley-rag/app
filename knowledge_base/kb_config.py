@@ -158,7 +158,7 @@ class KnowledgeBase:
         log.info('kb_config.py _store_indexes: ', kb_id)
         vector_index = "vector_index"
 
-        environment = os.environ["ENVIRONMENT"]
+        environment = os.getenv('ENVIRONMENT', 'production')
 
         if environment == 'local' or environment == 'mongoatlas':
             vector_store = MongoDBAtlasVectorSearch(

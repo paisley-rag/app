@@ -1,5 +1,10 @@
 #!/bin/bash
 
+# Source the .env file to load existing environment variables, ignoring comments and empty lines
+if [ -f ~/db/.env ]; then
+  export $(grep -v '^#' ~/db/.env | xargs)
+fi
+
 # Install postgresql
 pipenv run sudo apt install postgresql postgresql-contrib
 
@@ -9,6 +14,10 @@ set -a
 set +a
 
 # run init_pg.sql file as admin
-PGPASSWORD=$PG_ADMIN_PASSWORD psql --host=$PG_HOST --port=$PG_PORT --username=$PG_ADMIN --password --dbname=postgres -f ~/db/setup_scripts/init_pg.sql
+export PGPASSWORD=$PG_ADMINPW
+echo "pg password is: $PGPASSWORD"
+
+psql --host=$PG_HOST --port=$PG_PORT --username=$PG_ADMIN --dbname=postgres \
+  -v pg_database=$PG_DATABASE -v pg_user=$PG_USER -v pg_password=$PG_PASSWORD -f ~/db/setup_scripts/init_pg.sql
 
 echo "PostgreSQL setup completed successfully."

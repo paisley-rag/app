@@ -4,13 +4,25 @@
 -- things easy for now there's a scored and unscored benchmark data table
 
 -- Create a new user with a password
-CREATE USER paisley WITH PASSWORD 'paisley_rules';
+SET myapp.pg_user = :pg_user;
+SET myapp.pg_password = :pg_password;
+
+DO
+$$
+DECLARE
+    pg_user TEXT := current_setting('myapp.pg_user');
+    pg_password TEXT := current_setting('myapp.pg_password');
+BEGIN
+    EXECUTE format('CREATE USER %I WITH PASSWORD %L', pg_user, pg_password);
+END
+$$;
+-- CREATE USER :pg_user WITH PASSWORD ':pg_password';
 
 -- Create a new database
-CREATE DATABASE paisley_evals2;
+CREATE DATABASE :pg_database;
 
 -- Connect to the new database
-\c paisley_evals2
+\c :pg_database
 
 -- Create new tables
 CREATE TABLE chat_history (
@@ -30,12 +42,12 @@ CREATE TABLE scored_benchmark_data (
 );
 
 -- Grant privileges to the new user on the database and table
-GRANT ALL PRIVILEGES ON DATABASE paisley_evals2 TO paisley;
+GRANT ALL PRIVILEGES ON DATABASE :pg_database TO :pg_user;
 
-GRANT ALL PRIVILEGES ON TABLE chat_history TO paisley;
-GRANT ALL PRIVILEGES ON TABLE benchmark_data TO paisley;
-GRANT ALL PRIVILEGES ON TABLE scored_benchmark_data TO paisley;
+GRANT ALL PRIVILEGES ON TABLE chat_history TO :pg_user;
+GRANT ALL PRIVILEGES ON TABLE benchmark_data TO :pg_user;
+GRANT ALL PRIVILEGES ON TABLE scored_benchmark_data TO :pg_user;
 
-GRANT USAGE, SELECT ON SEQUENCE chat_history_id_seq TO paisley;
-GRANT USAGE, SELECT ON SEQUENCE benchmark_data_id_seq TO paisley;
-GRANT USAGE, SELECT ON SEQUENCE scored_benchmark_data_id_seq TO paisley;
+GRANT USAGE, SELECT ON SEQUENCE chat_history_id_seq TO :pg_user;
+GRANT USAGE, SELECT ON SEQUENCE benchmark_data_id_seq TO :pg_user;
+GRANT USAGE, SELECT ON SEQUENCE scored_benchmark_data_id_seq TO :pg_user;

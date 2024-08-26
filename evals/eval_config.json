@@ -1,4 +1,8 @@
 {
     "evaluation_toggle": "true",
-    "scores": ["faithfulness", "answer_relevancy", "contextual_relevancy"]
+    "scores": [
+        "faithfulness",
+        "answer_relevancy",
+        "contextual_relevancy"
+    ]
 }
