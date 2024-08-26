@@ -21,6 +21,7 @@ class Pipeline:
 
     def __init__(self, config_id):
         self._config = self._get_config(config_id)
+        self._DEFAULT_TOP_K = 5
 
     def _get_config(self, config_id):
         result = mg.get_one_pipeline(config_id)
@@ -51,9 +52,7 @@ class Pipeline:
 
         # query each knowledge base and get returned_nodes
         vector_nodes, keyword_nodes  = self._query_retriever(retrievers, user_query).values()
-        # log.info('**********', vector_nodes, keyword_nodes)
-        # all_nodes = vector_nodes + keyword_nodes
-        all_nodes = vector_nodes
+        all_nodes = vector_nodes + keyword_nodes
 
         log.info("pipeline.py _pipeline: all_nodes")
         self._log_nodes(all_nodes)
@@ -66,7 +65,6 @@ class Pipeline:
 
         nodes_rerank = self._process_colbert(nodes_similar, user_query)
 
-
         log.info('nodes_rerank')
         self._log_nodes(nodes_rerank)
 
@@ -74,7 +72,6 @@ class Pipeline:
 
         log.info('nodes_reorder')
         self._log_nodes(nodes_reorder)
-
 
         # return appropriate synthesizer
         synth = self._process_prompt()
@@ -100,10 +97,8 @@ class Pipeline:
         # log.info(f"pipeline.py _get_retriever: {kb_id} received")
  
         # just return existing knowledge bases for testing
-        # vector_retriever = search.vector_retriever(kb_id)
-        # keyword_retriever = search.keyword_retriever(kb_id)
-        vector_retriever = vector.get_retriever(kb_id)
-        keyword_retriever = keyword.get_retriever(kb_id, 1)
+        vector_retriever = vector.get_retriever(kb_id, self._DEFAULT_TOP_K)
+        keyword_retriever = keyword.get_retriever(kb_id, self._max_top_k(kb_id))
 
         log.info("pipeline.py _get_retriever: vector ", vector_retriever, "keyword ", keyword_retriever)
         return { 'vector': vector_retriever, 'keyword': keyword_retriever }
@@ -207,6 +202,17 @@ class Pipeline:
         for k, p in prompts_dict.items():
             log.info("Prompt Key: ", k)
             log.info("Text: ", p.get_template())
+
+
+    def _max_top_k(self, kb_id):
+        max_nodes = mg.nodes_in_keyword(kb_id)
+        log.info('pipeline_class.py _max_top_k:', f'max_nodes: {max_nodes}')
+        if self._DEFAULT_TOP_K > max_nodes:
+            log.info(f'pipeline_class.py _max_top_k: returned max_nodes {max_nodes}')
+            return max_nodes
+        else:
+            log.info(f'pipeline_class.py _max_top_k: returned max_nodes {self._DEFAULT_TOP_K}')
+            return self._DEFAULT_TOP_K
 
 
     # Public class method

@@ -1,0 +1,41 @@
+config:
+  # Post Celery implementation testing
+  # - testing w/ top running on server - more aggressive
+  # - paisley5 did not stress the system out at all - the potential exists that the chatbot may not have existed
+  # - after updating the chatbot id, paisley5 performed similarily to last time
+  # Paisley6:
+  # - of 68 VUs created, 36 were successfully completed with response times from 4.5s to 119.8 s
+  # - 32 failed (by timeout)
+  # - CPU monitoring on top showed that CPU never went over 47%, memory didn't change
+  target: http://3.84.61.211
+  http:
+    timeout: 120
+    defaults:
+      headers:
+        X-API-Key: '272de67e6ab46cd6c09cd5149e7e5889'
+  phases:
+    - duration: 60
+      arrivalCount: 1
+      name: Warm up phase
+    - duration: 30
+      arrivalRate: 3
+      maxVusers: 60
+      name: Ramp up load
+  # Load & configure a couple of useful plugins
+  # https://docs.art/reference/extensions
+  plugins:
+    # apdex: {}
+    metrics-by-endpoint: {}
+  # apdex:
+    # threshold: 100
+scenarios:
+  - flow:
+    - get:
+        url: '/'
+    - get:
+        url: '/chatbots'
+    - post:
+        url: '/api/query'
+        json:
+          chatbot_id: '66c8b53ac4284e0a8bf76d89'
+          query: 'tell me about how to make my startup successful'
