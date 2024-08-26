@@ -14,7 +14,7 @@ export const clientPipelineConfigSchema = z.object({
   }),
   colbert_rerank: z.object({
     on: z.boolean(),
-    top_n: z.number().optional(),
+    top_n: z.string().optional(), // updated type to string to fix colbert rerank string error
   }),
   long_context_reorder: z.object({
     on: z.boolean(),
