@@ -84,5 +84,13 @@ def insert_db(new_obj):
     pprint.pp(new_obj)
 
 
+def write_api_key_to_env(api_data, id_string):
+    api_key = api_data[id_string]["api_key"]
+    print('API AUTH KEY ADDED TO .ENV:', api_key)
+    env_path = os.path.expanduser("~/db/.env")
+    with open(env_path, "a") as env_file:
+        env_file.write(f"\nVITE_PAISLEY_API_KEY={api_key}\n")
+
 if __name__ == "__main__":
     insert_db(api_db_data)
+    write_api_key_to_env(api_db_data, "id1")
