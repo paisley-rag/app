@@ -4,7 +4,6 @@
 cd ~/db/ui && npm run build &&
 
 # delete old build files
-
 if [[ -e /var/www/html/index.html && -d /var/www/html/assets ]]; then
   read -p "Are you sure you want to delete 'assets' and 'index.html' from '/var/www/html'? (y/n): " confirm
   if [[ $confirm == [yY] ]]; then
