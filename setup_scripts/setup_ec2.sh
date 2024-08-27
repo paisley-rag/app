@@ -1,45 +1,24 @@
 #! /bin/bash
 
-echo ""
-echo "========= updating / upgrading packages"
+# get global-bundle.pem for docdb
+cd ~ && wget https://truststore.pki.rds.amazonaws.com/global/global-bundle.pem &&
 
-sudo apt update
-sudo apt upgrade -y
+# setup postgres
+bash ~/db/setup_scripts/setup_postgres.sh &&
 
-echo ""
-echo "========= install nginx"
+# Copy `celery.service` and `test.service` to `/etc/systemd/system`
+sudo cp ~/db/systemd/celery.service ~/db/systemd/test.service /etc/systemd/system && 
+sudo systemctl daemon-reload && 
 
-sudo apt -y install nginx
+# Start backend server
+sudo chmod +x /home/ubuntu/db/util/start_server.sh &&
+sudo systemctl start test.service &&
 
+# Start celery background processing (used for evaluations)
+sudo chmod +x /home/ubuntu/db/util/start_celery.sh &&
+sudo systemctl start celery.service &&
 
-echo ""
-echo "========= installing pyenv"
-
-curl https://pyenv.run | bash
-
-echo 'export PYENV_ROOT="$HOME/.pyenv"' >> ~/.profile
-echo 'command -v pyenv >/dev/null || export PATH="$PYENV_ROOT/bin:$PATH"' >> ~/.profile
-echo 'eval "$(pyenv init -)"' >> ~/.profile
-
-echo ""
-echo "========= installing build dependencies for python"
-
-sudo apt -y install build-essential libssl-dev zlib1g-dev \
-libbz2-dev libreadline-dev libsqlite3-dev curl \
-libncursesw5-dev xz-utils tk-dev libxml2-dev libxmlsec1-dev libffi-dev liblzma-dev
-
-echo ""
-echo "========= installing python 3.10.12"
-
-pyenv install -v 3.10.12
-pyenv global 3.10.12
-
-echo ""
-echo "========= installing pipenv"
-
-pip install pipenv
-
-source ~/.profile
-
-
-
+# Configure nginx
+sudo cp ~/db/nginx/default /etc/nginx/sites-enabled &&
+sudo cp ~/db/nginx/nginx.conf /etc/nginx &&
+sudo systemctl reload nginx
