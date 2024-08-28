@@ -3,7 +3,7 @@ import shutil
 from datetime import datetime, timezone
 
 import pymongo
-import use_s3
+import db.util.use_s3 as use_s3
 import nest_asyncio
 from dotenv import load_dotenv
 from llama_index.core import StorageContext
@@ -120,7 +120,8 @@ class KnowledgeBase:
         with open(file_path, "wb+") as file_object:
             shutil.copyfileobj(file.file, file_object)
 
-        use_s3.ul_file(file.filename, dir=FILE_DIR)
+        # use_s3.ul_file(file.filename, dir=FILE_DIR)
+        use_s3.ul_file(file.filename)
 
         return file_path
     
