@@ -9,9 +9,11 @@ if [[ -e /var/www/html/index.html && -d /var/www/html/assets ]]; then
   if [[ $confirm == [yY] ]]; then
     sudo rm -rf /var/www/html/assets &&
     sudo rm /var/www/html/index.html
+    echo "old build files removed."
   fi
 fi
 
 # move build files
 sudo mv ~/db/ui/dist/assets /var/www/html &&
 sudo mv ~/db/ui/dist/index.html /var/www/html
+echo "build files replaced."
