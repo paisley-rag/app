@@ -3,7 +3,7 @@ import { Chatbot } from "../Chatbot";
 import { ChatbotConfiguration } from "../ChatbotConfiguration";
 import { chatbotService } from "@/services/chatbot-service";
 import { useQuery, useQueryClient, useMutation } from "@tanstack/react-query";
-import { useLocation } from "wouter";
+import { useLocation, useParams } from "wouter";
 import {
   knowledgeBaseService,
   ServerKnowledgeBaseConfig,
@@ -13,11 +13,10 @@ import { Button } from "@/components/ui/button";
 import { ArrowLeftIcon } from "lucide-react";
 import { ErrorMessageWithReload } from "../ErrorMessageWithReload";
 
-interface PageChatbotProps {
-  id: string;
-}
+export function PageChatbot() {
+  const { id } = useParams();
+  if (!id) return null;
 
-export function PageChatbot({ id }: PageChatbotProps) {
   const {
     data: chatbot,
     isLoading: isChatbotLoading,
@@ -54,7 +53,7 @@ export function PageChatbot({ id }: PageChatbotProps) {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["chatbot", id] });
-      navigate('/chatbots'); 
+      navigate('/chatbots');
     },
     onError: (error) => {
       console.error("Error deleting chatbot:", error);
@@ -109,7 +108,7 @@ export function PageChatbot({ id }: PageChatbotProps) {
             </Button>
             {chatbot.name}
           </Typography>
-          
+
         </header>
         <div className="grid grid-cols-2 gap-4">
           <Chatbot id={id} />

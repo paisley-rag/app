@@ -32,6 +32,9 @@ python-multipart = "*"
 uvicorn = "*"
 deepeval = "*"
 celery = {extras = ["sqs"], version = "*"}
+pyjwt = "*"
+passlib = "*"
+bcrypt = "*"
 
 [dev-packages]
 pytest = "*"

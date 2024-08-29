@@ -4,7 +4,7 @@ import {
 } from "@/services/knowledge-base-service";
 import { ArrowLeftIcon } from "lucide-react";
 import { useQuery, useMutation } from "@tanstack/react-query";
-import { useLocation } from "wouter";
+import { useLocation, useParams } from "wouter";
 import { Typography } from "../Typography";
 import { useState } from "react";
 import { SkeletonPageKnowledgeBase } from "../skeletons/SkeletonPageKnowledgeBase";
@@ -21,11 +21,10 @@ import { Button } from "@/components/ui/button";
 import { ModalFileUpload } from "../ModalFileUpload";
 import { ErrorMessageWithReload } from "../ErrorMessageWithReload";
 
-interface PageKnowledgeBaseProps {
-  id: string;
-}
+export function PageKnowledgeBase() {
+  const { id } = useParams();
+  if (!id) return null;
 
-export function PageKnowledgeBase({ id }: PageKnowledgeBaseProps) {
   const { data, isLoading, error } = useQuery<ServerKnowledgeBaseConfig>({
     queryKey: ["knowledge-base", id],
     queryFn: () => knowledgeBaseService.fetchKnowledgeBaseById(id),
