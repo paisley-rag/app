@@ -23,8 +23,7 @@ export function Chatbot({ id }: ChatbotProps) {
     { role: "assistant", content: "Hello, how can I help you?" },
   ]);
   const [input, setInput] = useState("");
-  const [_, setIsLoading] = useState(false);
-  
+  const [, setIsLoading] = useState(false);
 
   const mutation = useMutation({
     mutationFn: (message: string) => queryService.sendMessage(id, message),
@@ -71,19 +70,16 @@ export function Chatbot({ id }: ChatbotProps) {
               {messages.map((message, index) => (
                 <div
                   key={index}
-                  className={`mb-4 flex ${
-                    message.role === "user" ? "justify-end" : "justify-start"
-                  }`}
+                  className={`mb-4 flex ${message.role === "user" ? "justify-end" : "justify-start"
+                    }`}
                 >
                   <div
-                    className={`max-w-[75%] ${
-                      message.role === "user" ? "ml-auto" : ""
-                    }`}
+                    className={`max-w-[75%] ${message.role === "user" ? "ml-auto" : ""
+                      }`}
                   >
                     <Card
-                      className={`py-2 px-4 ${
-                        message.role === "user" ? "bg-blue-100" : "bg-gray-100"
-                      }`}
+                      className={`py-2 px-4 ${message.role === "user" ? "bg-blue-100" : "bg-gray-100"
+                        }`}
                     >
                       <Typography variant="p" className="text-left">
                         {message.content}

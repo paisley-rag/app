@@ -53,15 +53,15 @@ interface AuthProviderProps {
     children: ReactNode;
 }
 
-const AuthContext = createContext<AuthContextType | undefined>(undefined);
+const AuthContext = createContext<AuthContextType>({} as AuthContextType);
 
-export const AuthProvider= ({ children }: AuthProviderProps) => {
+export const AuthProvider = ({ children }: AuthProviderProps) => {
     const [isAuthenticated, setIsAuthenticated] = useState(false);
 
     useEffect(() => {
         const token = localStorage.getItem('jwt');
         if (token) {
-            setIsAuthenticated(true); // Check token validity if needed
+            setIsAuthenticated(true);
         }
     }, []);
 
@@ -84,8 +84,8 @@ export const AuthProvider= ({ children }: AuthProviderProps) => {
 
 export const useAuth = (): AuthContextType => {
     const context = useContext(AuthContext);
-    if (!context) {
-        throw new Error('AuthProvider cannot be undefined');
+    if (context === undefined) {
+        throw new Error('useAuth must be used within an AuthProvider');
     }
     return context;
 };
