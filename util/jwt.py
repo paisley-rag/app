@@ -22,13 +22,13 @@ pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 # OAuth2 scheme for getting the token
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 
-USERNAME = os.getenv('ADMIN_USERNAME')
+USERNAME = os.getenv('PAISLEY_ADMIN_USERNAME')
 user_db = {
     USERNAME: {
         "username": USERNAME,
         "full_name": "John Doe",
         "email": "johndoe@example.com",
-        "hashed_password": os.getenv("ADMIN_PASSWORD"),
+        "hashed_password": os.getenv("PAISLEY_ADMIN_PASSWORD"),
         "disabled": False,
     }
 }
