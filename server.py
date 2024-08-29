@@ -35,24 +35,24 @@ app.add_middleware(
     allow_headers=['*']
 )
 
-app.include_router(
-    api_auth.router,
-    dependencies=[Depends(check_key)]
-)
+# app.include_router(
+#    api_auth.router,
+#    dependencies=[Depends(jwt.get_current_user)]
+#)
 
 app.include_router(
     chatbots.router,
-    dependencies=[Depends(check_key)]
+    dependencies=[Depends(jwt.get_current_user)]
 )
 
 app.include_router(
     knowledge_bases.router,
-    dependencies=[Depends(check_key)]
+    dependencies=[Depends(jwt.get_current_user)]
 )
 
 @app.post("/token", response_model=jwt.Token)
 async def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends()):
-    user = jwt.authenticate_user(jwt.fake_users_db, form_data.username, form_data.password)
+    user = jwt.authenticate_user(jwt.user_db, form_data.username, form_data.password)
     if not user:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
@@ -76,7 +76,7 @@ async def root():
 
 # query route
 @app.post('/api/query')
-async def post_query(body: pq.QueryBody, auth: bool = Depends(check_key)):
+async def post_query(body: pq.QueryBody, auth: bool = Depends(jwt.get_current_user)):
     response = pq.post_query(body)
     if response:
       context, output = eval_utils.extract_from_response(response)
@@ -90,12 +90,12 @@ async def post_query(body: pq.QueryBody, auth: bool = Depends(check_key)):
     return response
 
 @app.get('/api/history')
-async def get_evals(auth: bool = Depends(check_key)):
+async def get_evals(auth: bool = Depends(jwt.get_current_user)):
     data = evals.get_chat_history()
     return data
 
 @app.get('/api/scores')
-async def get_scores(auth: bool = Depends(check_key)):
+async def get_scores(auth: bool = Depends(jwt.get_current_user)):
     config_path = os.path.join(os.path.dirname(__file__), 'evals', 'eval_config.json')
     with open(config_path, 'r') as file:
         config = json.load(file)

@@ -7,16 +7,16 @@ interface ProtectedRouteProps {
 }
 
 export const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
-  const { isAuthenticated } = useAuth();
+  const { token } = useAuth();
   const [, setLocation] = useLocation();
 
   useEffect(() => {
-    if (!isAuthenticated) {
+    if (!token) {
       setLocation("/login");
     }
-  }, [isAuthenticated, setLocation]);
+  }, [token, setLocation]);
 
-  if (!isAuthenticated) return null;
+  if (!token) return null;
 
   return <>{children}</>;
 };

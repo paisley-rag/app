@@ -11,7 +11,8 @@ router = APIRouter(
 
 # get all knowledge bases
 @router.get("/")
-async def get_knowledge_bases():
+async def get_knowledge_bases(request: Request):
+    print(request.json())
     return kb.get_all()
 
 # create a knowledge base

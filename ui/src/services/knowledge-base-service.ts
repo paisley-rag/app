@@ -1,6 +1,6 @@
-import axios from "axios";
+import { axiosInstance } from "../auth";
 import { z } from "zod";
-import { AXIOS_CONFIG, baseUrl } from '../lib/utils.ts';
+import { baseUrl } from '../lib/utils.ts';
 
 const markdownSplitterConfig = z.object({
   splitter: z.literal("Markdown"),
@@ -76,8 +76,8 @@ export const clientKnowledgeBaseConfigSchema = z.intersection(
     z.object({
       id: z.string().optional(),
       kb_name: z
-      .string()
-      .regex(/^\S*$/, "Knowledge Base Name cannot contain spaces"),
+        .string()
+        .regex(/^\S*$/, "Knowledge Base Name cannot contain spaces"),
       ingest_method: z.literal("LlamaParse"),
       llm_config: llmConfigSchema,
       embed_config: embeddingConfigSchema,
@@ -85,8 +85,8 @@ export const clientKnowledgeBaseConfigSchema = z.intersection(
     z.object({
       id: z.string().optional(),
       kb_name: z
-      .string()
-      .regex(/^\S*$/, "Knowledge Base Name cannot contain spaces"),
+        .string()
+        .regex(/^\S*$/, "Knowledge Base Name cannot contain spaces"),
       ingest_method: z.literal("Simple"),
       embed_config: embeddingConfigSchema,
     }),
@@ -120,17 +120,17 @@ export type ServerKnowledgeBaseConfig = z.infer<
 >;
 
 async function fetchKnowledgeBases() {
-  const response = await axios.get(`${baseUrl}/api/knowledge-bases`, AXIOS_CONFIG);
+  const response = await axiosInstance.get(`${baseUrl}/api/knowledge-bases`);
   return response.data;
 }
 
 async function fetchKnowledgeBaseById(id: string) {
-  const response = await axios.get(`${baseUrl}/api/knowledge-bases/${id}`, AXIOS_CONFIG);
+  const response = await axiosInstance.get(`${baseUrl}/api/knowledge-bases/${id}`);
   return response.data;
 }
 
 async function createKnowledgeBase(config: ClientKnowledgeBaseConfig) {
-  const response = await axios.post(`${baseUrl}/api/knowledge-bases`, config, AXIOS_CONFIG);
+  const response = await axiosInstance.post(`${baseUrl}/api/knowledge-bases`, config);
   return response.data;
 }
 
@@ -138,13 +138,12 @@ async function uploadFile(id: string, file: File) {
   const formData = new FormData();
   formData.append("file", file);
 
-  const response = await axios.post(
+  const response = await axiosInstance.post(
     `${baseUrl}/api/knowledge-bases/${id}/upload`,
     formData,
     {
       headers: {
         "Content-Type": "multipart/form-data",
-        ...AXIOS_CONFIG['headers']
       },
     }
   );
@@ -152,7 +151,7 @@ async function uploadFile(id: string, file: File) {
 }
 
 async function deleteKnowledgeBase(id: string) {
-  const response = await axios.delete(`${baseUrl}/api/knowledge-bases/${id}/delete`, AXIOS_CONFIG);
+  const response = await axiosInstance.delete(`${baseUrl}/api/knowledge-bases/${id}/delete`);
   return response.data;
 }
 

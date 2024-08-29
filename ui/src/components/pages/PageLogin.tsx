@@ -1,19 +1,25 @@
 import { useState } from "react";
+import { useAuth } from "../../auth";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardHeader, CardTitle, CardContent, CardFooter } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
+import * as authService from "../../services/auth-service";
+import { useLocation } from "wouter";
 
 export function PageLogin() {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+  const { setToken } = useAuth();
+  const [, navigate] = useLocation();
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      // Implement actual login logic here
-      console.log("Login submitted");
+      const token = await authService.authenticate(username, password);
+      setToken(token);
+      navigate("/chatbots");
     } catch (err) {
       setError('Invalid username or password');
     }
