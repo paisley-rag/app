@@ -13,7 +13,7 @@ load_dotenv(override=True)
 
 # configs
 # top_k = 5
-environment = os.environ["ENVIRONMENT"]
+environment = os.getenv('ENVIRONMENT', 'production')
 
 log.info(f"vector.py: using environment '{environment}'")
 
