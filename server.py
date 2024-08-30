@@ -14,11 +14,10 @@ import db.evals.eval_utils as eval_utils
 import db.pipeline.query as pq
 import db.util.jwt as jwt
 
-# from db.celery.tasks import run_evals_background
+from db.celery.tasks import run_evals_background
 from db.routers import chatbots
 from db.routers import api_auth
 from db.routers import knowledge_bases
-from db.util.auth import check_key
 
 ACCESS_TOKEN_EXPIRE_MINUTES = 30
 
@@ -81,12 +80,12 @@ async def post_query(body: pq.QueryBody, auth: bool = Depends(jwt.get_current_us
     if response:
       context, output = eval_utils.extract_from_response(response)
       log.info(f"Adding background task for chatbot_id: {body.chatbot_id}, query: {body.query}, output: {output}")
-    #   run_evals_background.delay(
-    #       body.chatbot_id,
-    #       body.query,
-    #       context,
-    #       output
-    #   )
+      run_evals_background.delay(
+          body.chatbot_id,
+          body.query,
+          context,
+          output
+      )
     return response
 
 @app.get('/api/history')
