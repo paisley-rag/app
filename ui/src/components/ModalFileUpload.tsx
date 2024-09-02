@@ -22,6 +22,8 @@ import {
 } from "@/components/ui/form";
 import { useMutation } from "@tanstack/react-query";
 import { knowledgeBaseService } from "@/services/knowledge-base-service";
+import { ApiKeyContext } from '../providers/ApiKeyProvider.tsx';
+import { useContext } from 'react';
 
 interface ModalFileUploadProps {
   setModalVisible: Dispatch<SetStateAction<boolean>>;
@@ -35,6 +37,7 @@ const formSchema = z.object({
 });
 
 export function ModalFileUpload({ setModalVisible, id }: ModalFileUploadProps) {
+  const { apiKey } = useContext(ApiKeyContext);
   const [loadingStatus, setLoadingStatus] = useState<string | null>(null);
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -51,7 +54,7 @@ export function ModalFileUpload({ setModalVisible, id }: ModalFileUploadProps) {
 
   const uploadMutation = useMutation({
     mutationFn: async (file: File) => {
-      return await knowledgeBaseService.uploadFile(id, file);
+      return await knowledgeBaseService.uploadFile(id, file, apiKey);
     },
     onSuccess: async () => {
       await new Promise((resolve) => setTimeout(resolve, 0)); // Ensures synchronous execution

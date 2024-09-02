@@ -6,7 +6,7 @@ import {
   BookOpenText,
   BotMessageSquare,
   ScrollText,
-  // KeyRound,
+  KeyRound,
   // Settings,
   ChartLine,
 } from "lucide-react";
@@ -49,19 +49,19 @@ export function Navigation() {
           <p className="text-base">Metrics</p>
         </NavigationLink>
       </nav>
-      {/* <nav className="flex flex-col gap-2">
+      <nav className="flex flex-col gap-2">
         <Typography variant="muted" className="px-2">
           Account
         </Typography>
-        <NavigationLink href="/api-keys">
+        <NavigationLink href="/api-key">
           <KeyRound />
-          <p className="text-base">API Keys</p>
+          <p className="text-base">API Key</p>
         </NavigationLink>
-        <NavigationLink href="/settings">
+        {/* <NavigationLink href="/settings">
           <Settings />
           <p className="text-base">Settings</p>
-        </NavigationLink>
-      </nav> */}
+        </NavigationLink> */}
+      </nav>
     </div>
   );
 }

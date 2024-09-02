@@ -1,8 +1,8 @@
 import axios from "axios";
-import { baseUrl, AXIOS_CONFIG } from '../lib/utils.ts';
+import { baseUrl, axiosHeader } from '../lib/utils.ts';
 
-async function fetchChatbotHistory() {
-  const response = await axios.get(`${baseUrl}/api/history`, AXIOS_CONFIG);
+async function fetchChatbotHistory(apiKey: string) {
+  const response = await axios.get(`${baseUrl}/api/history`, axiosHeader(apiKey));
   return response.data;
 }
 

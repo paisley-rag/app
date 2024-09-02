@@ -6,7 +6,7 @@ import { ArrowLeftIcon } from "lucide-react";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { useLocation } from "wouter";
 import { Typography } from "../Typography";
-import { useState } from "react";
+import { useState, useContext } from "react";
 import { SkeletonPageKnowledgeBase } from "../skeletons/SkeletonPageKnowledgeBase";
 
 import {
@@ -20,15 +20,17 @@ import {
 import { Button } from "@/components/ui/button";
 import { ModalFileUpload } from "../ModalFileUpload";
 import { ErrorMessageWithReload } from "../ErrorMessageWithReload";
+import { ApiKeyContext } from '../../providers/ApiKeyProvider.tsx';
 
 interface PageKnowledgeBaseProps {
   id: string;
 }
 
 export function PageKnowledgeBase({ id }: PageKnowledgeBaseProps) {
+  const { apiKey } = useContext(ApiKeyContext);
   const { data, isLoading, error } = useQuery<ServerKnowledgeBaseConfig>({
     queryKey: ["knowledge-base", id],
-    queryFn: () => knowledgeBaseService.fetchKnowledgeBaseById(id),
+    queryFn: async () => knowledgeBaseService.fetchKnowledgeBaseById(id, apiKey)
   });
   const [, setLocation] = useLocation();
   const [modalVisible, setModalVisible] = useState(false);
@@ -40,7 +42,7 @@ export function PageKnowledgeBase({ id }: PageKnowledgeBaseProps) {
 
 
   const deleteMutation = useMutation({
-    mutationFn: () => knowledgeBaseService.deleteKnowledgeBase(id),
+    mutationFn: () => knowledgeBaseService.deleteKnowledgeBase(id, apiKey),
     onSuccess: () => {
       setLocation("/knowledge-bases/");
     },

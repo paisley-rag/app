@@ -4,6 +4,8 @@ import { Typography } from "../Typography";
 import { Button } from "@/components/ui/button";
 import { CardChatbot } from "../CardChatbot";
 import { SkeletonPageChatbots } from "../skeletons/SkeletonPageChatbots";
+import { ApiKeyContext } from '../../providers/ApiKeyProvider.tsx';
+import { useContext } from 'react';
 
 import {
   chatbotService,
@@ -11,9 +13,10 @@ import {
 } from "../../services/chatbot-service";
 
 export function PageChatbots() {
+  const { apiKey } = useContext(ApiKeyContext);
   const { data: chatbots, isLoading } = useQuery({
     queryKey: ["chatbots"],
-    queryFn: () => chatbotService.fetchChatbots(),
+    queryFn: () => chatbotService.fetchChatbots(apiKey),
   });
   const [, setLocation] = useLocation();
 

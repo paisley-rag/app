@@ -1,7 +1,7 @@
 import { Typography } from "../Typography";
 import { Button } from "../ui/button";
 import { Link } from "wouter";
-import { useState } from "react";
+import { useState, useContext } from "react";
 import { SkeletonPageKnowledgeBase } from "../skeletons/SkeletonPageKnowledgeBases";
 import { ModalKnowledgeBase } from "../ModalKnowledgeBase";
 import { useQuery } from "@tanstack/react-query";
@@ -10,9 +10,12 @@ import {
   ServerKnowledgeBaseConfig,
 } from "@/services/knowledge-base-service";
 import { ErrorMessageWithReload } from "../ErrorMessageWithReload";
+import { ApiKeyContext } from '../../providers/ApiKeyProvider.tsx';
 
 export function PageKnowledgeBases() {
   const [modalVisible, setModalVisible] = useState(false);
+
+  const { apiKey } = useContext(ApiKeyContext);
 
   function handleNewKnowledgeBaseClick() {
     setModalVisible(true);
@@ -20,7 +23,7 @@ export function PageKnowledgeBases() {
 
   const { data, isLoading, isError } = useQuery({
     queryKey: ["knowledge-bases"],
-    queryFn: knowledgeBaseService.fetchKnowledgeBases,
+    queryFn: async () => knowledgeBaseService.fetchKnowledgeBases(apiKey),
   });
 
   if (isLoading) return <SkeletonPageKnowledgeBase />;

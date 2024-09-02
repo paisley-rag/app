@@ -1,6 +1,6 @@
 import axios from "axios";
 import { SeriesOptionsType } from 'highcharts';
-import { AXIOS_CONFIG, baseUrl } from '../lib/utils.ts';
+import { axiosHeader, baseUrl } from '../lib/utils.ts';
 
 import { chatbotService } from './chatbot-service';
 
@@ -12,8 +12,8 @@ export type SeriesData = SeriesOptionsType & {
 };
 
 
-async function seriesFromData(test_data: any[] = []): Promise<any> {
-  const scoreNames = await fetchScoreNames()
+async function seriesFromData(test_data: any[] = [], apiKey: string): Promise<any> {
+  const scoreNames = await fetchScoreNames(apiKey);
     
   let series: SeriesData[] = scoreNames.map((name: string) => ({
     type: 'line',
@@ -34,25 +34,25 @@ async function seriesFromData(test_data: any[] = []): Promise<any> {
   return series;
 }
 
-async function fetchChatbotMetrics(chatbotName: string | null) {
+async function fetchChatbotMetrics(chatbotName: string | null, apiKey: string) {
   
-  let chatbots = await chatbotService.fetchChatbots()
+  let chatbots = await chatbotService.fetchChatbots(apiKey);
 
   const chatbot = chatbots.find((chatbot: any) => chatbot.name === chatbotName); // change any later
   if (!chatbot) {
-    return seriesFromData();
+    return seriesFromData([], apiKey);
   }
 
-  const response = await axios.get(`${baseUrl}/api/history`, AXIOS_CONFIG);
+  const response = await axios.get(`${baseUrl}/api/history`, axiosHeader(apiKey));
   let data = response.data
 
   data = data.filter((entry: any) => entry.chatbot_id === chatbot.id);
 
-  return seriesFromData(data);
+  return seriesFromData(data, apiKey);
 }
 
-async function fetchScoreNames() {
-  const response = await axios.get(`${baseUrl}/api/scores`, AXIOS_CONFIG);
+async function fetchScoreNames(apiKey: string) {
+  const response = await axios.get(`${baseUrl}/api/scores`, axiosHeader(apiKey));
   console.log('SCORE NAMES ARE:', response.data)
   return response.data;
 }

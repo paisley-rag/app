@@ -4,9 +4,10 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Card } from "@/components/ui/card";
 import { Typography } from "./Typography";
 
-import { useState } from "react";
+import { useState, useContext } from "react";
 import { useMutation } from "@tanstack/react-query";
 import { queryService } from "../services/query-service";
+import { ApiKeyContext } from '../providers/ApiKeyProvider.tsx';
 
 interface ChatbotProps {
   id: string;
@@ -24,10 +25,11 @@ export function Chatbot({ id }: ChatbotProps) {
   ]);
   const [input, setInput] = useState("");
   const [_, setIsLoading] = useState(false);
+  const { apiKey } = useContext(ApiKeyContext);
   
 
   const mutation = useMutation({
-    mutationFn: (message: string) => queryService.sendMessage(id, message),
+    mutationFn: (message: string) => queryService.sendMessage(id, message, apiKey),
     onSuccess: (data) => {
       setIsLoading(false);
       setMessages((prev) => {

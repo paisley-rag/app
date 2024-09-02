@@ -1,6 +1,6 @@
 import axios from "axios";
 import { z } from "zod";
-import { AXIOS_CONFIG, baseUrl } from '../lib/utils.ts';
+import { axiosHeader, baseUrl } from '../lib/utils.ts';
 
 const markdownSplitterConfig = z.object({
   splitter: z.literal("Markdown"),
@@ -119,22 +119,22 @@ export type ServerKnowledgeBaseConfig = z.infer<
   typeof serverKnowledgeBaseConfigSchema
 >;
 
-async function fetchKnowledgeBases() {
-  const response = await axios.get(`${baseUrl}/api/knowledge-bases`, AXIOS_CONFIG);
+async function fetchKnowledgeBases(apiKey: string) {
+  const response = await axios.get(`${baseUrl}/api/knowledge-bases`, axiosHeader(apiKey));
   return response.data;
 }
 
-async function fetchKnowledgeBaseById(id: string) {
-  const response = await axios.get(`${baseUrl}/api/knowledge-bases/${id}`, AXIOS_CONFIG);
+async function fetchKnowledgeBaseById(id: string, apiKey: string) {
+  const response = await axios.get(`${baseUrl}/api/knowledge-bases/${id}`, axiosHeader(apiKey));
   return response.data;
 }
 
-async function createKnowledgeBase(config: ClientKnowledgeBaseConfig) {
-  const response = await axios.post(`${baseUrl}/api/knowledge-bases`, config, AXIOS_CONFIG);
+async function createKnowledgeBase(config: ClientKnowledgeBaseConfig, apiKey: string) {
+  const response = await axios.post(`${baseUrl}/api/knowledge-bases`, config, axiosHeader(apiKey));
   return response.data;
 }
 
-async function uploadFile(id: string, file: File) {
+async function uploadFile(id: string, file: File, apiKey: string) {
   const formData = new FormData();
   formData.append("file", file);
 
@@ -144,15 +144,15 @@ async function uploadFile(id: string, file: File) {
     {
       headers: {
         "Content-Type": "multipart/form-data",
-        ...AXIOS_CONFIG['headers']
+        ...axiosHeader(apiKey)['headers']
       },
     }
   );
   return response.data;
 }
 
-async function deleteKnowledgeBase(id: string) {
-  const response = await axios.delete(`${baseUrl}/api/knowledge-bases/${id}/delete`, AXIOS_CONFIG);
+async function deleteKnowledgeBase(id: string, apiKey: string) {
+  const response = await axios.delete(`${baseUrl}/api/knowledge-bases/${id}/delete`, axiosHeader(apiKey));
   return response.data;
 }
 

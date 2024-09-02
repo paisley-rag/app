@@ -1,5 +1,5 @@
 import axios from "axios";
-import { AXIOS_CONFIG, baseUrl } from '../lib/utils.ts';
+import { axiosHeader, baseUrl } from '../lib/utils.ts';
 // import z from "zod";
 
 // const querySchema = z.object({
@@ -12,11 +12,11 @@ import { AXIOS_CONFIG, baseUrl } from '../lib/utils.ts';
 //   body: z.string(),
 // });
 
-async function sendMessage(id: string, message: string) {
+async function sendMessage(id: string, message: string, apiKey: string) {
   const response = await axios.post(`${baseUrl}/api/query`, {
     query: message,
     chatbot_id: id,
-  }, AXIOS_CONFIG);
+  }, axiosHeader(apiKey));
   return response.data;
 }
 

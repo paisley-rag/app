@@ -8,23 +8,26 @@ import {
   knowledgeBaseService,
   ServerKnowledgeBaseConfig,
 } from "@/services/knowledge-base-service";
+import { useContext } from 'react';
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
 import { ArrowLeftIcon } from "lucide-react";
 import { ErrorMessageWithReload } from "../ErrorMessageWithReload";
+import { ApiKeyContext } from '../../providers/ApiKeyProvider.tsx';
 
 interface PageChatbotProps {
   id: string;
 }
 
 export function PageChatbot({ id }: PageChatbotProps) {
+  const { apiKey } = useContext(ApiKeyContext);
   const {
     data: chatbot,
     isLoading: isChatbotLoading,
     error: chatbotError,
   } = useQuery({
     queryKey: ["chatbot", id],
-    queryFn: () => chatbotService.fetchChatbotById(id),
+    queryFn: async () => chatbotService.fetchChatbotById(id, apiKey),
   });
 
   const {
@@ -33,7 +36,7 @@ export function PageChatbot({ id }: PageChatbotProps) {
     error: knowledgeBasesError,
   } = useQuery<ServerKnowledgeBaseConfig[]>({
     queryKey: ["knowledgeBases"],
-    queryFn: knowledgeBaseService.fetchKnowledgeBases,
+    queryFn: async () => knowledgeBaseService.fetchKnowledgeBases(apiKey)
   });
 
   const queryClient = useQueryClient();
@@ -49,7 +52,7 @@ export function PageChatbot({ id }: PageChatbotProps) {
       // Note: Note sure WHY this works, but it seems critical:
       // - mutationFn defined as 'async'
       // - having the return statement on a separate line from service call
-      chatbotService.deleteChatbotById(id);
+      chatbotService.deleteChatbotById(id, apiKey);
       return
     },
     onSuccess: () => {

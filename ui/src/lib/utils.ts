@@ -1,5 +1,5 @@
-import { type ClassValue, clsx } from "clsx"
-import { twMerge } from "tailwind-merge"
+import { type ClassValue, clsx } from "clsx";
+import { twMerge } from "tailwind-merge";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
@@ -7,10 +7,10 @@ export function cn(...inputs: ClassValue[]) {
 
 export const baseUrl = import.meta.env.VITE_BASE_URL || '';
 
-export const PAISLEY_API_KEY = import.meta.env.VITE_PAISLEY_API_KEY;
-
-export const AXIOS_CONFIG = {
-  headers: {
-    "X-API-Key": PAISLEY_API_KEY
-  }
+export const axiosHeader = (apiKey: string) => {
+  return {
+    headers: {
+      "X-API-Key": apiKey
+    }
+  };
 };

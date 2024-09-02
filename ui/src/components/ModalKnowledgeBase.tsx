@@ -39,6 +39,8 @@ import {
 import { zodResolver } from "@hookform/resolvers/zod";
 import { RefreshCw } from "lucide-react";
 import { useLocation } from "wouter";
+import { ApiKeyContext } from '../providers/ApiKeyProvider.tsx';
+import { useContext } from 'react';
 
 interface ModalKnowledgeBaseProps {
   setModalVisible: Dispatch<SetStateAction<boolean>>;
@@ -47,6 +49,7 @@ interface ModalKnowledgeBaseProps {
 export function ModalKnowledgeBase({
   setModalVisible,
 }: ModalKnowledgeBaseProps) {
+  const { apiKey } = useContext(ApiKeyContext);
   const form = useForm<ClientKnowledgeBaseConfig>({
     resolver: zodResolver(clientKnowledgeBaseConfigSchema),
     defaultValues: {
@@ -58,7 +61,7 @@ export function ModalKnowledgeBase({
 
   const { mutate, isPending } = useMutation({
     mutationFn: (data: ClientKnowledgeBaseConfig) =>
-      knowledgeBaseService.createKnowledgeBase(data),
+      knowledgeBaseService.createKnowledgeBase(data, apiKey),
 
     onSuccess: (data: ServerKnowledgeBaseConfig) => {
       setModalVisible(false);

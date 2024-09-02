@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useContext } from "react";
 import { useForm } from "react-hook-form";
 import { useMutation } from "@tanstack/react-query";
 
@@ -25,6 +25,7 @@ import { PromptField } from "./form_fields/PromptField";
 
 import { ServerKnowledgeBaseConfig } from "../services/knowledge-base-service";
 import { RotateCw } from "lucide-react";
+import { ApiKeyContext } from '../providers/ApiKeyProvider.tsx';
 
 interface ChatbotConfigurationProps {
   chatbot: ServerPipelineConfig;
@@ -37,9 +38,10 @@ export function ChatbotConfiguration({
   knowledgeBases,
   onDeleteClick,
 }: ChatbotConfigurationProps) {
+  const { apiKey } = useContext(ApiKeyContext);
   const { mutate, isPending } = useMutation({
     mutationFn: (data: ClientPipelineConfig) =>
-      chatbotService.updateChatbot(chatbot.id, data),
+      chatbotService.updateChatbot(chatbot.id, data, apiKey),
   });
 
   const form = useForm<ClientPipelineConfig>({

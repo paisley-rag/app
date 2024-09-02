@@ -45,15 +45,18 @@ import { useQuery } from "@tanstack/react-query";
 import { chatbotService } from "../../services/chatbot-service";
 import { historyService } from "../../services/history-service";
 import { metricService } from "../../services/metric-service";
+import { ApiKeyContext } from '../../providers/ApiKeyProvider.tsx';
+import { useContext } from "react";
 
 export function PageHistory() {
+  const { apiKey } = useContext(ApiKeyContext);
   const [selectedChatbot, setSelectedChatbot] = useState(() => {
     return localStorage.getItem('selectedChatbot') || '';
   });
 
   const { data: chatHistory, isLoading } = useQuery({
     queryKey: ["chatHistory"],
-    queryFn: () => historyService.fetchChatbotHistory(),
+    queryFn: () => historyService.fetchChatbotHistory(apiKey),
   });
 
   
@@ -65,7 +68,7 @@ export function PageHistory() {
   useEffect(() => {
     const fetchChatbotNames = async () => {
       if (chatHistory) {
-        const chatbots = await chatbotService.fetchChatbots();
+        const chatbots = await chatbotService.fetchChatbots(apiKey);
         const namesMap = Object.fromEntries(
           chatbots.map((chatbot: any) => [chatbot.id, chatbot.name])
         );
@@ -109,7 +112,7 @@ export function PageHistory() {
 
   useEffect(() => {
     const fetchScoreNames = async () => {
-      const scores = await metricService.fetchScoreNames();
+      const scores = await metricService.fetchScoreNames(apiKey);
       setScoreNames(scores);
     };
     fetchScoreNames();

@@ -20,7 +20,11 @@ import { chatbotService } from '../../services/chatbot-service';
 import { Button } from "@/components/ui/button";
 import { ChevronDown } from "lucide-react";
 
+import { ApiKeyContext } from '../../providers/ApiKeyProvider.tsx';
+import { useContext } from "react";
+
 export function PageLineChart() {
+  const { apiKey } = useContext(ApiKeyContext);
   const [selectedChatbot, setSelectedChatbot] = useState(() => {
     return localStorage.getItem('selectedChatbot') || '';
   });
@@ -33,7 +37,7 @@ export function PageLineChart() {
 
   const { data: chatbots } = useQuery({
     queryKey: ["chatbots"],
-    queryFn: () => chatbotService.fetchChatbots(),
+    queryFn: () => chatbotService.fetchChatbots(apiKey),
   });
 
 
@@ -41,7 +45,7 @@ export function PageLineChart() {
 
   const { data: metrics, isLoading } = useQuery({
     queryKey: ["metrics", selectedChatbot],
-    queryFn: () => metricService.fetchChatbotMetrics(selectedChatbot),
+    queryFn: () => metricService.fetchChatbotMetrics(selectedChatbot, apiKey),
     enabled: !!selectedChatbot,
   });
 

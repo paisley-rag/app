@@ -23,6 +23,8 @@ import { knowledgeBaseService } from "../../services/knowledge-base-service";
 import { Typography } from "../Typography";
 import { clientPipelineConfigSchema } from "@/services/chatbot-service";
 import { Skeleton } from "../ui/skeleton";
+import { ApiKeyContext } from '../../providers/ApiKeyProvider.tsx';
+import { useContext } from "react";
 
 export function PageCreateChatbot() {
   const form = useForm<z.infer<typeof clientPipelineConfigSchema>>({
@@ -44,6 +46,7 @@ export function PageCreateChatbot() {
     },
   });
   const [, navigate] = useLocation();
+  const { apiKey } = useContext(ApiKeyContext);
 
   const {
     data: knowledgeBases,
@@ -51,12 +54,12 @@ export function PageCreateChatbot() {
     error,
   } = useQuery({
     queryKey: ["knowledgeBases"],
-    queryFn: knowledgeBaseService.fetchKnowledgeBases,
+    queryFn: async () => knowledgeBaseService.fetchKnowledgeBases(apiKey),
   });
 
   const { mutate, isPending } = useMutation({
     mutationFn: (data: z.infer<typeof clientPipelineConfigSchema>) =>
-      chatbotService.createChatbot(data),
+      chatbotService.createChatbot(data, apiKey),
     onSuccess: (data) => {
       navigate(`/chatbots/${data.id}`);
     },

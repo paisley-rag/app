@@ -1,6 +1,6 @@
 import axios from "axios";
 import { z } from "zod";
-import { AXIOS_CONFIG, baseUrl } from '../lib/utils.ts';
+import { axiosHeader, baseUrl } from '../lib/utils.ts';
 
 
 export const clientPipelineConfigSchema = z.object({
@@ -48,28 +48,28 @@ export const serverPipelineConfigSchema = z.object({
 export type ClientPipelineConfig = z.infer<typeof clientPipelineConfigSchema>;
 export type ServerPipelineConfig = z.infer<typeof serverPipelineConfigSchema>;
 
-async function updateChatbot(id: string, data: ClientPipelineConfig) {
-  const response = await axios.put(`${baseUrl}/api/chatbots/${id}/update`, data, AXIOS_CONFIG);
+async function updateChatbot(id: string, data: ClientPipelineConfig, apiKey: string) {
+  const response = await axios.put(`${baseUrl}/api/chatbots/${id}/update`, data, axiosHeader(apiKey));
   return response.data;
 }
 
-async function createChatbot(data: ClientPipelineConfig) {
-  const response = await axios.post(`${baseUrl}/api/chatbots`, data, AXIOS_CONFIG);
+async function createChatbot(data: ClientPipelineConfig, apiKey: string) {
+  const response = await axios.post(`${baseUrl}/api/chatbots`, data, axiosHeader(apiKey));
   return response.data;
 }
 
-async function fetchChatbots() {
-  const response = await axios.get(`${baseUrl}/api/chatbots`, AXIOS_CONFIG);
+async function fetchChatbots(apiKey: string) {
+  const response = await axios.get(`${baseUrl}/api/chatbots`, axiosHeader(apiKey));
   return response.data;
 }
 
-async function fetchChatbotById(id: string) {
-  const response = await axios.get(`${baseUrl}/api/chatbots/${id}`, AXIOS_CONFIG);
+async function fetchChatbotById(id: string, apiKey: string) {
+  const response = await axios.get(`${baseUrl}/api/chatbots/${id}`, axiosHeader(apiKey));
   return response.data;
 }
 
-async function deleteChatbotById(id: string) {
-  const response = await axios.delete(`${baseUrl}/api/chatbots/${id}/delete`, AXIOS_CONFIG);
+async function deleteChatbotById(id: string, apiKey: string) {
+  const response = await axios.delete(`${baseUrl}/api/chatbots/${id}/delete`, axiosHeader(apiKey));
   return response.data;
 }
 

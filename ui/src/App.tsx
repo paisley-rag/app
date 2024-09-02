@@ -8,6 +8,8 @@ import { PageChatbot } from "./components/pages/PageChatbot.tsx";
 import { PageCreateChatbot } from "./components/pages/PageCreateChatbot.tsx";
 import { PageHistory } from "./components/pages/PageHistory.tsx";
 import { PageLineChart } from "./components/pages/PageLineChart.tsx";
+import { ApiKey } from './components/pages/ApiKey.tsx';
+import { ApiKeyProvider } from './providers/ApiKeyProvider.tsx';
 // import { DataTableDemo } from "./components/pages/DataTableDemo.tsx"; // testing only
 
 const queryClient = new QueryClient();
@@ -15,6 +17,7 @@ const queryClient = new QueryClient();
 function App() {
   return (
     <QueryClientProvider client={queryClient}>
+      <ApiKeyProvider>
       <Navigation />
       <main className="ml-60 p-6">
         <Router>
@@ -30,9 +33,12 @@ function App() {
             </Route>
             <Route path="/history" component={PageHistory} />
             <Route path="/metrics" component={PageLineChart} />
+            <Route path="/api-key" component={ApiKey} />
+            <Route path="/" component={ApiKey} />
           </Switch>
         </Router>
       </main>
+      </ApiKeyProvider>
     </QueryClientProvider>
   );
 }
