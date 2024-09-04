@@ -9,8 +9,6 @@ import db.evals.evals as evals
 load_dotenv(override=True)
 
 ENVIRONMENT = os.getenv('ENVIRONMENT', 'production')
-print('ENVIRONMENT', ENVIRONMENT)
-# log.info('ENVIRONMENT', ENVIRONMENT)
 
 if ENVIRONMENT == 'production':
     session = boto3.Session()
@@ -19,20 +17,25 @@ if ENVIRONMENT == 'production':
     aws_secret_key = credentials.secret_key
     region = session.region_name or os.getenv('AWS_REGION', 'us-east-1')
     sqs_url = os.getenv('SQS_URL', '')
+    paisley_queue_name = "SQSQueuePaisley.fifo"
+    broker_options = {
+        "region": region,
+        "predefined_queues": {
+            # 'celery': {
+            paisley_queue_name: {
+                "url": sqs_url,
+                "access_key_id": aws_access_key,
+                "secret_access_key": aws_secret_key,
+                "session_token": aws_session_token,
+            }
+        },
+    }
+    print("BROKER OPTIONS ARE:", broker_options)
     app = Celery(
         'tasks',
         broker=f'sqs://{aws_access_key}:{aws_secret_key}@',
-        broker_transport_options={
-            "region": region,
-            "predefined_queues": {
-                f"SQSQueue-{os.getenv('INSTANCE_NUM')}.fifo": {  # sqs queue name
-                    "url": sqs_url,
-                    "access_key_id": aws_access_key,
-                    "secret_access_key": aws_secret_key,
-                }
-            },
-        },
-        task_create_missing_queues=False,
+        broker_transport_options=broker_options,
+        task_default_queue=paisley_queue_name
     )
     print('celery.py:  using AWS SQS as message broker')
     print('REGION IS:', region)
