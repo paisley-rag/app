@@ -23,9 +23,9 @@ if ENVIRONMENT == 'production':
         'tasks',
         broker=f'sqs://{aws_access_key}:{aws_secret_key}@',
         broker_transport_options={
-            f"SQSQueue-{os.getenv('INSTANCE_NUM')}": region,
+            "region": region,
             "predefined_queues": {
-                "celery": {  # the name of the SQS queue
+                f"SQSQueue-{os.getenv('INSTANCE_NUM')}.fifo": {  # sqs queue name
                     "url": sqs_url,
                     "access_key_id": aws_access_key,
                     "secret_access_key": aws_secret_key,
