@@ -49,7 +49,7 @@ app.include_router(
     dependencies=[Depends(jwt.get_current_user)]
 )
 
-@app.post("/token", response_model=jwt.Token)
+@app.post("/api/token", response_model=jwt.Token)
 async def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends()):
     user = jwt.authenticate_user(jwt.user_db, form_data.username, form_data.password)
     if not user:
