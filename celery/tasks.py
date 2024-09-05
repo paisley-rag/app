@@ -8,11 +8,13 @@ import db.evals.evals as evals
 load_dotenv(override=True)
 
 ENVIRONMENT = os.getenv('ENVIRONMENT', 'production')
-print('ENVIRONMENT', ENVIRONMENT)
-# log.info('ENVIRONMENT', ENVIRONMENT)
 
 if ENVIRONMENT == 'production':
-    app = Celery('tasks', broker='sqs://')
+    app = Celery(
+        'tasks',
+        broker='sqs://',
+        task_default_queue="SQSQueuePaisley.fifo"
+    )
     print('celery.py:  using AWS SQS as message broker')
 else:
     app = Celery('tasks', broker='redis://localhost')
