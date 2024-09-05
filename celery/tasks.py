@@ -18,27 +18,27 @@ if ENVIRONMENT == 'production':
     region = session.region_name or os.getenv('AWS_REGION', 'us-east-1')
     sqs_url = os.getenv('SQS_URL', '')
     paisley_queue_name = "SQSQueuePaisley.fifo"
-    broker_options = {
-        "region": region,
-        "predefined_queues": {
-            # 'celery': {
-            paisley_queue_name: {
-                "url": sqs_url,
-                "access_key_id": aws_access_key,
-                "secret_access_key": aws_secret_key,
-                "session_token": aws_session_token,
-            }
-        },
-    }
+    # broker_options = {
+    #     "region": region,
+    #     "predefined_queues": {
+    #         # 'celery': {
+    #         paisley_queue_name: {
+    #             "url": sqs_url,
+    #             "access_key_id": aws_access_key,
+    #             "secret_access_key": aws_secret_key,
+    #             "session_token": aws_session_token,
+    #         }
+    #     },
+    # }
     print("BROKER OPTIONS ARE:", broker_options)
     app = Celery(
         'tasks',
-        broker=f'sqs://{aws_access_key}:{aws_secret_key}@',
-        broker_transport_options=broker_options,
+        broker=f'sqs://',
+        # broker_transport_options=broker_options,
         task_default_queue=paisley_queue_name
     )
     print('celery.py:  using AWS SQS as message broker')
-    print('REGION IS:', region)
+    # print('REGION IS:', region)
 else:
     app = Celery('tasks', broker='redis://localhost')
     print('celery.py:  using local redis as message broker')
