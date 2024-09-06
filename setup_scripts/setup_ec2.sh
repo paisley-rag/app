@@ -33,8 +33,8 @@ if [[ -e /var/www/html/index.html && -d /var/www/html/assets ]]; then
 fi
 
 # move build files
-sudo mv ~/db/ui/dist/assets /var/www/html &&
-	sudo mv ~/db/ui/dist/index.html /var/www/html &&
+sudo cp ~/db/ui/dist/assets /var/www/html &&
+	sudo cp ~/db/ui/dist/index.html /var/www/html &&
 	sudo cp ~/db/ui/public/favicon.ico /var/www/html &&
 	echo "build files replaced."
 

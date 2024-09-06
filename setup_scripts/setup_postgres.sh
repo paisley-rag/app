@@ -6,7 +6,7 @@ if [ -f ~/db/.env ]; then
 fi
 
 # Install postgresql
-pipenv run DEBIAN_FRONTEND=noninteractive sudo apt install postgresql postgresql-contrib -y
+DEBIAN_FRONTEND=noninteractive pipenv run sudo apt install postgresql postgresql-contrib -y
 
 # load db details from .env
 set -a
