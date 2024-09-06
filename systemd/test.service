@@ -5,7 +5,7 @@
   [Service]
   Type=simple
   Restart=always
-  User=ubuntu
+  User=root
   WorkingDirectory=/home/ubuntu/
   Environment="PIPENV_PIPFILE=/home/ubuntu/db/Pipfile"
   ExecStart=/home/ubuntu/db/util/start_server.sh
