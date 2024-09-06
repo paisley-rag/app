@@ -8,7 +8,6 @@ fastapi = "*"
 boto3 = "*"
 datasets = "*"
 ragas = "*"
-psycopg2-binary = "*"
 async-timeout = "*"
 llama-index = "*"
 pymongo = "*"
@@ -35,6 +34,7 @@ celery = {extras = ["sqs"], version = "*"}
 pyjwt = "*"
 passlib = "*"
 bcrypt = "*"
+psycopg2 = "*"
 
 [dev-packages]
 pytest = "*"
