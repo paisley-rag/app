@@ -9,7 +9,7 @@ WorkingDirectory=/home/ubuntu/
 Restart=always
 TimeoutStartSec=30
 TimeoutStopSec=300
-ExecStart=/home/ubuntu/venv/bin/celery -A db.celery.tasks worker -l info -E -f celery.log
+ExecStart=/home/ubuntu/venv/bin/celery -A db.celery.tasks worker -l info -E -f /home/ubuntu/celery.log
 
 
 [Install]

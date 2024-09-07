@@ -5,7 +5,7 @@
   [Service]
   Type=simple
   Restart=always
-  User=root
+  User=ubuntu
   WorkingDirectory=/home/ubuntu/
   Environment="PYTHONPATH=/home/ubuntu/venv/bin"
   ExecStart=/home/ubuntu/venv/bin/python -m db.server
