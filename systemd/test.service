@@ -8,6 +8,7 @@
   User=root
   WorkingDirectory=/home/ubuntu/
   Environment="PIPENV_PIPFILE=/home/ubuntu/db/Pipfile"
+  Environment="WORKON_HOME=/root/.local/share/virtualenvs/db-grdQ2Ybz"
   ExecStart=/home/ubuntu/db/util/start_server.sh
 
   [Install]
