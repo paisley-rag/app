@@ -4,12 +4,12 @@ After=network.target
 
 [Service]
 Type=simple
-User=root
+User=ubuntu
 WorkingDirectory=/home/ubuntu/
 Restart=always
 TimeoutStartSec=30
 TimeoutStopSec=300
-ExecStart=/home/ubuntu/db/util/start_celery.sh
+ExecStart=/home/ubuntu/venv/bin/celery -A db.celery.tasks worker -l info -E -f celery.log
 
 
 [Install]
