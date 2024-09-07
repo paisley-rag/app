@@ -1,7 +1,7 @@
 #! /bin/bash
 
 # get global-bundle.pem for docdb
-cd ~ && wget https://truststore.pki.rds.amazonaws.com/global/global-bundle.pem &&
+cd ~ && wget https://truststore.pki.rds.amazonaws.com/global/global-bundle.pem -P /home/ubuntu/db &&
 
 	# setup postgres
 	bash ~/db/setup_scripts/setup_postgres.sh &&
@@ -33,7 +33,7 @@ if [[ -e /var/www/html/index.html && -d /var/www/html/assets ]]; then
 fi
 
 # move build files
-sudo cp ~/db/ui/dist/assets /var/www/html &&
+sudo cp -r ~/db/ui/dist/assets /var/www/html &&
 	sudo cp ~/db/ui/dist/index.html /var/www/html &&
 	sudo cp ~/db/ui/public/favicon.ico /var/www/html &&
 	echo "build files replaced."
