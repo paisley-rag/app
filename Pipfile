@@ -34,7 +34,7 @@ celery = {extras = ["sqs"], version = "*"}
 pyjwt = "*"
 passlib = "*"
 bcrypt = "*"
-psycopg2 = "*"
+psycopg2-binary = "*"
 
 [dev-packages]
 pytest = "*"
