@@ -1,7 +1,7 @@
 import { axiosInstance } from "../auth";
-import { baseUrl } from "../lib/utils";
+import { baseUrl } from "../lib/utils.ts";
 
-export async function authenticate(username: string, password: string) {
+async function authenticate(username: string, password: string) {
   const formData = new FormData();
   formData.append('username', username);
   formData.append('password', password);
@@ -14,3 +14,7 @@ export async function authenticate(username: string, password: string) {
 
   return response.data.access_token;
 }
+
+export const authService = {
+  authenticate
+};
