@@ -43,7 +43,7 @@ async function fetchChatbotMetrics(chatbotName: string | null) {
     return seriesFromData();
   }
 
-  const response = await axiosInstance.get(`${baseUrl}/api/history`);
+  const response = await axiosInstance.get(`${baseUrl()}/api/history`);
   let data = response.data
 
   data = data.filter((entry: any) => entry.chatbot_id === chatbot.id);
@@ -52,7 +52,7 @@ async function fetchChatbotMetrics(chatbotName: string | null) {
 }
 
 async function fetchScoreNames() {
-  const response = await axiosInstance.get(`${baseUrl}/api/scores`);
+  const response = await axiosInstance.get(`${baseUrl()}/api/scores`);
   console.log('SCORE NAMES ARE:', response.data)
   return response.data;
 }

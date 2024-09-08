@@ -6,7 +6,7 @@ async function authenticate(username: string, password: string) {
   formData.append('username', username);
   formData.append('password', password);
 
-  const response = await axiosInstance.post(`${ baseUrl !== '/' ? baseUrl : ''}/api/token`, formData, {
+  const response = await axiosInstance.post(`${baseUrl()}/api/token`, formData, {
     headers: {
       'Content-Type': 'multipart/form-data'
     }

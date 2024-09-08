@@ -49,27 +49,27 @@ export type ClientPipelineConfig = z.infer<typeof clientPipelineConfigSchema>;
 export type ServerPipelineConfig = z.infer<typeof serverPipelineConfigSchema>;
 
 async function updateChatbot(id: string, data: ClientPipelineConfig) {
-  const response = await axiosInstance.put(`${baseUrl}/api/chatbots/${id}/update`, data);
+  const response = await axiosInstance.put(`${baseUrl()}/api/chatbots/${id}/update`, data);
   return response.data;
 }
 
 async function createChatbot(data: ClientPipelineConfig) {
-  const response = await axiosInstance.post(`${baseUrl}/api/chatbots`, data);
+  const response = await axiosInstance.post(`${baseUrl()}/api/chatbots`, data);
   return response.data;
 }
 
 async function fetchChatbots() {
-  const response = await axiosInstance.get(`${baseUrl}/api/chatbots`);
+  const response = await axiosInstance.get(`${baseUrl()}/api/chatbots`);
   return response.data;
 }
 
 async function fetchChatbotById(id: string) {
-  const response = await axiosInstance.get(`${baseUrl}/api/chatbots/${id}`);
+  const response = await axiosInstance.get(`${baseUrl()}/api/chatbots/${id}`);
   return response.data;
 }
 
 async function deleteChatbotById(id: string) {
-  const response = await axiosInstance.delete(`${baseUrl}/api/chatbots/${id}/delete`);
+  const response = await axiosInstance.delete(`${baseUrl()}/api/chatbots/${id}/delete`);
   return response.data;
 }
 
