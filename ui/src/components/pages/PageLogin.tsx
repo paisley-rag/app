@@ -19,7 +19,7 @@ export function PageLogin() {
     try {
       const token = await authService.authenticate(username, password);
       setToken(token);
-      navigate("/chatbots");
+      navigate("/");
     } catch (err) {
       setError('Invalid username or password');
     }
