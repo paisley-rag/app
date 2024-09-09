@@ -16,9 +16,9 @@ def ul_file(file, tag='kb_files'):
     s3 = boto3.client('s3')
 
      # Make sure directory exists
-    os.makedirs('./tmpfiles', exist_ok=True)
+    os.makedirs(f'./{tag}', exist_ok=True)
 
-    with open(f"./tmpfiles/{file}", "rb") as f:
+    with open(f"./{tag}/{file}", "rb") as f:
         s3.upload_fileobj(f, s3_bucket_name, f"{tag}/{file}")
 
 

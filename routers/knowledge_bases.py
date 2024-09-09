@@ -2,6 +2,7 @@ from fastapi import Request, APIRouter, File, UploadFile
 
 import db.app_logger as log
 import db.knowledge_base.routes as kb
+from db.util import use_s3
 
 
 router = APIRouter(
@@ -12,7 +13,7 @@ router = APIRouter(
 # get all knowledge bases
 @router.get("/")
 async def get_knowledge_bases(request: Request):
-    print(request.json())
+    log.info('/api/knowledge-bases', request.json())
     return kb.get_all()
 
 # create a knowledge base
@@ -34,7 +35,9 @@ async def delete_knowledge_base(id: str):
 @router.post('/{id}/upload')
 async def upload_file(id: str, file: UploadFile=File(...)):
     try:
-        return await kb.upload_file(id, file)
+      await kb.upload_file(id, file)
+      use_s3.ul_file(file, id)
+      return { "message": "file uploaded" }
         
     except Exception as e:
         return {"message": f"Error: {e}"}
