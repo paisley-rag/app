@@ -5,6 +5,7 @@ from datetime import datetime, timezone
 import pymongo
 import db.util.use_s3 as use_s3
 import nest_asyncio
+import db.app_logger as log
 from dotenv import load_dotenv
 from llama_index.core import StorageContext
 from llama_index.core import VectorStoreIndex
@@ -54,6 +55,7 @@ class KnowledgeBase:
     # self._ingest_method is the class of the ingestion method defined by the
     # ingest_method property in `self._config`
     def __init__(self, kb_name):
+        self._id = kb_name
         self._config = self._get_kb_config(kb_name)
         self._embed_model = self._configure_embed_model()
         self._llm = self._configure_llm()
@@ -109,19 +111,18 @@ class KnowledgeBase:
     # saves file locally, returns file path
     def _save_file_locally(self, file):
         FILE_DIR = 'tmpfiles'
-        log.info('kb_config.py _save_file_locally: ', file.filename)
+        log.info('kb_config.py _save_file_locally: ', file.filename, self._id)
+
         # write file to disk
         if not os.path.exists(f"./{FILE_DIR}"):
             os.makedirs(f"./{FILE_DIR}")
-
 
         file_path= f"./{FILE_DIR}/{file.filename}"
 
         with open(file_path, "wb+") as file_object:
             shutil.copyfileobj(file.file, file_object)
 
-        # use_s3.ul_file(file.filename, dir=FILE_DIR)
-        use_s3.ul_file(file.filename)
+        use_s3.ul_file(file, self._id)
 
         return file_path
     
