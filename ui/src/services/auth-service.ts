@@ -11,7 +11,6 @@ async function authenticate(username: string, password: string) {
       'Content-Type': 'multipart/form-data'
     }
   });
-
   return response.data.access_token;
 }
 
