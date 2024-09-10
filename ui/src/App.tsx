@@ -10,6 +10,7 @@ import { PageCreateChatbot } from "./components/pages/PageCreateChatbot.tsx";
 import { PageHistory } from "./components/pages/PageHistory.tsx";
 import { PageLineChart } from "./components/pages/PageLineChart.tsx";
 import { ProtectedRoute } from "./components/ProtectedRoute.tsx";
+import { useAuth } from './auth';
 // import { DataTableDemo } from "./components/pages/DataTableDemo.tsx"; // testing only
 
 const queryClient = new QueryClient();
@@ -30,6 +31,7 @@ const routes: Route[] = [
 ];
 
 function App() {
+  const { token } = useAuth();
   return (
     <QueryClientProvider client={queryClient}>
       <Route path="/login" component={PageLogin} />
@@ -48,6 +50,7 @@ function App() {
                 )}
               />
             ))}
+            <Route>{ token ? null : <PageLogin/> }</Route>
           </Switch>
         </Router>
       </main>
