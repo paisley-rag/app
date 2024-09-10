@@ -39,17 +39,17 @@ function App() {
       <main className="ml-60 p-6">
         <Router>
           <Switch>
+            <ProtectedRoute>
             {routes.map((route) => (
               <Route
                 key={route.path}
                 path={route.path}
                 component={() => (
-                  <ProtectedRoute>
                     <route.component />
-                  </ProtectedRoute>
-                )}
-              />
-            ))}
+                  )}
+                  />
+                ))}
+            </ProtectedRoute>
             <Route>{ token ? null : <PageLogin/> }</Route>
           </Switch>
         </Router>
