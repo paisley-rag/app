@@ -1,3 +1,6 @@
+'''
+Mongo utility functions for pipeline class / module
+'''
 import os
 
 import pymongo
@@ -9,20 +12,19 @@ MONGO_URI = os.environ["MONGO_URI"]
 CONFIG_DB = os.environ["CONFIG_DB"]
 CONFIG_PIPELINE_COL = os.environ["CONFIG_PIPELINE_COL"]
 
-def get_one_pipeline(id):
+def get_one_pipeline(get_id):
     mongo = pymongo.MongoClient(MONGO_URI)
     result = mongo[CONFIG_DB][CONFIG_PIPELINE_COL].find_one(
-        {"id": id},
+        {"id": get_id},
         {'_id': 0}
     )
     mongo.close()
     return result
 
-
 # used in /api/chatbots route
 def get_all_pipelines():
     mongo = pymongo.MongoClient(MONGO_URI)
-    results = mongo[CONFIG_DB][CONFIG_PIPELINE_COL].find( 
+    results = mongo[CONFIG_DB][CONFIG_PIPELINE_COL].find(
         {},
         { '_id': 0 }
     )
@@ -39,10 +41,10 @@ def pipeline_name_taken(name):
     )
     return result
 
-def delete_pipeline(id):
+def delete_pipeline(get_id):
     mongo = pymongo.MongoClient(MONGO_URI)
     result = mongo[CONFIG_DB][CONFIG_PIPELINE_COL].delete_one(
-        { "id": id }
+        { "id": get_id }
     )
     mongo.close()
     return result
@@ -61,18 +63,18 @@ def add_id_to_pipeline_config(name, inserted_id):
     )
     return result
 
-def update_pipeline(id, new_config):
-    old_config = get_one_pipeline(id)
+def update_pipeline(get_id, new_config):
+    old_config = get_one_pipeline(get_id)
     updates = compare_configs(old_config, new_config)
 
     if updates:
         mongo = pymongo.MongoClient(MONGO_URI)
-        result = mongo[CONFIG_DB][CONFIG_PIPELINE_COL].update_one(
-            { "id": id },
+        mongo[CONFIG_DB][CONFIG_PIPELINE_COL].update_one(
+            { "id": get_id },
             { "$set": updates }
         )
         mongo.close()
-    
+
     return get_one_pipeline(id)
 
 def compare_configs(old_config, new_config):
@@ -86,7 +88,7 @@ def compare_configs(old_config, new_config):
 def nodes_in_keyword(kb_id):
     mongo = pymongo.MongoClient(MONGO_URI)
 
-    results = mongo[kb_id]['docstore/ref_doc_info'].find( 
+    results = mongo[kb_id]['docstore/ref_doc_info'].find(
         {},
         { '_id': 0 }
     )

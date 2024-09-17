@@ -1,3 +1,6 @@
+'''
+mongo helper functions for knowledge_base class
+'''
 import os
 
 import pymongo
@@ -47,11 +50,11 @@ def knowledge_base_name_taken(kb_name):
         {"_id": 0}
     )
 
-def get_knowledge_base(id):
+def get_knowledge_base(get_id):
     return get(
         CONFIG_DB,
         CONFIG_KB_COL,
-        {"id": id},
+        {"id": get_id},
         {"_id": 0}
     )
 
@@ -70,8 +73,8 @@ def add_file_metadata_to_kb(kb_name, file_metadata):
     mongo.close()
     log.info(f"add_file_metadata_to_kb: {result}")
 
-def file_exists(id, file):
-    kb = get_knowledge_base(id)
+def file_exists(get_id, file):
+    kb = get_knowledge_base(get_id)
     if kb:
         for f in kb["files"]:
             if (
@@ -102,13 +105,13 @@ def get_kb_id(kb_name):
     # print("type of result id string:", type(str(result["_id"])))
     if result:
         return str(result["_id"])
-    else:
-        return None
-    
-def delete_knowledge_base(id):
+
+    return None
+
+def delete_knowledge_base(get_id):
     mongo = pymongo.MongoClient(MONGO_URI)
-    kb_result = mongo[CONFIG_DB][CONFIG_KB_COL].delete_one({"id": id})
-    pipeline_result = remove_kb_from_pipeline(id)
+    kb_result = mongo[CONFIG_DB][CONFIG_KB_COL].delete_one({"id": get_id})
+    remove_kb_from_pipeline(get_id)
     mongo.close()
 
     return kb_result
@@ -122,6 +125,6 @@ def remove_kb_from_pipeline(kb_id):
     log.info(f"remove_kb_from_pipeline: {result}")
     mongo.close()
     return result
-    
+
 
 # get_kb_id("Sentence Split")

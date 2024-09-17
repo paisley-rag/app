@@ -1,11 +1,11 @@
-import os
-
+'''
+class and functions specific to the /api/query route
+- imported in server.py
+'''
 from pydantic import BaseModel
 
 import db.app_logger as log
 from db.pipeline.pipeline_class import Pipeline
-# import pipeline.mongo_util as mutil
-# import pipeline.config_util as cutil
 
 
 class UserQuery(BaseModel):

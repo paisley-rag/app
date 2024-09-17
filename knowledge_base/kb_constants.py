@@ -1,5 +1,6 @@
-import os
-
+'''
+constants for knowledge_base class
+'''
 from llama_index.llms.openai import OpenAI
 from llama_index.llms.anthropic import Anthropic
 from llama_index.llms.cohere import Cohere
@@ -10,16 +11,14 @@ from llama_index.embeddings.cohere import CohereEmbedding
 # from llama_index.embeddings.bedrock import BedrockEmbedding
 # from llama_index.embeddings.huggingface import HuggingFaceEmbedding
 
-# imports for reading files
-from llama_parse import LlamaParse
 from llama_index.core import SimpleDirectoryReader
-
-# imports for parsing files
 from llama_index.core.node_parser import (
     SentenceSplitter,
     SemanticSplitterNodeParser,
     MarkdownElementNodeParser
 )
+
+from llama_parse import LlamaParse
 
 LLMS = {
     "OpenAI": OpenAI,
@@ -33,7 +32,7 @@ EMBEDDINGS = {
     "Cohere": CohereEmbedding,
 }
 
-INGEST_METHODS = { 
+INGEST_METHODS = {
     "LlamaParse": LlamaParse,
     "Simple": SimpleDirectoryReader
 }
@@ -51,19 +50,16 @@ API_KEYS = {
     "LlamaParse": "LLAMA_CLOUD_API_KEY",
 }
 
-
-
-
 LLM_MODELS = {
     "OpenAI": [
         {
             "name": "gpt-3.5-turbo",
             "description": "good balance of cost and precision",
-        },  
+        },
         {
             "name": "gpt-4-turbo",
             "description": "more advanced than 'gpt-3.5-turbo'",
-        },  
+        },
         {
             "name": "gpt-4o-mini",
             "description": "affordable small model for lightweight tasks",
@@ -120,22 +116,11 @@ EMBEDDING_MODEL_DETAILS = {
             "name": "embed-multilingual-light-v3.0",
             "description": "slightly less precise, but faster than 'embed-multilingual-v3.0'",
             "language": "multilingual"
-        }, 
+        },
         {
             "name": "embed-multilingual-v3.0",
             "description": "more precise, but slower than 'embed-multilingual-light-v3.0'",
             "language": "multilingual"
-        },       
+        },
     ],
 }
-
-
-
-
-
-'''
-Need to test hugging face embedding
-
-
-
-'''

@@ -18,7 +18,7 @@ const queryClient = new QueryClient();
 interface Route {
   path: string;
   component: React.ComponentType;
-};
+}
 
 const routes: Route[] = [
   { path: "/knowledge-bases", component: PageKnowledgeBases },
@@ -40,17 +40,17 @@ function App() {
         <Router>
           <Switch>
             <ProtectedRoute>
-            {routes.map((route) => (
-              <Route
-                key={route.path}
-                path={route.path}
-                component={() => (
+              {routes.map((route) => (
+                <Route
+                  key={route.path}
+                  path={route.path}
+                  component={() => (
                     <route.component />
                   )}
-                  />
-                ))}
+                />
+              ))}
             </ProtectedRoute>
-            <Route>{ token ? null : <PageLogin/> }</Route>
+            <Route>{token ? null : <PageLogin />}</Route>
           </Switch>
         </Router>
       </main>

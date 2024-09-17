@@ -11,9 +11,9 @@ import {
   getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-import { 
-  ArrowUpDown, 
-  ChevronDown, 
+import {
+  ArrowUpDown,
+  ChevronDown,
   // MoreHorizontal 
 } from "lucide-react";
 
@@ -54,12 +54,12 @@ export function PageHistory() {
     queryFn: () => historyService.fetchChatbotHistory(),
   });
 
-  
-  
-  
+
+
+
   // Name/id cache for chatbots
   const [chatbotNames, setChatbotNames] = useState<{ [key: string]: string }>({});
-  
+
   useEffect(() => {
     const fetchChatbotNames = async () => {
       if (chatHistory) {
@@ -85,9 +85,9 @@ export function PageHistory() {
 
   const handleChatbotSelection = (name: string) => {
     setSelectedChatbot(name);
-    
+
   };
- 
+
 
   // Shadcn table stuff
   const [sorting, setSorting] = useState<SortingState>([
@@ -286,9 +286,9 @@ export function PageHistory() {
                       {header.isPlaceholder
                         ? null
                         : flexRender(
-                            header.column.columnDef.header,
-                            header.getContext()
-                          )}
+                          header.column.columnDef.header,
+                          header.getContext()
+                        )}
                     </TableHead>
                   );
                 })}

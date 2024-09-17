@@ -1,12 +1,16 @@
+'''
+jwt helper functions to implement API endpoint security
+'''
 from datetime import datetime, timedelta, timezone
 import os
 
-import jwt
 from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
 from passlib.context import CryptContext
 from pydantic import BaseModel
 from dotenv import load_dotenv
+
+import jwt
 
 load_dotenv(override=True)
 # Define a FastAPI instance
@@ -67,9 +71,9 @@ def get_user(db, username: str):
 def authenticate_user(db, username: str, password: str):
     user = get_user(db, username)
     if not user:
-        return False
+        return None
     if not verify_password(password, user.hashed_password):
-        return False
+        return None
     return user
 
 def create_access_token(data: dict, expires_delta: timedelta | None = None):
@@ -99,9 +103,9 @@ async def get_current_user(token: str = Depends(oauth2_scheme)):
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Token has expired",
             headers={"WWW-Authenticate": "Bearer"},
-        )
+        ) from jwt.ExpiredSignatureError
     except jwt.InvalidTokenError:
-        raise credentials_exception
+        raise credentials_exception from jwt.InvalidTokenError
     user = get_user(user_db, username=token_data.username)
     if user is None:
         raise credentials_exception

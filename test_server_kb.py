@@ -1,3 +1,6 @@
+'''
+Tests basic server routes
+'''
 from fastapi.testclient import TestClient
 
 from db.server import app
@@ -6,8 +9,8 @@ from db.knowledge_base.kb_test_constants import (
     client_semantic_config,
     client_llama_parse_config,
     server_sentence_config,
-    server_semantic_config,
-    server_llama_parse_config,
+    # server_semantic_config,
+    # server_llama_parse_config,
 )
 
 client = TestClient(app)
@@ -93,9 +96,9 @@ def test_reupload_same_file():
     assert response.status_code == 200
     assert response.json() == {"message": "test.txt already exists in Sentence"}
 
-    # response = client.post("/api/knowledge-bases/unknown_kb/upload", files={"file": ("test.txt", b"test")})
+    # response = client.post(
+    #   "/api/knowledge-bases/unknown_kb/upload",
+    #   files={"file": ("test.txt", b"test")}
+    # )
     # assert response.status_code == 200
     # assert response.json() == {"message": "Knowledge base unknown_kb doesn't exist"}
-
-
-

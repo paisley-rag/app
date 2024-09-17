@@ -7,8 +7,8 @@ from llama_index.postprocessor.colbert_rerank import ColbertRerank
 from llama_index.core.response_synthesizers import  ResponseMode
 
 import db.app_logger as log
-import db.pipeline.hybrid_search.keyword as keyword
-import db.pipeline.hybrid_search.vector as vector
+from db.pipeline.hybrid_search import keyword
+from db.pipeline.hybrid_search import vector
 import db.pipeline.mongo_util as mg
 
 class Pipeline:
@@ -21,7 +21,7 @@ class Pipeline:
 
     def __init__(self, config_id):
         self._config = self._get_config(config_id)
-        self._DEFAULT_TOP_K = 5
+        self._default_top_k = 5
 
     def _get_config(self, config_id):
         result = mg.get_one_pipeline(config_id)
@@ -37,7 +37,7 @@ class Pipeline:
             return synthesizer.synthesize(user_query, nodes=nodes)
         except Exception as err:
             log.error('pipeline.py query: ******** ERROR *********', type(err), err)
-            return { 
+            return {
                 "response": None,
                 "source_nodes": [],
                 "metadata": {}
@@ -84,23 +84,17 @@ class Pipeline:
         log.debug(f"pipeline.py _process_kbs: kb_ids {kb_ids}")
         retrievers = list(map(self._get_retriever, kb_ids))
 
-        log.info(f"pipeline.py _process_kbs: returned retrievers from {len(retrievers)} kbs", retrievers)
+        log.info(f"pipeline.py _process_kbs: returned retrievers from {len(retrievers)} kbs",
+                 retrievers)
         return retrievers
 
 
     def _get_retriever(self, kb_id):
-
-        # result = self._check_kb(kb_id)
-        # if not result:
-        #     raise Exception(f'Knowledge base id "{kb_id}" not found!')
-
-        # log.info(f"pipeline.py _get_retriever: {kb_id} received")
- 
-        # just return existing knowledge bases for testing
-        vector_retriever = vector.get_retriever(kb_id, self._DEFAULT_TOP_K)
+        vector_retriever = vector.get_retriever(kb_id, self._default_top_k)
         keyword_retriever = keyword.get_retriever(kb_id, self._max_top_k(kb_id))
 
-        log.info("pipeline.py _get_retriever: vector ", vector_retriever, "keyword ", keyword_retriever)
+        log.info("pipeline.py _get_retriever: vector ", vector_retriever,
+                 "keyword ", keyword_retriever)
         return { 'vector': vector_retriever, 'keyword': keyword_retriever }
 
 
@@ -113,13 +107,15 @@ class Pipeline:
             log.info('pipeline.py _query_retriever: vector', obj['vector'])
             new_nodes = obj['vector'].retrieve(user_query)
             vector_nodes += new_nodes
-            log.info('pipeline_class.py _query_retriever', f'returned {len(new_nodes)} vector nodes')
+            log.info('pipeline_class.py _query_retriever',
+                     f'returned {len(new_nodes)} vector nodes')
 
             # keyword retrieval
             log.info('pipeline.py _query_retriever: keyword', obj['keyword'])
             new_nodes = obj['keyword'].retrieve(user_query)
             keyword_nodes += new_nodes
-            log.info('pipeline_class.py _query_retriever', f'returned {len(new_nodes)} keyword nodes')
+            log.info('pipeline_class.py _query_retriever',
+                     f'returned {len(new_nodes)} keyword nodes')
 
             log.info('pipeline_class.py _query_retriever: both retrievers successfully queried')
 
@@ -134,9 +130,9 @@ class Pipeline:
             log.info("pipeline.py _process_similarity: similarity on")
             similarity_pp = SimilarityPostprocessor(**self._remove_on(options))
             return similarity_pp.postprocess_nodes(nodes)
-        else:
-            log.info("pipeline.py _process_similarity: similarity off")
-            return nodes
+
+        log.info("pipeline.py _process_similarity: similarity off")
+        return nodes
 
     def _process_colbert(self, nodes, query):
         options = self._config['colbert_rerank']
@@ -148,9 +144,9 @@ class Pipeline:
             query_bundle = QueryBundle(query)
             log.info(f"pipeline.py _process_colbert: top_n of {options['top_n']} applied")
             return reranker.postprocess_nodes(nodes, query_bundle)
-        else:
-            log.info("pipeline.py _process_colbert: colbert rerank off")
-            return nodes
+
+        log.info("pipeline.py _process_colbert: colbert rerank off")
+        return nodes
 
     def _process_reorder(self, nodes):
         options = self._config['long_context_reorder']
@@ -158,9 +154,9 @@ class Pipeline:
             reorder = LongContextReorder()
             log.info("pipeline.py _process_reorder: long context reorder on")
             return reorder.postprocess_nodes(nodes)
-        else:
-            log.info("pipeline.py _process_reorder: long context reorder off")
-            return nodes
+
+        log.info("pipeline.py _process_reorder: long context reorder off")
+        return nodes
 
     def _process_prompt(self):
         custom_prompt = self._config['prompt']
@@ -207,12 +203,12 @@ class Pipeline:
     def _max_top_k(self, kb_id):
         max_nodes = mg.nodes_in_keyword(kb_id)
         log.info('pipeline_class.py _max_top_k:', f'max_nodes: {max_nodes}')
-        if self._DEFAULT_TOP_K > max_nodes:
+        if self._default_top_k > max_nodes:
             log.info(f'pipeline_class.py _max_top_k: returned max_nodes {max_nodes}')
             return max_nodes
-        else:
-            log.info(f'pipeline_class.py _max_top_k: returned max_nodes {self._DEFAULT_TOP_K}')
-            return self._DEFAULT_TOP_K
+
+        log.info(f'pipeline_class.py _max_top_k: returned max_nodes {self._default_top_k}')
+        return self._default_top_k
 
 
     # Public class method
@@ -227,13 +223,3 @@ class Pipeline:
         )
         template = synth.get_prompts()['text_qa_template'].get_template()
         return template
-
-    # def _check_kb(self, kb_id):
-    #     result = mg.get(
-    #         os.environ['CONFIG_DB'],
-    #         os.environ['CONFIG_KB_COL'],
-    #         {'id': kb_id}
-    #     )
-    #     log.info('pipeline.py _check_kb', result)
-    #     return result
-

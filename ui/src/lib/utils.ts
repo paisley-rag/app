@@ -6,7 +6,7 @@ export function cn(...inputs: ClassValue[]) {
 }
 
 export const baseUrl = () => {
-  let base = import.meta.env.VITE_URL;
+  const base = import.meta.env.VITE_URL;
   if (base) {
     return base;
   } else {

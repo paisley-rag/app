@@ -1,3 +1,6 @@
+'''
+helper functions for vector search
+'''
 import os
 
 from dotenv import load_dotenv
@@ -22,9 +25,9 @@ log.info(f"vector.py: using environment '{environment}'")
 
 def get_retriever(db_name, top_k=None):
     if environment == 'mongoatlas':
-        return read_mongoAtlas(db_name, top_k)
-    else:
-        return read_prod(db_name, top_k)
+        return read_mongo_atlas(db_name, top_k)
+
+    return read_prod(db_name, top_k)
 
 
 # docdb functions
@@ -53,12 +56,13 @@ def read_prod(db_name, top_k):
 
 
     # mongodb_client.close()
-    log.info(f"vector.py read_prod: vector retriever returned from mongo {db_name}/{COLLECTION_NAME}")
+    log.info("vector.py read_prod: vector retriever returned from mongo",
+             f"{db_name}/{COLLECTION_NAME}")
     return vector_retriever
 
 # MongoAtlas functions
 
-def read_mongoAtlas(db_name, top_k):
+def read_mongo_atlas(db_name, top_k):
     mongodb_client = pymongo.MongoClient(MONGO_URI)
     store = MongoDBAtlasVectorSearch(
         mongodb_client,
@@ -78,5 +82,6 @@ def read_mongoAtlas(db_name, top_k):
         vector_retriever = vector_index.as_retriever()
 
     # mongodb_client.close()
-    log.info(f"vector.py read_mongoAtlas: vector retriever returned from mongoAtlas {db_name}/{COLLECTION_NAME}")
+    log.info("vector.py read_mongo_atlas: vector retriever returned from mongoAtlas",
+             f"{db_name}/{COLLECTION_NAME}")
     return vector_retriever

@@ -1,3 +1,6 @@
+'''
+type definitions for knowledge_base class
+'''
 from typing import TypedDict, Optional
 
 # Notes:
@@ -9,12 +12,12 @@ class EmbedConfig(TypedDict):
     embed_provider: str
     embed_model: str
 
-class LLMConfig(TypedDict): 
+class LLMConfig(TypedDict):
     llm_provider: str
     llm_model: str
 
 class MarkdownConfig(TypedDict):
-    num_workers: int | str # default: 8 
+    num_workers: int | str # default: 8
 
 class SemanticConfig(TypedDict):
     buffer_size: int | str # default: 100
