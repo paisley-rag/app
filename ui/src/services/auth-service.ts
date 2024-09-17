@@ -1,16 +1,19 @@
 import { axiosInstance } from "../auth";
-import { baseUrl } from "../lib/utils";
+import { baseUrl } from "../lib/utils.ts";
 
-export async function authenticate(username: string, password: string) {
+async function authenticate(username: string, password: string) {
   const formData = new FormData();
   formData.append('username', username);
   formData.append('password', password);
 
-  const response = await axiosInstance.post(`${baseUrl}/api/token`, formData, {
+  const response = await axiosInstance.post(`${baseUrl()}/api/token`, formData, {
     headers: {
       'Content-Type': 'multipart/form-data'
     }
   });
-
   return response.data.access_token;
 }
+
+export const authService = {
+  authenticate
+};

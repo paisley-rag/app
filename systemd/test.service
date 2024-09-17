@@ -7,8 +7,8 @@
   Restart=always
   User=ubuntu
   WorkingDirectory=/home/ubuntu/
-  Environment="PIPENV_PIPFILE=/home/ubuntu/db/Pipfile"
-  ExecStart=/home/ubuntu/db/util/start_server.sh
+  Environment="PYTHONPATH=/home/ubuntu/venv/bin"
+  ExecStart=/home/ubuntu/venv/bin/python -m db.server
 
   [Install]
   WantedBy=multi-user.target

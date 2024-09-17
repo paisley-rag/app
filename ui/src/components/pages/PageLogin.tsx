@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardHeader, CardTitle, CardContent, CardFooter } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
-import * as authService from "../../services/auth-service";
+import { authService } from "../../services/auth-service";
 import { useLocation } from "wouter";
 
 export function PageLogin() {
@@ -19,7 +19,7 @@ export function PageLogin() {
     try {
       const token = await authService.authenticate(username, password);
       setToken(token);
-      navigate("/chatbots");
+      navigate("/");
     } catch (err) {
       setError('Invalid username or password');
     }

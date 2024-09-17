@@ -1,4 +1,5 @@
 import axios from "axios";
+import { navigate } from "wouter/use-browser-location";
 import { createContext, useContext, useEffect, useMemo, useState } from "react";
 
 export const axiosInstance = axios.create();
@@ -11,7 +12,19 @@ axiosInstance.interceptors.request.use((config) => {
   }
   return config;
 },
-  (error) => console.log(error));
+(error) => {
+  console.error(error);
+});
+
+// automatically re-direct to login if a 401 (error) response is received
+axiosInstance.interceptors.response.use((response) => {
+  return response;
+}, (error) => {
+  console.error(error.message);
+  if (error.response.status === 401) {
+    navigate('/login', { replace: true});
+  }
+});
 
 const AuthContext = createContext<{ token: string | null; setToken: (newToken: string) => void }>({ token: null, setToken: () => { } });
 

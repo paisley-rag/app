@@ -12,7 +12,6 @@ router = APIRouter(
 # get all knowledge bases
 @router.get("/")
 async def get_knowledge_bases(request: Request):
-    print(request.json())
     return kb.get_all()
 
 # create a knowledge base
@@ -24,7 +23,9 @@ async def create_knowledge_base(request: Request):
 # get one knowledge base's configuration details
 @router.get("/{id}")
 async def get_knowledge_base(id: str):
-    return kb.get_one(id)
+    result = kb.get_one(id)
+    log.info('/api/knowledge-bases/', 'id', id, 'result:', result)
+    return result
 
 @router.delete("/{id}/delete")
 async def delete_knowledge_base(id: str):
@@ -34,7 +35,8 @@ async def delete_knowledge_base(id: str):
 @router.post('/{id}/upload')
 async def upload_file(id: str, file: UploadFile=File(...)):
     try:
-        return await kb.upload_file(id, file)
+      result = await kb.upload_file(id, file)
+      return { "message": result }
         
     except Exception as e:
         return {"message": f"Error: {e}"}

@@ -13,7 +13,7 @@ import { baseUrl } from '../lib/utils.ts';
 // });
 
 async function sendMessage(id: string, message: string) {
-  const response = await axiosInstance.post(`${baseUrl}/api/query`, {
+  const response = await axiosInstance.post(`${baseUrl()}/api/query`, {
     query: message,
     chatbot_id: id,
   });

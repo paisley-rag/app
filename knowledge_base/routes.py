@@ -65,7 +65,6 @@ def delete(id):
 
         
 # config helpers to convert strings to numbers
-# probaly should be moved to help james too!
 def str_to_nums(config_dict):
     result = {}
     for key in config_dict:
@@ -91,18 +90,3 @@ def is_float(value):
         return True
     except ValueError:
         return False
-
-
-
-
-# def create_kb(client_config):
-    # add properties to client_config
-    # kb_config = create_kb_config(client_config)
-    # log.info("kb_config.py create (classmethod): ", kb_config)
-
-    # insert knowledge base configuration into database
-    # result = mongo.insert_knowledge_base(kb_config)
-    # log.info("create_kb: ", result)
-    # # name = kb_config["kb_name"]
-    
-    # return {"message": f"{kb_config["kb_name"]} created"}

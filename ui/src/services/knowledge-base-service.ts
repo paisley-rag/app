@@ -120,17 +120,17 @@ export type ServerKnowledgeBaseConfig = z.infer<
 >;
 
 async function fetchKnowledgeBases() {
-  const response = await axiosInstance.get(`${baseUrl}/api/knowledge-bases`);
+  const response = await axiosInstance.get(`${baseUrl()}/api/knowledge-bases`);
   return response.data;
 }
 
 async function fetchKnowledgeBaseById(id: string) {
-  const response = await axiosInstance.get(`${baseUrl}/api/knowledge-bases/${id}`);
+  const response = await axiosInstance.get(`${baseUrl()}/api/knowledge-bases/${id}`);
   return response.data;
 }
 
 async function createKnowledgeBase(config: ClientKnowledgeBaseConfig) {
-  const response = await axiosInstance.post(`${baseUrl}/api/knowledge-bases`, config);
+  const response = await axiosInstance.post(`${baseUrl()}/api/knowledge-bases`, config);
   return response.data;
 }
 
@@ -139,7 +139,7 @@ async function uploadFile(id: string, file: File) {
   formData.append("file", file);
 
   const response = await axiosInstance.post(
-    `${baseUrl}/api/knowledge-bases/${id}/upload`,
+    `${baseUrl()}/api/knowledge-bases/${id}/upload`,
     formData,
     {
       headers: {
@@ -151,7 +151,7 @@ async function uploadFile(id: string, file: File) {
 }
 
 async function deleteKnowledgeBase(id: string) {
-  const response = await axiosInstance.delete(`${baseUrl}/api/knowledge-bases/${id}/delete`);
+  const response = await axiosInstance.delete(`${baseUrl()}/api/knowledge-bases/${id}/delete`);
   return response.data;
 }
 

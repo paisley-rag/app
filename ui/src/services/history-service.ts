@@ -2,7 +2,7 @@ import { axiosInstance } from "../auth";
 import { baseUrl } from '../lib/utils.ts';
 
 async function fetchChatbotHistory() {
-  const response = await axiosInstance.get(`${baseUrl}/api/history`);
+  const response = await axiosInstance.get(`${baseUrl()}/api/history`);
   return response.data;
 }
 
