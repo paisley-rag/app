@@ -16,7 +16,7 @@ load_dotenv(override=True)
 # Define a FastAPI instance
 
 # Secret key to encode the JWT token
-SECRET_KEY = "your_secret_key"
+SECRET_KEY = os.getenv('JWT_SECRET_KEY')
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 30
 
@@ -32,7 +32,7 @@ user_db = {
         "username": USERNAME,
         "full_name": "John Doe",
         "email": "johndoe@example.com",
-        "hashed_password": os.getenv("PAISLEY_ADMIN_PASSWORD"),
+        "saved_password": os.getenv("PAISLEY_ADMIN_PASSWORD"),
         "disabled": False,
     }
 }
@@ -52,12 +52,12 @@ class User(BaseModel):
     disabled: bool | None = None
 
 class UserInDB(User):
-    hashed_password: str
+    saved_password: str
 
 # Utility functions
-def verify_password(plain_password, hashed_password):
-    return plain_password == hashed_password
-    # return pwd_context.verify(plain_password, hashed_password)
+def verify_password(plain_password, saved_password):
+    return plain_password == saved_password
+    # return pwd_context.verify(plain_password, saved_password)
 
 def get_password_hash(password):
     return pwd_context.hash(password)
@@ -72,7 +72,7 @@ def authenticate_user(db, username: str, password: str):
     user = get_user(db, username)
     if not user:
         return None
-    if not verify_password(password, user.hashed_password):
+    if not verify_password(password, user.saved_password):
         return None
     return user
 
