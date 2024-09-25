@@ -1,6 +1,9 @@
-client_sentence_config = {	
+'''
+configuration constants used for testing
+'''
+client_sentence_config = {
     "kb_name": "Sentence",
-	"ingest_method": "Simple", 
+    "ingest_method": "Simple",
     "splitter": "Sentence",
     "embed_config": {
         "embed_provider": "OpenAI",
@@ -12,9 +15,9 @@ client_sentence_config = {
     },
 }
 
-client_semantic_config = {	
+client_semantic_config = {
     "kb_name": "Semantic",
-	"ingest_method": "Simple", 
+    "ingest_method": "Simple",
     "splitter": "Semantic",
     "embed_config": {
         "embed_provider": "OpenAI",
@@ -26,9 +29,9 @@ client_semantic_config = {
     },
 }
 
-client_llama_parse_config = {	
+client_llama_parse_config = {
     "kb_name": "Markdown",
-	"ingest_method": "LlamaParse", 
+    "ingest_method": "LlamaParse",
     "splitter": "Markdown",
     "embed_config": {
         "embed_provider": "OpenAI",
@@ -38,14 +41,14 @@ client_llama_parse_config = {
         "num_workers": "8"
     },
     "llm_config": {
-        "llm_provider": "OpenAI",
-        "llm_model": "gpt-3.5-turbo"
+          "llm_provider": "OpenAI",
+          "llm_model": "gpt-3.5-turbo"
     },
 }
 
-server_sentence_config = {	
+server_sentence_config = {
     "kb_name": "Sentence",
-	"ingest_method": "Simple", 
+    "ingest_method": "Simple",
     "splitter": "Sentence",
     "embed_config": {
         "embed_provider": "OpenAI",
@@ -59,9 +62,9 @@ server_sentence_config = {
     "files": []
 }
 
-server_semantic_config ={	
+server_semantic_config ={
     "kb_name": "Semantic",
-	"ingest_method": "Simple", 
+    "ingest_method": "Simple",
     "splitter": "Semantic",
     "embed_config": {
         "embed_provider": "OpenAI",
@@ -75,9 +78,9 @@ server_semantic_config ={
     "files": []
 }
 
-server_llama_parse_config = {	
+server_llama_parse_config = {
     "kb_name": "Markdown",
-	"ingest_method": "LlamaParse", 
+    "ingest_method": "LlamaParse",
     "splitter": "Markdown",
     "embed_config": {
         "embed_provider": "OpenAI",
@@ -93,4 +96,3 @@ server_llama_parse_config = {
     "id": "Markdown",
     "files": []
 }
-

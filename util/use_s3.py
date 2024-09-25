@@ -1,7 +1,13 @@
-import boto3
+'''
+helper utility to upload files to aws s3
+'''
 import os
+import boto3
 
 import db.app_logger as log
+
+class UseS3Error(Exception):
+    pass
 
 def get_buckets():
     s3 = boto3.resource('s3')
@@ -13,13 +19,13 @@ def get_buckets():
 def ul_file(file, tag='kb_files'):
     s3_bucket_name = os.getenv('S3_BUCKET_NAME', '')
     if s3_bucket_name == '':
-        raise Exception('No s3 bucket name defined in .env')
+        raise UseS3Error('No s3 bucket name defined in .env')
 
     s3 = boto3.client('s3')
 
     # Make sure directory exists
     if not os.path.exists(f"./tmpfiles/{file.filename}"):
-        raise Exception(f'./tmpfiles/{file.filename} not found for upload to s3')
+        raise UseS3Error(f'./tmpfiles/{file.filename} not found for upload to s3')
 
     log.info('use_s3.py: ', 'filename', file.filename, 'tag', tag)
 

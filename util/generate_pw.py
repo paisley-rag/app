@@ -1,3 +1,6 @@
+'''
+helper util for jwt.py
+'''
 from passlib.context import CryptContext
 
 # Initialize the password hashing context

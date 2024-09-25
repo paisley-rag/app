@@ -1,9 +1,11 @@
+'''
+define background task for Celery worker
+'''
 import os
 
-from celery import Celery
 from dotenv import load_dotenv
-# import app_logger as log
-import db.evals.evals as evals
+from db.evals import evals
+from celery import Celery
 
 load_dotenv(override=True)
 
@@ -33,5 +35,5 @@ def run_evals_background(chatbot_id, query, context, output):
     print('celery.py run_evals_background:  task complete?')
     return f'run_evals_background: chatbot_id: {chatbot_id}, query: {query}'
 
-    # if __name__ == '__main__':
-    #     app.start()
+# if __name__ == '__main__':
+#     app.start()

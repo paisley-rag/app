@@ -1,5 +1,8 @@
-from pydantic import BaseModel
+'''
+Defines configuration types for chatbot class
+'''
 from typing import List
+from pydantic import BaseModel
 
 class SimilarityConfig(BaseModel):
     on: str
@@ -51,5 +54,3 @@ data = {
         "template_str": "Hello"
     }
 }
-
-

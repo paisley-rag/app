@@ -1,3 +1,7 @@
+'''
+Helper utility to check if api key exists within config_api collection
+- currently unused (using JWT auth instead of API key authentication)
+'''
 import os
 
 import pymongo
@@ -16,14 +20,4 @@ def key_exists(api_key):
         { "_id": 0 }
     )
     mongo.close()
-    if result:
-        return True
-    else:
-        return False
-    
-
-def insert(new_obj):
-    mongo = pymongo.MongoClient(MONGO_URI)
-    result = mongo[CONFIG_DB][CONFIG_API_COL].insert_one(new_obj)
-    mongo.close()
-    return result
+    return bool(result)

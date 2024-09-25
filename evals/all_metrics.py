@@ -1,12 +1,16 @@
+'''
+calculates all metrics defined in eval config file (eval_config.json)
+for a given set of query, context, output
+'''
 import os
 import importlib
 import json
 
 def all_scores(query, context, output):
     eval_config_path = os.path.join(os.path.dirname(__file__), 'eval_config.json')
-    with open(eval_config_path, 'r') as f:
+    with open(eval_config_path, 'r', encoding="utf-8") as f:
         eval_config = json.load(f)
-    
+
     if eval_config.get('evaluation_toggle', 'false').lower() == 'false':
         return {}
 

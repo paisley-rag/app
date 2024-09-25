@@ -1,9 +1,12 @@
-import psycopg2
-from psycopg2.extras import Json
+'''
+postgres / rds helper functions for evals
+'''
 import csv
 import os
 import json
 
+import psycopg2
+from psycopg2.extras import Json
 import db.app_logger as log
 
 from dotenv import load_dotenv
@@ -23,23 +26,24 @@ def connect_to_db():
     except Exception as e:
         log.info("An error occurred while connecting to the database:", e)
         return None
-    
-def insert_chat_history(dict):
-    insert_dict_in(dict, 'chat_history')
 
-def insert_benchmark_data(dict):
-    insert_dict_in(dict, 'benchmark_data')
+def insert_chat_history(obj):
+    insert_dict_in(obj, 'chat_history')
 
-def insert_scored_benchmark_data(dict):
-    insert_dict_in(dict, 'scored_benchmark_data')
+def insert_benchmark_data(obj):
+    insert_dict_in(obj, 'benchmark_data')
 
-def insert_dict_in(dict, table=''):
+def insert_scored_benchmark_data(obj):
+    insert_dict_in(obj, 'scored_benchmark_data')
+
+def insert_dict_in(obj, table=''):
     log.info(f"inserting data into {table}")
-    json_data = json.dumps(dict)
+    json_data = json.dumps(obj)
     conn = connect_to_db()
     if conn is None:
         log.info(f"table {table} not found.")
         return
+
     cursor = conn.cursor()
     insert_query = f"INSERT INTO {table} (data) VALUES (%s)"
     cursor.execute(insert_query, (json_data,))
@@ -53,7 +57,8 @@ def get_data_from(table=''):
     conn = connect_to_db()
     if conn is None:
         log.info(f"table {table} not found.")
-        return
+        return None
+
     cursor = conn.cursor()
     cursor.execute(f"SELECT * FROM {table}")
     records = cursor.fetchall()
@@ -77,13 +82,13 @@ def import_csv_benchmark_data(csv_file_path):
     cursor = conn.cursor()
 
     # Read the CSV file
-    with open(csv_file_path, 'r') as csvfile:
+    with open(csv_file_path, 'r', encoding='utf-8') as csvfile:
         csvreader = csv.DictReader(csvfile)
-        
+
         # Clear the existing data from the benchmark_data table
         cursor.execute("DELETE FROM benchmark_data")
         log.info("Existing data in 'benchmark_data' table has been cleared.")
-        
+
         # Prepare the SQL query
         insert_query = "INSERT INTO golden_dataset (data) VALUES (%s)"
 

@@ -15,7 +15,7 @@ export type SeriesData = SeriesOptionsType & {
 async function seriesFromData(test_data: any[] = []): Promise<any> {
   const scoreNames = await fetchScoreNames()
 
-  let series: SeriesData[] = scoreNames.map((name: string) => ({
+  const series: SeriesData[] = scoreNames.map((name: string) => ({
     type: 'line',
     name: name,
     data: []
@@ -26,7 +26,7 @@ async function seriesFromData(test_data: any[] = []): Promise<any> {
   }
 
   test_data.forEach((entry: any) => {
-    let time_ms = new Date(entry.time).getTime();
+    const time_ms = new Date(entry.time).getTime();
     scoreNames.forEach((name: string, index: number) => {
       series[index].data.push([time_ms, entry[name]]);
     });
@@ -36,7 +36,7 @@ async function seriesFromData(test_data: any[] = []): Promise<any> {
 
 async function fetchChatbotMetrics(chatbotName: string | null) {
 
-  let chatbots = await chatbotService.fetchChatbots()
+  const chatbots = await chatbotService.fetchChatbots()
 
   const chatbot = chatbots.find((chatbot: any) => chatbot.name === chatbotName); // change any later
   if (!chatbot) {

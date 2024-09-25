@@ -1,10 +1,12 @@
-from fastapi import Request, APIRouter
+'''
+/api/chatbots routes
+'''
+from fastapi import Request, APIRouter, Depends
 from pydantic import BaseModel
 
 import db.app_logger as log
-import db.pipeline.mongo_util as mutil
-import db.pipeline.pipeline_class as p
-import db.knowledge_base.routes as convert
+from db.chatbot.chatbot_class import Chatbot
+from db.db.session import get_db
 
 router = APIRouter(
     prefix='/api/chatbots'
@@ -17,14 +19,14 @@ class QueryBody(UserQuery):
     chatbot_id: str
 
 @router.get('/')
-async def get_chatbots():
+async def get_chatbots(chatbot_db=Depends(get_db)):
     log.info('/api/chatbots loaded')
-    results = mutil.get_all_pipelines()
+    results = chatbot_db.get_all_chatbots()
     return results
 
 @router.get('/{id}')
-async def get_chatbots_id(id: str):
-    results = mutil.get_one_pipeline(id)
+async def get_chatbots_id(id: str, chatbot_db=Depends(get_db)):
+    results = chatbot_db.get_one_chatbot(id)
     log.info(f"/api/chatbots/{id}: ", results)
     if not results:
         return {"message": "no chatbot configuration found"}
@@ -32,40 +34,40 @@ async def get_chatbots_id(id: str):
     return results
 
 @router.post('/')
-async def post_chatbots(request: Request):
+async def post_chatbots(request: Request, chatbot_db=Depends(get_db)):
     body = await request.json()
-    log.info(f"/api/chatbots POST body: ", body)
+    log.info("/api/chatbots POST body: ", body)
 
     # add the default prompt to all created chatbots
     # - gives the user something to modify
-    body['prompt'] = p.Pipeline.get_default_prompt()
+    body['prompt'] = Chatbot.get_default_prompt()
 
-    if mutil.pipeline_name_taken(body["name"]):
-        message = f"A pipeline named {body['name']} already exists"
+    if chatbot_db.chatbot_name_taken(body["name"]):
+        message = f"A chatbot named {body['name']} already exists"
         return {"message": message}
-    else:
-        result = mutil.insert_pipeline(body)
-        inserted_id = str(result.inserted_id)
-        mutil.add_id_to_pipeline_config(body["name"], inserted_id)
 
-        new_pipeline = mutil.get_one_pipeline(inserted_id)
-        print("new_pipeline: ", new_pipeline)
+    result = chatbot_db.insert_chatbot(body)
+    inserted_id = str(result.inserted_id)
+    chatbot_db.add_id_to_chatbot_config(body["name"], inserted_id)
 
-        return new_pipeline
+    new_chatbot = chatbot_db.get_one_chatbot(inserted_id)
+    print("new_chatbot: ", new_chatbot)
+
+    return new_chatbot
 
 @router.put('/{id}/update')
-async def update_chatbot(id: str, request: Request):
+async def update_chatbot(id: str, request: Request, chatbot_db=Depends(get_db)):
     body = await request.json()
     log.info(f"/api/chatbots/{id}/update body: ", body)
 
-    result = mutil.update_pipeline(id, body)
+    result = chatbot_db.update_chatbot(id, body)
     return result
 
 @router.delete('/{id}/delete')
-async def delete_chatbot(id: str):
+async def delete_chatbot(id: str, chatbot_db=Depends(get_db)):
     log.info(f"/api/chatbots DELETE request received for {id}")
-    result = mutil.delete_pipeline(id)
+    result = chatbot_db.delete_chatbot(id)
     if result.deleted_count == 1:
         return {"message": f"{id} deleted"}
-    else:
-        return {"message": f"{id} does not exist"}
+
+    return {"message": f"{id} does not exist"}
