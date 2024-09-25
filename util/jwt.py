@@ -8,15 +8,13 @@ from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
 from passlib.context import CryptContext
 from pydantic import BaseModel
-from dotenv import load_dotenv
+from db.config import settings
 
 import jwt
 
-load_dotenv(override=True)
 # Define a FastAPI instance
 
 # Secret key to encode the JWT token
-SECRET_KEY = os.getenv('JWT_SECRET_KEY')
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 30
 
@@ -26,13 +24,13 @@ pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 # OAuth2 scheme for getting the token
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 
-USERNAME = os.getenv('PAISLEY_ADMIN_USERNAME')
+USERNAME = settings.PAISLEY_ADMIN_USERNAME
 user_db = {
     USERNAME: {
         "username": USERNAME,
         "full_name": "John Doe",
         "email": "johndoe@example.com",
-        "saved_password": os.getenv("PAISLEY_ADMIN_PASSWORD"),
+        "saved_password": settings.PAISLEY_ADMIN_PASSWORD,
         "disabled": False,
     }
 }
@@ -83,7 +81,7 @@ def create_access_token(data: dict, expires_delta: timedelta | None = None):
     else:
         expire = datetime.now(timezone.utc) + timedelta(minutes=15)
     to_encode.update({"exp": expire})
-    encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
+    encoded_jwt = jwt.encode(to_encode, settings.SECRET_KEY, algorithm=ALGORITHM)
     return encoded_jwt
 
 async def get_current_user(token: str = Depends(oauth2_scheme)):
@@ -93,7 +91,7 @@ async def get_current_user(token: str = Depends(oauth2_scheme)):
         headers={"WWW-Authenticate": "Bearer"},
     )
     try:
-        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        payload = jwt.decode(token, settings.SECRET_KEY, algorithms=[ALGORITHM])
         username: str = payload.get("sub")
         if username is None:
             raise credentials_exception

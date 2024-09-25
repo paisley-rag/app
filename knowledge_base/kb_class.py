@@ -5,18 +5,18 @@ import os
 import shutil
 from datetime import datetime, timezone
 
-import pymongo
+# import pymongo
 import nest_asyncio
-from dotenv import load_dotenv
-from llama_index.core import StorageContext
+# from dotenv import load_dotenv
+# from llama_index.core import StorageContext
 from llama_index.core import VectorStoreIndex
-from llama_index.vector_stores.mongodb import MongoDBAtlasVectorSearch
-from llama_index.vector_stores.awsdocdb import AWSDocDbVectorStore
-from llama_index.storage.docstore.mongodb import MongoDocumentStore
+# from llama_index.vector_stores.mongodb import MongoDBAtlasVectorSearch
+# from llama_index.vector_stores.awsdocdb import AWSDocDbVectorStore
+# from llama_index.storage.docstore.mongodb import MongoDocumentStore
 
 from db.util import use_s3
 import db.app_logger as log
-from db.knowledge_base import mongo_helper as mongo
+from db.config import settings
 
 from db.knowledge_base.kb_constants import (
     EMBEDDINGS,
@@ -26,26 +26,9 @@ from db.knowledge_base.kb_constants import (
     API_KEYS,
 )
 
-# from db.knowledge_base.kb_type_definitions import (
-#     EmbedConfig,
-#     LLMConfig,
-#     MarkdownConfig,
-#     SemanticConfig,
-#     SentenceConfig,
-#     FileMetadata,
-#     ClientKBConfig,
-#     KBConfig
-# )
-
-env = os.getenv("ENV")
-print("env: ", env)
-if env == 'testing':
-    load_dotenv(override=True, dotenv_path='../.env.testing')
-else:
-    load_dotenv(override=True)
-
-MONGO_URI = os.environ["MONGO_URI"]
-FILE_DIR = 'tmpfiles'
+# load_dotenv(override=True)
+# MONGO_URI = os.environ["MONGO_URI"]
+# FILE_DIR = 'tmpfiles'
 
 nest_asyncio.apply()
 
@@ -55,7 +38,9 @@ class KnowledgeBase:
     # defined by properties in `self._config`
     # self._ingest_method is the class of the ingestion method defined by the
     # ingest_method property in `self._config`
-    def __init__(self, kb_name):
+
+    def __init__(self, kb_name, db):
+        self._db = db
         self._id = kb_name
         self._config = self._get_kb_config(kb_name)
         self._embed_model = self._configure_embed_model()
@@ -67,14 +52,14 @@ class KnowledgeBase:
 
     # returns the configuration object for a knowledge base
     def _get_kb_config(self, get_id):
-        kb_config = mongo.get_knowledge_base(get_id)
+        kb_config = self._db.get_knowledge_base(get_id)
         log.info('kb_config.py _get_kb_config: ', kb_config)
         return kb_config
 
     def _configure_embed_model(self):
         embed_provider = self._config['embed_config']['embed_provider']
         embed_model_class = EMBEDDINGS[embed_provider]
-        api_key = os.environ[API_KEYS[embed_provider]]
+        api_key = settings[API_KEYS[embed_provider]]
         model = self._config['embed_config']['embed_model']
         embed_model = embed_model_class(api_key=api_key, model=model)
 
@@ -114,10 +99,10 @@ class KnowledgeBase:
         log.info('kb_config.py _save_file_locally: ', file.filename, self._id)
 
         # write file to disk
-        if not os.path.exists(f"./{FILE_DIR}"):
-            os.makedirs(f"./{FILE_DIR}")
+        if not os.path.exists(f"./{settings.FILE_DIR}"):
+            os.makedirs(f"./{settings.FILE_DIR}")
 
-        file_path= f"./{FILE_DIR}/{file.filename}"
+        file_path= f"./{settings.FILE_DIR}/{file.filename}"
 
         with open(file_path, "wb+") as file_object:
             shutil.copyfileobj(file.file, file_object)
@@ -151,33 +136,36 @@ class KnowledgeBase:
         return nodes
 
     def _store_indexes(self, nodes):
-        client = pymongo.MongoClient(MONGO_URI)
+        # client = pymongo.MongoClient(MONGO_URI)
+        # vector_index = "vector_index"
+        # environment = os.getenv('ENVIRONMENT', 'production')
 
         log.info('kb_config.py _store_indexes: ********* ', self._config)
 
-        kb_id = mongo.get_kb_id(self._config['kb_name'])
+        kb_id = self._db.get_kb_id(self._config['kb_name'])
         log.info('kb_config.py _store_indexes: ', kb_id)
-        vector_index = "vector_index"
 
-        environment = os.getenv('ENVIRONMENT', 'production')
 
-        if environment in ('local', 'mongoatlas'):
-            vector_store = MongoDBAtlasVectorSearch(
-                client,
-                db_name=kb_id,
-                collection_name=vector_index
-            )
-        else:
-            vector_store = AWSDocDbVectorStore(
-                client,
-                db_name=kb_id,
-                collection_name=vector_index
-            )
+        # if environment in ('local', 'mongoatlas'):
+        #     vector_store = MongoDBAtlasVectorSearch(
+        #         client,
+        #         db_name=kb_id,
+        #         collection_name=vector_index
+        #     )
+        # else:
+        #     vector_store = AWSDocDbVectorStore(
+        #         client,
+        #         db_name=kb_id,
+        #         collection_name=vector_index
+        #     )
 
-        storage_context = StorageContext.from_defaults(
-            vector_store=vector_store,
-            # docstore=docstore
-        )
+        # storage_context = StorageContext.from_defaults(
+        #     vector_store=vector_store,
+        #     # docstore=docstore
+        # )
+
+        # vector index
+        storage_context = self._db.get_vector_storage_context(kb_id)
 
         VectorStoreIndex(
             nodes,
@@ -185,20 +173,22 @@ class KnowledgeBase:
             embed_model=self._embed_model
         )
 
-        docstore = MongoDocumentStore.from_uri(
-            uri=MONGO_URI,
-            db_name=kb_id
-        )
+        # keyword index
 
-        docstore.add_documents(nodes)
-        client.close()
+        # docstore = MongoDocumentStore.from_uri(
+        #     uri=MONGO_URI,
+        #     db_name=kb_id
+        # )
+
+        # docstore.add_documents(nodes)
+        self._db.get_keyword_store(kb_id).add_documents(nodes)
 
     def _add_file_to_kb_config(self, file):
+
         now = datetime.now(timezone.utc)
         date = now.strftime("%m-%d-%y")
         time = now.strftime("%H:%M")
         size = file.size
-
 
         file_metadata = {
             "file_name": file.filename,
@@ -208,10 +198,14 @@ class KnowledgeBase:
             "size": size
         }
 
-        mongo.add_file_metadata_to_kb(
+        log.info('kb_class._add_file_to_kb_config: ', file, file_metadata)
+
+        self._db.add_file_metadata_to_kb(
             self._config['kb_name'],
             file_metadata
         )
+
+        self._config = self._get_kb_config(self._id)
 
     async def ingest_file(self, file):
         file_path = self._save_file_locally(file)

@@ -1,106 +1,21 @@
 '''
-Paisley app - back-end server endpoints
+"Wrapper" server.py file
+- created to minimize overall structural changes to project
+- facilitates more traditional pytest structure for testing
 '''
 import os
-import json
-from datetime import timedelta
 
-from fastapi import FastAPI, Depends, HTTPException, status
-from fastapi.middleware.cors import CORSMiddleware
-from fastapi.security import OAuth2PasswordRequestForm
-
+import uvicorn
 import nest_asyncio
+from dotenv import load_dotenv
+from db.backend.app import app
 
-import db.app_logger as log
-import db.pipeline.query as pq
-from db.evals import evals
-from db.evals import eval_utils
-from db.util import jwt
+load_dotenv(override=True)
 
-from db.celery.tasks import run_evals_background
-from db.routers import chatbots
-from db.routers import knowledge_bases
+if __name__ == '__main__':
+    nest_asyncio.apply()
+    if os.environ['ENVIRONMENT'] != 'production':
+        print('non-production environment')
+        uvicorn.run("db.backend.app:app", host="0.0.0.0", port=8000, loop='asyncio', reload=True)
 
-ACCESS_TOKEN_EXPIRE_MINUTES = 30
-
-nest_asyncio.apply()
-
-app = FastAPI()
-
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=['*'],
-    allow_credentials=True,
-    allow_methods=['*'],
-    allow_headers=['*']
-)
-
-app.include_router(
-    chatbots.router,
-    dependencies=[Depends(jwt.get_current_user)]
-)
-
-app.include_router(
-    knowledge_bases.router,
-    dependencies=[Depends(jwt.get_current_user)]
-)
-
-@app.post("/api/token", response_model=jwt.Token)
-async def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends()):
-    user = jwt.authenticate_user(jwt.user_db, form_data.username, form_data.password)
-    if not user:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Incorrect username or password",
-            headers={"WWW-Authenticate": "Bearer"},
-        )
-
-    access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
-    access_token = jwt.create_access_token(
-        data={"sub": user.username}, expires_delta=access_token_expires
-    )
-    return {"access_token": access_token, "token_type": "bearer"}
-
-
-
-@app.get('/api')
-async def root():
-    log.info("server running")
-    return {"message": "Server running"}
-
-
-# query route
-@app.post('/api/query', dependencies=[Depends(jwt.get_current_user)])
-async def post_query(body: pq.QueryBody):
-    response = pq.post_query(body)
-    if response:
-        context, output = eval_utils.extract_from_response(response)
-        log.info(f"Adding background task for chatbot_id: {body.chatbot_id}",
-                 f", query: {body.query}, output: {output}")
-        run_evals_background.delay(
-            body.chatbot_id,
-            body.query,
-            context,
-            output
-        )
-    return response
-
-
-# evals routes
-@app.get('/api/history', dependencies=[Depends(jwt.get_current_user)])
-async def get_evals():
-    data = evals.get_chat_history()
-    return data
-
-@app.get('/api/scores', dependencies=[Depends(jwt.get_current_user)])
-async def get_scores():
-    config_path = os.path.join(os.path.dirname(__file__), 'evals', 'eval_config.json')
-    with open(config_path, 'r', encoding="utf-8") as file:
-        config = json.load(file)
-    scores = config.get('scores', [])
-    return scores
-
-
-if __name__ == "__main__":
-    import uvicorn
     uvicorn.run(app, host="0.0.0.0", port=8000, loop='asyncio')

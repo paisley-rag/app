@@ -1,5 +1,5 @@
 '''
-Defines configuration types for pipeline class
+Defines configuration types for chatbot class
 '''
 from typing import List
 from pydantic import BaseModel
