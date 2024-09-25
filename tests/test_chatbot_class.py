@@ -30,7 +30,11 @@ def prep_kb(client, jwt_headers):
     assert kb_upload_response.status_code == 200
     yield kb_id
 
-
+    # clean up
+    client.post(
+        '/api/knowlege-bases/{kb_id}/delete',
+        headers=jwt_headers
+    )
 
 @pytest.fixture(scope="function")
 def mocked_fcts(mocker):

@@ -55,3 +55,5 @@ async def test_kb_sentence_nodes_indexes(client, test_db, jwt_headers):
     # - check after
     logging.info(kb._config)
     assert len(kb._config['files']) == 1
+
+    test_db.delete_knowledge_base(id)
