@@ -16,6 +16,8 @@ import { ErrorMessageWithReload } from "../ErrorMessageWithReload";
 export function PageChatbot() {
   const { id } = useParams();
 
+  if (!id || id === 'create') return null;
+
   const {
     data: chatbot,
     isLoading: isChatbotLoading,
@@ -38,7 +40,6 @@ export function PageChatbot() {
 
   const [, navigate] = useLocation();
 
-  if (!id) return null;
 
   function handleBackClick() {
     navigate("/chatbots");
