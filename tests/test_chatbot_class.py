@@ -13,7 +13,11 @@ from db.chatbot.chatbot_class import Chatbot
 @pytest.fixture(scope="function")
 def prep_kb(client, jwt_headers):
     # setup kb
-    kb_post_response = client.post('/api/knowledge-bases', json=client_sentence_config, headers=jwt_headers)
+    kb_post_response = client.post(
+        '/api/knowledge-bases',
+        json=client_sentence_config,
+        headers=jwt_headers
+    )
     assert kb_post_response.status_code == 200
     kb_id = kb_post_response.json()['id']
 
@@ -30,16 +34,29 @@ def prep_kb(client, jwt_headers):
 
 @pytest.fixture(scope="function")
 def mocked_fcts(mocker):
-    mocker.patch('db.chatbot.chatbot_class.SimilarityPostprocessor.postprocess_nodes', return_value='testing')
-    mocker.patch('db.chatbot.chatbot_class.ColbertRerank.postprocess_nodes', return_value='testing')
-    mocker.patch('db.chatbot.chatbot_class.LongContextReorder.postprocess_nodes', return_value='testing')
+    mocker.patch(
+        'db.chatbot.chatbot_class.SimilarityPostprocessor.postprocess_nodes',
+        return_value='testing'
+    )
+    mocker.patch(
+        'db.chatbot.chatbot_class.ColbertRerank.postprocess_nodes',
+        return_value='testing'
+    )
+    mocker.patch(
+        'db.chatbot.chatbot_class.LongContextReorder.postprocess_nodes',
+        return_value='testing'
+    )
 
 @pytest.mark.asyncio
 async def test_all_false(prep_kb, test_db, client, jwt_headers, mocked_fcts):
     kb_id = prep_kb
 
     # setup chatbot
-    chatbot_post_response = client.post('/api/chatbots', json=chatbot_config(kb_id)['base'], headers=jwt_headers)
+    chatbot_post_response = client.post(
+        '/api/chatbots',
+        json=chatbot_config(kb_id)['base'],
+        headers=jwt_headers
+    )
     assert chatbot_post_response.status_code == 200
     chatbot_id = chatbot_post_response.json()['id']
     assert chatbot_id != ''
@@ -48,15 +65,15 @@ async def test_all_false(prep_kb, test_db, client, jwt_headers, mocked_fcts):
     get_response = client.get(f'/api/chatbots/{chatbot_id}', headers=jwt_headers)
     data_obj = get_response.json()
     logging.info(data_obj)
-    assert data_obj['similarity']['on'] == False
-    assert data_obj['colbert_rerank']['on'] == False
-    assert data_obj['long_context_reorder']['on'] == False
+    assert data_obj['similarity']['on'] is False
+    assert data_obj['colbert_rerank']['on'] is False
+    assert data_obj['long_context_reorder']['on'] is False
 
     c = Chatbot(chatbot_id, test_db)
 
-    assert c._process_similarity([]) == []
-    assert c._process_colbert([], 'query') == []
-    assert c._process_reorder([]) == []
+    assert not c._process_similarity([])
+    assert not c._process_colbert([], 'query')
+    assert not c._process_reorder([])
 
 @pytest.mark.asyncio
 async def test_similarity_only(prep_kb, test_db, client, jwt_headers, mocked_fcts):
@@ -76,15 +93,15 @@ async def test_similarity_only(prep_kb, test_db, client, jwt_headers, mocked_fct
     get_response = client.get(f'/api/chatbots/{chatbot_id}', headers=jwt_headers)
     data_obj = get_response.json()
     logging.info(data_obj)
-    assert data_obj['similarity']['on'] == True
-    assert data_obj['colbert_rerank']['on'] == False
-    assert data_obj['long_context_reorder']['on'] == False
+    assert data_obj['similarity']['on'] is True
+    assert data_obj['colbert_rerank']['on'] is False
+    assert data_obj['long_context_reorder']['on'] is False
 
     c = Chatbot(chatbot_id, test_db)
 
     assert c._process_similarity([]) == 'testing'
-    assert c._process_colbert([], 'query') == []
-    assert c._process_reorder([]) == []
+    assert not c._process_colbert([], 'query')
+    assert not c._process_reorder([])
 
 @pytest.mark.asyncio
 async def test_colbert_only(prep_kb, test_db, client, jwt_headers, mocked_fcts):
@@ -104,15 +121,15 @@ async def test_colbert_only(prep_kb, test_db, client, jwt_headers, mocked_fcts):
     get_response = client.get(f'/api/chatbots/{chatbot_id}', headers=jwt_headers)
     data_obj = get_response.json()
     logging.info(data_obj)
-    assert data_obj['similarity']['on'] == False
-    assert data_obj['colbert_rerank']['on'] == True
-    assert data_obj['long_context_reorder']['on'] == False
+    assert data_obj['similarity']['on'] is False
+    assert data_obj['colbert_rerank']['on'] is True
+    assert data_obj['long_context_reorder']['on'] is False
 
     c = Chatbot(chatbot_id, test_db)
 
-    assert c._process_similarity([]) == []
+    assert not c._process_similarity([])
     assert c._process_colbert([], 'query') == 'testing'
-    assert c._process_reorder([]) == []
+    assert not c._process_reorder([])
 
 @pytest.mark.asyncio
 async def test_similarity_colbert(prep_kb, test_db, client, jwt_headers, mocked_fcts):
@@ -132,12 +149,12 @@ async def test_similarity_colbert(prep_kb, test_db, client, jwt_headers, mocked_
     get_response = client.get(f'/api/chatbots/{chatbot_id}', headers=jwt_headers)
     data_obj = get_response.json()
     logging.info(data_obj)
-    assert data_obj['similarity']['on'] == True
-    assert data_obj['colbert_rerank']['on'] == True
-    assert data_obj['long_context_reorder']['on'] == False
+    assert data_obj['similarity']['on'] is True
+    assert data_obj['colbert_rerank']['on'] is True
+    assert data_obj['long_context_reorder']['on'] is False
 
     c = Chatbot(chatbot_id, test_db)
 
     assert c._process_similarity([]) == 'testing'
     assert c._process_colbert([], 'query') == 'testing'
-    assert c._process_reorder([]) == []
+    assert not c._process_reorder([])

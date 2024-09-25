@@ -1,12 +1,15 @@
 '''
 Mixin class for chatbot class db access
 '''
-import logging
 from db.db.base_mongo import BaseMongo
 from db.config import settings
 
 class ChatbotMongo(BaseMongo):
-    def set_chatbot_db(self, chatbot_db=settings.CONFIG_DB, chatbot_col=settings.CONFIG_PIPELINE_COL):
+    def set_chatbot_db(
+            self,
+            chatbot_db=settings.CONFIG_DB,
+            chatbot_col=settings.CONFIG_PIPELINE_COL
+        ):
         self._chatbot_db = self._client[chatbot_db][chatbot_col]
 
     # CRUD methods for chatbot class

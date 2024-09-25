@@ -83,4 +83,3 @@ class KbMongo(BaseMongo):
         )
         log.info(f"remove_kb_from_pipeline: {result}")
         return result
-

@@ -14,7 +14,11 @@ from db.knowledge_base.kb_class import KnowledgeBase
 @pytest.mark.asyncio
 async def test_kb_sentence_nodes_indexes(client, test_db, jwt_headers):
     # setup kb
-    post_response = client.post('/api/knowledge-bases', json=client_sentence_config, headers=jwt_headers)
+    post_response = client.post(
+        '/api/knowledge-bases',
+        json=client_sentence_config,
+        headers=jwt_headers
+    )
     id = post_response.json()['id']
     kb = KnowledgeBase(id, test_db)
     logging.info(kb._config)
@@ -36,7 +40,11 @@ async def test_kb_sentence_nodes_indexes(client, test_db, jwt_headers):
     # Add file to kb_config
     # - setup file
     with open('./db/tests/query_test_content.txt', 'rb') as testfile:
-        file = UploadFile(testfile, filename='query_test_content.txt', headers={"content-type": "text/plain"})
+        file = UploadFile(
+            testfile,
+            filename='query_test_content.txt',
+            headers={"content-type": "text/plain"}
+        )
 
     # - check before
     logging.info(kb._config)

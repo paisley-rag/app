@@ -2,14 +2,14 @@
 Tests for chatbot API routes
 '''
 import logging
-
 import pytest
+from .chatbot_test_configs import chatbot_config
 
 @pytest.mark.asyncio
 async def test_get_all_chatbots_200(client, jwt_headers):
     response = client.get('/api/chatbots', headers=jwt_headers)
     assert response.status_code == 200
-    # assert len(response.json()) == 0
+    assert len(response.json()) == 0
 
 @pytest.mark.asyncio
 async def test_get_single_chatbot_not_found(client, jwt_headers):
@@ -19,21 +19,7 @@ async def test_get_single_chatbot_not_found(client, jwt_headers):
 
 @pytest.mark.asyncio
 async def test_add_get_single_chatbot(client, jwt_headers):
-    new_chatbot_data = {
-        "name": "testchatbot",
-        "knowledge_bases": [],
-        "generative_model": "gpt-4-o",
-        "similarity": {
-            "on": False
-            },
-        "colbert_rerank": {
-            "on": False
-            },
-        "long_context_reorder": {
-            "on": False
-            },
-        "prompt": ""
-    }
+    new_chatbot_data = chatbot_config('')['base']
     post_response = client.post('/api/chatbots', json=new_chatbot_data, headers=jwt_headers)
     assert post_response.status_code == 200
     id = post_response.json()['id']
@@ -44,21 +30,7 @@ async def test_add_get_single_chatbot(client, jwt_headers):
 
 @pytest.mark.asyncio
 async def test_add_put_single_chatbot(client, jwt_headers):
-    new_chatbot_data = {
-        "name": "testchatbot",
-        "knowledge_bases": [],
-        "generative_model": "gpt-4-o",
-        "similarity": {
-            "on": False
-            },
-        "colbert_rerank": {
-            "on": False
-            },
-        "long_context_reorder": {
-            "on": False
-            },
-        "prompt": ""
-    }
+    new_chatbot_data = chatbot_config('')['base']
     post_response = client.post('/api/chatbots', json=new_chatbot_data, headers=jwt_headers)
     assert post_response.status_code == 200
     logging.info(f'******************* {post_response.json()}')
@@ -86,37 +58,22 @@ async def test_add_put_single_chatbot(client, jwt_headers):
     get_response = client.get(f'/api/chatbots/{id}', headers=jwt_headers)
     data_obj = get_response.json()
     assert data_obj['generative_model'] == 'gpt-4o-mini'
-    assert data_obj['long_context_reorder']['on'] == True
+    assert data_obj['long_context_reorder']['on'] is True
 
 @pytest.mark.asyncio
 async def test_add_delete_chatbot(client, jwt_headers):
-    new_chatbot_data = {
-        "name": "testchatbot",
-        "knowledge_bases": [],
-        "generative_model": "gpt-4-o",
-        "similarity": {
-            "on": False
-            },
-        "colbert_rerank": {
-            "on": False
-            },
-        "long_context_reorder": {
-            "on": False
-            },
-        "prompt": ""
-    }
+    new_chatbot_data = chatbot_config('')['base']
     post_response = client.post('/api/chatbots', json=new_chatbot_data, headers=jwt_headers)
     assert post_response.status_code == 200
     id = post_response.json()['id']
 
     get_response1 = client.get(f'/api/chatbots/{id}', headers=jwt_headers)
-    logging.info('********* get-response1', get_response1.json())
+    logging.info(f'********* get-response1 {get_response1.json()}')
     assert get_response1.json()['name'] == 'testchatbot'
 
     del_response = client.delete(f'/api/chatbots/{id}/delete', headers=jwt_headers)
     assert del_response.status_code == 200
 
     get_response2 = client.get(f'/api/chatbots/{id}', headers=jwt_headers)
-    logging.info('********* get-response2', get_response2.json())
+    logging.info(f'********* get-response2 {get_response2.json()}')
     assert get_response2.json()['message'] == 'no chatbot configuration found'
-

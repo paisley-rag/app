@@ -16,7 +16,11 @@ async def test_get_all_kbs_200(client, jwt_headers):
 
 @pytest.mark.asyncio
 async def test_add_get_single_kb(client, jwt_headers):
-    post_response = client.post('/api/knowledge-bases', json=client_sentence_config, headers=jwt_headers)
+    post_response = client.post(
+        '/api/knowledge-bases',
+        json=client_sentence_config,
+        headers=jwt_headers
+    )
     assert post_response.status_code == 200
     id = post_response.json()['id']
 
@@ -28,7 +32,11 @@ async def test_add_get_single_kb(client, jwt_headers):
 
 @pytest.mark.asyncio
 async def test_add_delete_single_kb(client, jwt_headers):
-    post_response = client.post('/api/knowledge-bases', json=client_sentence_config, headers=jwt_headers)
+    post_response = client.post(
+        '/api/knowledge-bases',
+        json=client_sentence_config,
+        headers=jwt_headers
+    )
     assert post_response.status_code == 200
     id = post_response.json()['id']
 
@@ -45,11 +53,15 @@ async def test_add_delete_single_kb(client, jwt_headers):
 
 @pytest.mark.asyncio
 async def test_upload_single_kb(client, jwt_headers):
-    post_response = client.post('/api/knowledge-bases', json=client_sentence_config, headers=jwt_headers)
+    post_response = client.post(
+        '/api/knowledge-bases',
+        json=client_sentence_config,
+        headers=jwt_headers
+    )
     id = post_response.json()['id']
 
     # upload file
-    testfile = open('./db/tests/testfile.txt', 'a')
+    testfile = open('./db/tests/testfile.txt', 'a', encoding="utf-8")
     testfile.write('test content')
 
     with open('./db/tests/testfile.txt', 'rb') as f:

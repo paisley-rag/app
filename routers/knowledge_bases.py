@@ -1,3 +1,6 @@
+'''
+/api/knowledge-bases routes
+'''
 from fastapi import Request, APIRouter, File, UploadFile, Depends
 
 import db.app_logger as log

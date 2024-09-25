@@ -1,3 +1,6 @@
+'''
+utility function to output chatbot configurations for testing
+'''
 import copy
 
 def chatbot_config(kb_id: str):

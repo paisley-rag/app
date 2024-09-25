@@ -13,7 +13,11 @@ from db.knowledge_base.kb_class import KnowledgeBase
 
 @pytest.mark.asyncio
 async def test_kb_sentence_config(client, test_db, jwt_headers):
-    post_response = client.post('/api/knowledge-bases', json=client_sentence_config, headers=jwt_headers)
+    post_response = client.post(
+        '/api/knowledge-bases',
+        json=client_sentence_config,
+        headers=jwt_headers
+    )
     id = post_response.json()['id']
     kb = KnowledgeBase(id, test_db)
     logging.info(kb._config)
@@ -27,7 +31,11 @@ async def test_kb_sentence_config(client, test_db, jwt_headers):
 
 @pytest.mark.asyncio
 async def test_kb_semantic_config(client, test_db, jwt_headers):
-    post_response = client.post('/api/knowledge-bases', json=client_semantic_config, headers=jwt_headers)
+    post_response = client.post(
+        '/api/knowledge-bases',
+        json=client_semantic_config,
+        headers=jwt_headers
+    )
     id = post_response.json()['id']
     kb = KnowledgeBase(id, test_db)
     logging.info(kb._config)
@@ -42,7 +50,11 @@ async def test_kb_semantic_config(client, test_db, jwt_headers):
 
 @pytest.mark.asyncio
 async def test_kb_llamaparse_config(client, test_db, jwt_headers):
-    post_response = client.post('/api/knowledge-bases', json=client_llama_parse_config, headers=jwt_headers)
+    post_response = client.post(
+        '/api/knowledge-bases',
+        json=client_llama_parse_config,
+        headers=jwt_headers
+    )
     id = post_response.json()['id']
     kb = KnowledgeBase(id, test_db)
     logging.info(kb._config)

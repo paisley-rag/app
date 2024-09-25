@@ -5,14 +5,8 @@ import os
 import shutil
 from datetime import datetime, timezone
 
-# import pymongo
 import nest_asyncio
-# from dotenv import load_dotenv
-# from llama_index.core import StorageContext
 from llama_index.core import VectorStoreIndex
-# from llama_index.vector_stores.mongodb import MongoDBAtlasVectorSearch
-# from llama_index.vector_stores.awsdocdb import AWSDocDbVectorStore
-# from llama_index.storage.docstore.mongodb import MongoDocumentStore
 
 from db.util import use_s3
 import db.app_logger as log
@@ -25,10 +19,6 @@ from db.knowledge_base.kb_constants import (
     LLMS,
     API_KEYS,
 )
-
-# load_dotenv(override=True)
-# MONGO_URI = os.environ["MONGO_URI"]
-# FILE_DIR = 'tmpfiles'
 
 nest_asyncio.apply()
 
@@ -136,33 +126,11 @@ class KnowledgeBase:
         return nodes
 
     def _store_indexes(self, nodes):
-        # client = pymongo.MongoClient(MONGO_URI)
-        # vector_index = "vector_index"
-        # environment = os.getenv('ENVIRONMENT', 'production')
 
         log.info('kb_config.py _store_indexes: ********* ', self._config)
 
         kb_id = self._db.get_kb_id(self._config['kb_name'])
         log.info('kb_config.py _store_indexes: ', kb_id)
-
-
-        # if environment in ('local', 'mongoatlas'):
-        #     vector_store = MongoDBAtlasVectorSearch(
-        #         client,
-        #         db_name=kb_id,
-        #         collection_name=vector_index
-        #     )
-        # else:
-        #     vector_store = AWSDocDbVectorStore(
-        #         client,
-        #         db_name=kb_id,
-        #         collection_name=vector_index
-        #     )
-
-        # storage_context = StorageContext.from_defaults(
-        #     vector_store=vector_store,
-        #     # docstore=docstore
-        # )
 
         # vector index
         storage_context = self._db.get_vector_storage_context(kb_id)
@@ -174,13 +142,6 @@ class KnowledgeBase:
         )
 
         # keyword index
-
-        # docstore = MongoDocumentStore.from_uri(
-        #     uri=MONGO_URI,
-        #     db_name=kb_id
-        # )
-
-        # docstore.add_documents(nodes)
         self._db.get_keyword_store(kb_id).add_documents(nodes)
 
     def _add_file_to_kb_config(self, file):

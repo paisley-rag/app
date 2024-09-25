@@ -15,7 +15,6 @@ from db.db.mongo import Mongo
 from db.db.session import get_db
 from db.config import settings
 
-
 def _get_test_db():
     try:
         db = Mongo(settings.MONGO_URI)

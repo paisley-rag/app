@@ -1,8 +1,6 @@
 '''
 utilities for testing
 '''
-import os
-
 from db.util import jwt
 from db.config import settings
 

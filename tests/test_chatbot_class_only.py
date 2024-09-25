@@ -4,13 +4,11 @@ Tests for chatbot class only
 - note:  db is required to instantiate chatbot class
 '''
 import logging
-
-import db.app_logger as log
 from db.chatbot.chatbot_class import Chatbot
 
 def test_instantiate_chatbot_class(test_db):
     chatbot = Chatbot('12345', test_db)
-    logging.info(f'instantiate_chatbot_class: type(pipe), {type(chatbot).__name__} {isinstance(chatbot, Chatbot)}')
+    logging.info(f'type(pipe), {type(chatbot).__name__} {isinstance(chatbot, Chatbot)}')
     assert type(chatbot).__name__ == 'Chatbot'
 
 def test_get_default_prompt():
@@ -19,4 +17,4 @@ def test_get_default_prompt():
     assert "{context_str}" in template
     assert "{query_str}" in template
     assert "Context information is below" in template
-    assert "Given the context information and not prior knowledge, answer the query."
+    assert "Given the context information and not prior knowledge, answer the query." in template
