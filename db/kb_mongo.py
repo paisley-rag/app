@@ -31,7 +31,8 @@ class KbMongo(BaseMongo):
         result = self._kb_db.insert_one(kb_config)
         return result
 
-    def add_file_metadata_to_kb(self, kb_name, file_metadata):
+    async def add_file_metadata_to_kb(self, kb_name, file_metadata):
+        log.info(f"add_file_metadata_to_kb: start {kb_name}")
         result = self._kb_db.update_one(
             { "kb_name": kb_name },
             { "$push": { "files": file_metadata } }

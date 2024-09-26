@@ -50,7 +50,7 @@ async def test_kb_sentence_nodes_indexes(client, test_db, jwt_headers):
     logging.info(kb._config)
     assert len(kb._config['files']) == 0
 
-    kb._add_file_to_kb_config(file)
+    await kb._add_file_to_kb_config(file)
 
     # - check after
     logging.info(kb._config)
