@@ -5,6 +5,7 @@ Mixin class for kb class db access
 import db.app_logger as log
 from db.db.base_mongo import BaseMongo
 from db.config import settings
+from motor.motor_asyncio import AsyncIOMotorClient
 
 class KbMongo(BaseMongo):
     def set_kb_db(
@@ -13,6 +14,7 @@ class KbMongo(BaseMongo):
         kb_col=settings.CONFIG_KB_COL
     ):
         self._kb_db = self._client[kb_db][kb_col]
+        self._akb_db = AsyncIOMotorClient(settings.MONGO_URI)[kb_db][kb_col]
 
     # CRUD methods for kb class
     def get_knowledge_bases(self):
@@ -33,7 +35,7 @@ class KbMongo(BaseMongo):
 
     async def add_file_metadata_to_kb(self, kb_name, file_metadata):
         log.info(f"add_file_metadata_to_kb: start {kb_name}")
-        result = self._kb_db.update_one(
+        result = await self._akb_db.update_one(
             { "kb_name": kb_name },
             { "$push": { "files": file_metadata } }
         )
