@@ -29,7 +29,7 @@ async def test_kb_sentence_nodes_indexes(client, test_db, jwt_headers):
     assert type(nodes[0]).__name__ == 'TextNode'
 
     # Store indexes
-    kb._store_indexes(nodes)
+    await kb._store_indexes(nodes)
     vector_retriever = test_db.get_vector_retriever(id, 1)
     keyword_retriever = test_db.get_keyword_retriever(id, 1)
     logging.info(f"************* {vector_retriever}  {keyword_retriever}")
@@ -50,7 +50,7 @@ async def test_kb_sentence_nodes_indexes(client, test_db, jwt_headers):
     logging.info(kb._config)
     assert len(kb._config['files']) == 0
 
-    kb._add_file_to_kb_config(file)
+    await kb._add_file_to_kb_config(file)
 
     # - check after
     logging.info(kb._config)

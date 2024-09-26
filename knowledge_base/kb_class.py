@@ -125,7 +125,7 @@ class KnowledgeBase:
 
         return nodes
 
-    def _store_indexes(self, nodes):
+    async def _store_indexes(self, nodes):
 
         log.info('kb_config.py _store_indexes: ********* ', self._config)
 
@@ -144,7 +144,7 @@ class KnowledgeBase:
         # keyword index
         self._db.get_keyword_store(kb_id).add_documents(nodes)
 
-    def _add_file_to_kb_config(self, file):
+    async def _add_file_to_kb_config(self, file):
 
         now = datetime.now(timezone.utc)
         date = now.strftime("%m-%d-%y")
@@ -161,7 +161,7 @@ class KnowledgeBase:
 
         log.info('kb_class._add_file_to_kb_config: ', file, file_metadata)
 
-        self._db.add_file_metadata_to_kb(
+        await self._db.add_file_metadata_to_kb(
             self._config['kb_name'],
             file_metadata
         )
@@ -171,5 +171,5 @@ class KnowledgeBase:
     async def ingest_file(self, file):
         file_path = self._save_file_locally(file)
         nodes = await self._create_nodes(file_path)
-        self._store_indexes(nodes)
-        self._add_file_to_kb_config(file)
+        await self._store_indexes(nodes)
+        await self._add_file_to_kb_config(file)

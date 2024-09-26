@@ -80,4 +80,5 @@ async def upload_file(id: str, file: UploadFile=File(...), kb_db=Depends(get_db)
         return {"message": f"{file.filename} uploaded"}
     except Exception as e:
         log.error(f"/api/knowledge-bases/{id}/upload  *****ERROR uploading {file.filename}")
+        log.error(f"/api/knowledge-bases/{id}/upload  *****ERROR uploading {e}")
         return {"message": f"Error: {e}"}

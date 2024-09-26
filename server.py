@@ -14,8 +14,9 @@ load_dotenv(override=True)
 
 if __name__ == '__main__':
     nest_asyncio.apply()
-    if os.environ['ENVIRONMENT'] != 'production':
+    if os.getenv('ENVIRONMENT', 'production') != 'production':
         print('non-production environment')
         uvicorn.run("db.backend.app:app", host="0.0.0.0", port=8000, loop='asyncio', reload=True)
 
-    uvicorn.run(app, host="0.0.0.0", port=8000, loop='asyncio')
+    else:
+        uvicorn.run(app, host="0.0.0.0", port=8000, loop='asyncio')
